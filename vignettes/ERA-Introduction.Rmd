@@ -118,6 +118,10 @@ We can also use the `ERAAlphaPlot` function. We can add a background map to the 
 ```{r Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F}
 
 ERAAlphaPlot(Data = ERA.Compiled,
+            Background = NA,
+            Background.Labs = NA,
+            Background.Cols = NA,
+            Background.Title = NA,
             alpha.bandwidth = 4,
             Showpoints = T,
             Low = "black",
