@@ -5,7 +5,7 @@ knitr::opts_chunk$set(
 )
 
 ## ----setup,include=F,eval=T,echo=T--------------------------------------------
-require(ERA)
+require(ERAg)
 require(broom)
 require(ggplot2)
 require(metafor)

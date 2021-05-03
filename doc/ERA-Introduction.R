@@ -5,7 +5,7 @@ knitr::opts_chunk$set(
 )
 
 ## ----packages,include=F,eval=T,echo=T-----------------------------------------
-  require(ERA)
+  require(ERAg)
   require(sp)
   require(rgeos)
   require(ggplot2)
@@ -73,7 +73,7 @@ plot(SiteBuffers)
 ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
 
 ## ----Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F-----------------
-FSMap<-terra::rast(unzip(system.file("extdata", "FSMap.zip", package = "ERA"),overwrite=T))
+FSMap<-terra::rast(unzip(system.file("extdata", "FSMap.zip", package = "ERAg"),overwrite=T))
 FSMap[FSMap==0]<-NA
 FSMap[is.nan(FSMap)]<-NA
 

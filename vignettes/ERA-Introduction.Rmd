@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 
 ```{r packages,include=F,eval=T,echo=T}
-  require(ERA)
+  require(ERAg)
   require(sp)
   require(rgeos)
   require(ggplot2)
@@ -116,7 +116,7 @@ ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = 
 We can also use the `ERAAlphaPlot` function. We can add a background map to the plot using the Background parameters in the function, in this case we add a farming system map supplied from the [CELL5M](https://doi.org/10.7910/DVN/G4TBLF/7RIFT5) dataset.
 
 ```{r Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F}
-FSMap<-terra::rast(unzip(system.file("extdata", "FSMap.zip", package = "ERA"),overwrite=T))
+FSMap<-terra::rast(unzip(system.file("extdata", "FSMap.zip", package = "ERAg"),overwrite=T))
 FSMap[FSMap==0]<-NA
 FSMap[is.nan(FSMap)]<-NA
 
@@ -346,7 +346,9 @@ knitr::kable(EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
 9) **`Product.Type.Code`**= product type name code
 
 ## Biophysical Variables
-You can find a range of variables to define the context of an ERA observation and we will be adding more functions to `ERAg` to enable you to link spatio-temporal co-ordinates to biophysical datasets.
+You can find a range of variables to define the context of an ERA observation and we will be adding more functions to `ERAg` to enable you to link spatio-temporal co-ordinates to biophysical datasets.  
+
+`An update is pending to complete the biophysical datasets, this should be ready by 07.05.2021`
 
 ### Climate
 #### Climate: Reported
@@ -472,7 +474,7 @@ can be found in the `ERA_Other_Linked_Data` dataset. You can find details of the
  knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
 ```
 
-*To Do: Describe column suffixes*
+
 
 ```{r Landuse, include = F, eval = F,echo=F}
 ### Landuse
