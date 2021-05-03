@@ -5,7 +5,7 @@
 \alias{PracticeCodes}
 \title{Practice Codes}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 129 rows and 10 columns.
+An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 174 rows and 14 columns.
 }
 \source{
 \emph{To be added}
