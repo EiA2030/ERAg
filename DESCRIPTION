@@ -1,0 +1,45 @@
+Package: ERAg
+Title: Evidence for Resilient Agriculture Tools
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Peter",
+           family = "Steward",
+           role = c("aut", "cre"),
+           email = "p.steward@cgiar.org",
+           comment = c(ORCID = "0000-0003-3985-4911"))
+Description: What the package does (one paragraph).
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends:  R (>= 2.10),
+          data.table
+Imports: lme4,
+         lmerTest,
+         stats,
+         diagis,
+         Hmisc,
+         terra,
+         rworldmap,
+         rworldxtra,
+         ggplot2,
+         ggnewscale,
+         sf,
+         sp,
+         rasterVis,
+         RColorBrewer,
+         doSNOW,
+         parallel,
+         rgeos,
+         metafor,
+         MASS,
+         plyr,
+         sfsmisc,
+         broom,
+         pbapply,
+         reldist,
+         matrixStats
+VignetteBuilder: knitr
+Suggests: BiocStyle, rmarkdown
+
