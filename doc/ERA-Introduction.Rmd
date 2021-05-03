@@ -1,0 +1,496 @@
+use---
+title: "ERA-Introduction"
+author: "Peter Steward & Todd Rosenstock"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ERA-Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r packages,include=F,eval=T,echo=T}
+  require(ERA)
+  require(sp)
+  require(rgeos)
+  require(ggplot2)
+  require(rworldmap)
+  require(rworldxtra)
+  require(sf)
+  require(ggnewscale)
+  require(terra)
+  require(RColorBrewer)
+  require(rasterVis)
+
+```
+
+In this vignette, we will explore key components of the ERA dataset and some derived products to which it can be linked (also provided in the `ERAg` package). This is not intended to be a complete explanation of everything ERA. Instead its purpose is to highlight a few features to kick-start use and analysis. Please send feedback on the explanations or on discoveries that should be included in the next version to Pete Steward (p.steward@cgiar.org). Please post any questions to the ERA-Data-Sprint Slack Workspace.
+
+## Accessing ERA
+The ERA dataset is included with the `ERAg` package as a `data.table` object **`ERA.Compiled`**.
+
+```{r Access ERA, echo=T}
+knitr::kable(head(ERA.Compiled[,1:8], 5))
+```
+
+## ERA's structure
+Each row of the dataset forms one **`observation`**. An observation encodes a unique article, site, treatment comparison, outcome measure, and time period combination. Each observation includes the article’s bibliographic information, spatial variables, environmental context, experimental design, treatment comparisons, and outcome indicator effects. Each observation has a unique identifier in the `Index` column. The **`Code`** is each study's unique identifier. The most complete description of ERA fields can be found in either `ERA.Compiled`, the `ERACompiledFields` object from within R, or 'Online-only Table 2' in the Data Descriptor manuscript.
+
+```{r ERA Fields, echo=T}
+knitr::kable(head(ERACompiledFields[c(1,7,10,19,50),c("Field.Name","Description")]))
+```
+
+## Bibliographic Variables
+Even bibliographic data can provide insights in to agricultural research. The **`Author`**, ,**`Date`** and **`Journal`** fields provide bibliographic information for the publication that has contributed the row of data. **`DataLoc`** field describes where data were extracted from in the publication (e.g. a table or figure). Here, a simple plot shows how the number of publications reporting different ERA practice themes changes over time:
+
+```{r Bibliographic, echo=T, fig.align='center', fig.asp=1, fig.width=6, warning=FALSE}
+knitr::kable(head(unique(ERA.Compiled[,list(Code,Author,Date,Journal,DataLoc)]), 5))
+
+# Plot no. studies x theme x year
+
+# Subset data
+PrxThxYe<-ERA.Compiled[!is.na(Date),list(Theme,Code,Date)]
+# Split Theme on "-" delim (multiple themes can be present in an experimental treatment)
+ThemeSplit<-strsplit(PrxThxYe[,Theme],"-")
+# Count no. themes per observation & replicate each row by N
+N<-rep(1:nrow(PrxThxYe),lapply(ThemeSplit,length))
+# Do replication and add split theme back
+PrxThxYe<-PrxThxYe[N][,Theme:=unlist(ThemeSplit)]
+# Calculate no. studies per theme per year   
+PrxThxYe<-PrxThxYe[,list(N.Studies=length(unique(Code))),by=list(Theme,Date)]
+# Subset to fewer themes to simplify plot
+PrxThxYe<-PrxThxYe[Theme %in% c("Nutrient Management","Agroforestry","Postharvest","Soil Management")]
+# Order on publication year
+PrxThxYe<-PrxThxYe[, Date:=as.numeric(Date)][order(Date)]
+# Get cumulative sum by theme by year
+PrxThxYe[,Cum.Sum := cumsum(N.Studies), by=list(Theme)]
+
+# Plot
+ggplot(PrxThxYe,aes(x=Date,y=Cum.Sum,col=Theme))+
+  geom_line(alpha=1,size=1)+
+  theme_bw()+
+  theme(legend.position = "bottom")+
+  labs(title="Cumulative number of studies reporting practice themes over time",
+       x= "Publication Year",
+       y = "No. Studies")
+
+
+
+```
+
+## Spatial Variables
+ERA's power, in part, comes from the ability to link it to other datasets such as soils, historical climate, distance to markets among many others. Unfortunately, geographic coordinates have not always been commonly reported. Even today coordinates are often reported with low degrees of precision or are simply incorrect. During data extraction, significant effort was made to identify the most likely coordinates for where a study occurred and to provide some estimate of uncertainty for those coordinates. These data can be found in the **`Country`**, **`Site.ID`**, ,**`Latitude`**, **`Longitude`** and **`Buffer`** fields. These fields give the spatial location of the site in decimal degrees and a radius of uncertainty in meters. There is also the **Site.Key** field which is a concatenation of the **`Latitude`**, **`Longitude`** and **`Buffer`** fields, this can be used to identify unique locations independent of what the site is called in a publication (i.e. the **`Site.ID`** field). We standardized location names so the experiments that occurred at the same locations have the same corresponding names. 
+
+```{r Location, echo=T}
+knitr::kable(head(unique(ERA.Compiled[,list(Country,Site.ID,Latitude,Longitude,Buffer)]), 5))
+```
+
+The `Pbuffer` function  creates a `SpatialPolygons` object of all the study sites in ERA.
+
+```{r Buffers, echo=T,fig.width=7,fig.height=6}
+SiteBuffers<-Pbuffer(Data=ERA.Compiled, ID = NA, Projected = F)
+plot(SiteBuffers)
+```
+
+You will immediately notice that some locations have very high spatial uncertainty, which can derive from the aggregation of sites in reporting. Depending on the use, it may be worth considering filtering these from the dataset using the `Buffer` field. 
+
+```{r Filter Location, echo=T,eval=F}
+# Filter dataset to sites with spatial uncertainty radius of less than 5km
+ERA.Compiled<-ERA.Compiled[Buffer<5000]
+```
+
+The spatial distribution of ERA data can be visualized with the `ERAHexPlot` functions:
+
+```{r Hexplot, echo=T,eval=T,fig.width=7,fig.height=6,warning=F}
+ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
+```
+
+We can also use the `ERAAlphaPlot` function. We can add a background map to the plot using the Background parameters in the function, in this case we add a farming system map supplied from the [CELL5M](https://doi.org/10.7910/DVN/G4TBLF/7RIFT5) dataset.
+
+```{r Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F}
+FSMap<-terra::rast(unzip(system.file("extdata", "FSMap.zip", package = "ERA"),overwrite=T))
+FSMap[FSMap==0]<-NA
+FSMap[is.nan(FSMap)]<-NA
+
+ERAAlphaPlot(Data = ERA.Compiled,
+            Background = FSMap ,
+            Background.Labs =  FS.Map.Attributes[order(as.numeric(Number)),Label],
+            Background.Cols = c(rev(colorRampPalette(brewer.pal(11, "Spectral"))(16))),
+            Background.Title = "Farming System",
+            alpha.bandwidth = 4,
+            Showpoints = T,
+            Low = "black",
+            Mid = "grey30",
+            High = "white",
+            Point.Col = "Black",
+            ALevel = NA)+
+            theme_bw(base_size=10)+
+            theme(panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.text = element_blank(),
+            axis.ticks = element_blank(),
+            axis.title = element_blank(),
+            legend.position = c(0.18,0.29),
+            legend.background = element_blank(),
+            legend.text = element_text(colour = "white",face="bold"),
+            legend.title = element_text(colour = "white",face="bold"),
+            panel.background = element_blank(),
+            panel.border = element_blank()
+            )
+
+```
+
+### Aggregated Sites 
+Where experiments have been conducted across multiple sites it is not unusual for results to be reported averaged across more than one site. In ERA, combined sites are indicated by the concatenation of names in the **`Site.ID`** field using a **`..`** delimiter. Note that aggregation of sites can lead to very large buffer distances.
+
+```{r Ag Sites, echo=T}
+
+Agg.Sites<-unique(ERA.Compiled[grep("[.][.]",Site.ID),
+                               list(Site.ID,Latitude,Longitude,Buffer,Version)])
+
+knitr::kable(head(Agg.Sites,5))
+```
+
+## Temporal Variables
+Understanding when an experiment took place is equally important to its spatial location for linking ERA to many other data. Temporal variables describe when an observation was measured in terms of year and growing season, with year defined by the observation measurement date. They also include any reported planting and harvest dates. The following describe the field and format of temporal variables.
+
+1) **`M.Year`** =  data entry code for season of observation (we recommend you use the fields below where this is split into component parts)
+2) **`M.Year.Start`** =  start year of observation period
+3) **`M.Year.End`** =  end year of observation period
+4) **`M.Season.Start`** =  start season of observation period
+5) **`M.Season.End`** = end season of observation period
+6) **`Plant.Start`** =  start date of planting period/uncertainty (dd.mm.yyyy)
+7) **`Plant.End`** =  end date of planting period/uncertainty (dd.mm.yyyy)
+8) **`Harvest.Start`** =  start date of harvest period/uncertainty (dd.mm.yyyy)
+9) **`Harvest.End`** =  end date of harvest period/uncertainty (dd.mm.yyyy)
+10) **`Duration`** = duration of the experiment for the season of observation (season 1 = 0.5)
+
+Experimental outcomes can be reported averaged over time. When this is the case, `M.Year.Start` and `M.Season.Start` indicate the starting season and `M.Year.End` and `M.Season.End` the ending season, respectively for the temporal reporting period. Season is typically used to indicate the growing season in a bimodal rainfall area. However, it also used to indicate non-seasonal experimental periods within a year, for example multiple irrigated growing seasons.  
+
+Planting & harvest start and end dates typically indicate uncertainty as to when planting or harvesting occurred. For example, when a publication reports crop `were planted in May 2012` then `Plant.Start` would be 01.05.2012 and `Plant.End` would be 31.05.2012.  
+
+Values of **`9999`** in `M.Year` fields indicate the year an experimental outcome was not reported. This situation is more common in postharvest or livestock diet experiments, than agronomic experiments. 
+
+## Experimental Design
+The number of experimental replications, **`Rep`**, is used as a proxy for experimental precision and used when calculating observation weights and calculating effects sizes in ERA. Replications are used, instead of other measures of variation, because standard deviations and standard errors are not reported consistently. Given ERA's scope (1,000s of papers), it was not logistically possible to reach out to every author. **`Plot.Size`** is the physical area per replication. It can be another proxy for experimental precision and could be used to weight observations. Last, ERA records whether the experiment occurred on a research station or in a farmer's field. 
+
+## Higher Level Concepts: Practices, Outcomes, and Products (EUs)
+In addition to spatial and temporal variables, there are three high level concepts that are the foundation of ERA's experiment classification system. These are **practices**, **outcomes** and **products** (or experimental units). Practices here is shorthand for **Management practices and technologies** which describe agronomic, agroforestry, and livestock interventions, for example, crop rotations, livestock dietary supplements or the like. Outcomes, as they sound, relate to the dependent variables in experiments (e.g., yield, benefit-cost ratios, soil carbon). Products refers to the the species or commodity that the outcome is measured on, for example maize, milk, or meat.  
+
+Each is organized hierarchically, where concepts are nested below and above related concepts. This organization allows the user to aggregate or disaggregate data using these fields to explore different questions, from narrow (e.g., how does a Gliricidia-based alley cropping change maize crop yields?) to broad (e.g., considering all products which practices, on average, improve productivity, resilience and mitigation outcomes?). It also facilitates the user to deliver information at the level for the specific users. For example, policy makers refer to agroforestry broadly while farmers are typically more interested in nuanced (disaggregated) results for species and practices. ERA's practices, outcomes, and products hierarchies are unique but recently has been mapped to other ontologies including **AGROVOC** and **AgrO** to increase future interoperability. These mappings will be available in future realeases. 
+
+We can view the subordinates of these high level concepts by accessing the datasets `PracticeCodes`, `OutcomesCodes` and `EUCodes` included with the `ERAg` package. Alternatively the organization of higher level concepts can also be viewed in the `ERAConcepts` list or in somewhat less detail in the manuscript describing the data.
+
+```{r Show ERA Concepts, echo=T}
+ERAConcepts
+```
+
+Individual concepts have columns containing their name and corresponding column with the suffix **`.Code`** containing much abbreviated versions of the name, for example **`OutSubInd`** & **`OutSubInd.Code`**. The abbreviated names are useful in decluttering plot axes.
+
+```{r Names vs. Codes, echo=T}
+knitr::kable(head(unique(ERA.Compiled[,list(Out.SubInd,Out.SubInd.Code,PrName,PrName.Code,Product.Simple,Product.Simple.Code)]), 5))
+```
+
+### Management practices and technologies
+We selected a set of management practices and technologies ('practices' hereafter) based on existing literature and feedback from development partners. This list includes a broad range of interventions but clearly not all. Therefore, it is important to familiarize yourself with what is included with ERA. Practice coding is highly disaggregated with a single treatment receiving up to 13 individual codes. Codes for every practice in that treatment are included such as seed, tillage, fertilizer use, weeding, etc.   
+
+Each observation (row in the dataset) is set up to compare two treatments.  A treatment in an experiment may be compared to more than one other treatment. What constitutes valid comparisons can be found in the manuscript describing the dataset. But it is important to know that a treatment from a single study may be presented in multiple observations (rows) for those interested to not work on the comparisons themselves. 
+
+#### Management practices and technologies: Code Sheet
+We can find practice codes, their names and definitions in the `PracticeCodes` object:
+```{r Show Practice Codes, echo=T}
+knitr::kable(head(PracticeCodes[,1:6], 5))
+```
+
+There are two types of practice code **h codes** and **ERA codes** (all other code values). **h codes** are control codes for unimproved or non-focal experimental practices. 
+
+#### Management practices and technologies: Data Extraction Variables
+The main columns used to describe practices and treatments (treatments being a specific combination of experimental or control practices) in data extraction include:   
+1) **`T1:T13`** =  `T columns` each column can contain a single practice code and together they describe the **experimental** treatment  
+2) **`C1:C13`** = `C columns` each column can contain a single practice code and together they describe the **control** treatment  
+3) **`TID`** = a short code beginning with T identifying a unique experimental treatment within a study    
+4) **`CID`** = a short code beginning with C identifying a unique control treatment within a study    
+5) **`T.Descrip`** = a short descriptive of the experimental treatment (used to aid data entry)  
+6) **`C.Descrip`** = a short descriptive of the control treatment (used to aid data entry)  
+
+There are additional columns that describe aspects of specific practices:    
+1) **`T.NI/C.NI`** = the amount of inorganic nitrogen applied in the experimental and control treatments  
+2) **`T.NO/C.NO`** = the amount of organic nitrogen applied in the experimental and control treatments  
+3) **`Variety`** = the name of the crop or animal variety,race,breed, etc. for the product (EU) of the observation  
+4) **`Diversity`** = a description of crop diversification in time and/or space (i.e. intercropping and/or rotation). A `/` indicates different growing seasons a `..` or a `-` indicates intercropping. *We are working to standardize the delimiters used in this field *. Current differences are between two data entry periods. The 2020 data entry this field shows the entire temporal sequence for an experiment, for the 2018 data entry the field captures only the repeating unit of a rotation (if present)  
+5) **`Tree`** = scientific name(s) of trees used in agroforestry practices  
+
+#### Management practices and technologies: Set Difference Variables
+The base ERA analysis applies a set difference approach, where the `T columns` are compared to the `C columns` to extract: 1) experimental ERA practices (i.e. practices that do not contain `h`) that are in the experimental, but not the control treatment (**`plist`** column); and 2) base practices that are shared between experimental and control treatments (**`base.list`**  column).
+
+```{r Demonstrate Set Differences, echo=T}
+T.Cols<-paste0("T",1:13)
+C.Cols<-paste0("C",1:13)
+
+T.Cols<-unique(unlist(ERA.Compiled[99,..T.Cols]))
+C.Cols<-unique(unlist(ERA.Compiled[99,..C.Cols]))
+
+T.Cols
+C.Cols
+
+# Remove blanks and h-codes
+T.Cols<-T.Cols[!(T.Cols==""|grepl("h",T.Cols)) ]
+C.Cols<-C.Cols[!(C.Cols==""|grepl("h",C.Cols)) ]
+
+T.Cols
+C.Cols
+
+# Experimental practices in experimental treatment but not the control treatment (plist column)
+T.Cols[!T.Cols %in% C.Cols]
+
+# Base practices in both experimental and control treatments (base.list column)
+T.Cols[T.Cols %in% C.Cols]
+```
+
+Multiple practices in base or experimental columns are sorted then concatenated using a `-` delimiter.  
+
+For convenience we have translated the codes in the **`plist`** and **`base.list`**  columns into names and their corresponding codes:  
+1) **`PrName`** = (experimental) practice name  
+2) **`PrName.Code`** = (experimental) practice name code  
+3) **`PrName.Base`** = base practice name  
+4) **`PrName.Base.Code`** = base practice name code  
+5) **`SubPrName`** = (experimental) subpractice name  
+6) **`SubPrName.Code`** = (experimental) subpractice name code  
+7) **`SubPrName.Base`** = base practice name  
+8) **`SubPrName.Base.Code`** = base subpractice name code  
+9) **`Theme`** = (experimental) practice theme name  
+10) **`Theme.Code`** = (experimental) practice theme name code  
+11) **`Theme.Base`** = base practice theme name  
+12) **`Theme.Base.Code`** = base practice theme name code  
+
+
+```{r ERA Show Practice Codes, echo=T}
+knitr::kable(ERA.Compiled[99,list(plist,base.list,SubPrName,SubPrName.Code,SubPrName.Base,SubPrName.Base.Code)])
+```
+
+#### Management practices and technologies: Aggregated Treatments
+As with sites and reporting seasons, authors sometimes average outcomes across experimental treatments, for example in a tillage x fertilizer experiment the results of fertilizer might be reported averaged to for tillage and vice-versa. In the 2018 dataset (`Version == 2018`) aggregated treatments are indicated in the `TID`/`CID` field with a `.` delim for example `T1.T2.T3` in the 2020 dataset (`Version == 2020`) aggregated treatments are indicated in the `T.Descrip`/`C.Descrip` fields with a `..` delim for example `120 T1..120 T2..120T3..120 T4..120 T5`.  
+
+Aggregated treatments must have identical management for the aggregated practices in both control and treatment, for example if the experimental vs control comparison is tillage vs no-tillage and aggregation is across five levels of inorganic nitrogen application (0N, 20N, 40N, 60N and 100N) both tillage and no-tillage must be averaged across the same five levels of nitrogen application.  
+
+In the 2020 data entry a practice is added to control and treatment for when a practice is present in 50% or more of the aggregated treatments.  
+
+Data on practices averaged across different rotation or intercropping sequences is not collected.  
+
+### Outcomes
+Outcomes are simpler than practices as each ERA observation can only have a single outcome. Outcomes were selected to capture metrics of productivity, proxies for resilience, and climate change mitigation. The selection process was driven by practicality, how can we ensure a good distributions of metrics across our end goals, what type of information is typically collected, and what type of information are stakeholders requesting. A fuller description of the outcomes and specifically how resilience is considered in the accompanying manuscript draft.    
+
+#### Outcomes: Code Sheet
+Outcome codes, their names and definitions can be found in the `OutcomeCodes` object:
+```{r Show Outcome Codes, echo=T}
+knitr::kable(head(OutcomeCodes[,1:6], 5))
+```
+
+#### Outcomes: ERA Columns
+
+1) **`Outcode`** =  the outcome code `OutcomeCodes$Code` for the observation  
+2) **`Units`** = the unit of outcome reporting  
+3) **`Out.SubInd`** = outcome subindicator name  
+4) **`Out.SubInd.Code`** = outcome subindicator name code  
+5) **`Out.Ind`** = outcome indicator name  
+6) **`Out.Ind.Code`** = outcome indicator name code  
+7) **`Out.SubPillar`** = outcome subpillar name  
+8) **`Out.SubPillar.Code`** = outcome subpillar name code  
+9) **`Out.Pillar`** = outcome pillar name  
+10) **`Out.Pillar.Code`** = outcome pillar name code
+
+
+```{r ERA Show Outcomes, echo=T}
+knitr::kable(head(unique(ERA.Compiled[!is.na(Units),list(Outcode,Units,Out.SubInd,Out.SubInd.Code,Out.Ind,Out.Ind.Code,Out.Pillar,Out.Pillar.Code)]),5))
+```
+
+#### Outcome: Partial Outcomes
+The **`Partial.Outcome.Code`** and **`Partial.Outcome.Name`** columns related specifically to economic outcomes and the concept of marginal outcomes, in particular costs, benefits, and variables derived from these such as benefit-cost ratio. Values in these fields indicate that the outcome does not consider the entire treatment, but only the practices indicated by the codes and names present. For example a partial outcome could be the marginal cost of using improved seeds. 
+
+#### Outcomes: Currency Outcomes
+Where economic outcomes are reported using a currency unit the **`USD2010.C`** and **`USD2010.T`** columns standardize these to a USD value in 2010 for the control and experimental treatments respectively.  
+
+We use purchasing power parity ([`PPP`](https://data.worldbank.org/indicator/PA.NUS.PRVT.PP)), consumer price index ([`CPI`](https://data.worldbank.org/indicator/FP.CPI.TOTL)) and USD/local currency exchange rates ([`xrat`](https://data.worldbank.org/indicator/PA.NUS.FCRF)) to standardize local currency to USD:    
+1) `USD` values are converted back to local currency using the `xrat` for the year and country 
+2) `CPI` adjust local currencies to their value in 2010  
+3) `CPI` adjusted 2010 values are divided by `PPP`  
+
+Data are not present for all countries and years, in particular Zimbabwe.
+
+### Products
+Products are the final high level concept in ERA. Due to legacy of the data extraction, products are also called experiment units (EUs) in ERA. Products as mentioned refer to what is being measured. This is typically a plant species or animal product. Note that parts of the plant are often differentiated in the outcome code (e.g., 101 for crop yield and 102 for biomass yield such as maize stover). In most cases, only 1 product is provided per observation. When more than one product relates to an observation outcome product codes or names are concatenated with a `-` delimiter.
+
+#### Products: Code Sheet
+Products codes, their names and definitions can be found in the `EUCodes` object:
+```{r Show EU Codes, echo=T}
+knitr::kable(EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
+```
+
+#### Products: ERA Columns
+1) **`EU`** = `depreciated: the product code  for the observation using a . delim for multiple products`  
+2) **`EUlist`** = the product code `OutcomeCodes$Code` for the observation using a `-` delim for multiple products  
+3) **`Product`** =  the full name of the product, including aspect of the component such as grain, meat or milk  
+4) **`Product.Simple`** = simplified product name, excluding any aspects of component  
+5) **`Product.Simple.Code`** = simplified product name code  
+6) **`Product.Subtype`** = product subtype name  
+7) **`Product.Subtype.Code`** = product subtype name code  
+8) **`Product.Type`** = product type name  
+9) **`Product.Type.Code`**= product type name code
+
+## Biophysical Variables
+You can find a range of variables to define the context of an ERA observation and we will be adding more functions to `ERAg` to enable you to link spatio-temporal co-ordinates to biophysical datasets.
+
+### Climate
+#### Climate: Reported
+ERA harvests the following long-term average or seasonal climate variables when reported from published data:  
+1) **`MAT`**  = mean annual temperature (&degC)  
+2) **`MAP`** = mean annual precipitation (mm)  
+3) **`MSP`** means seasonal precipitation (mm; matched to the growing season of the observation)  
+4) **`TAP`** total annual precipitation (mm; matched to the year of the observation)  
+5) **`TSP`** total seasonal precipitation (mm; matched to the growing season of the observation)  
+
+These fields are `NA` where no information was available.
+
+```{r Climate Published, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1}
+knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)|is.na(TSP)),list(Code,Country,Site.ID,MAT,MAP,MSP,TAP,TSP)]), 5))
+
+# Make sure Mean.Annual.Precip variable is numeric
+# Average Mean.Annual.Precip for unique spatial locations
+# Select Mean.Annual.Precip variable from data.table
+MAP<-ERA.Compiled[,MAP:=as.numeric(MAP)
+                  ][!is.na(MAP),list(MAP=mean(MAP)),by=Site.Key
+                    ][,MAP] 
+
+hist(MAP,main="MAP hist",xlab="Mean annual precipitation (mm) - Published Data")
+
+```
+
+#### Climate: Derived
+In `ERA.Compiled` we have also added two climate fields extracted from geo-spatial climate datasets using the buffers created by the `Pbuffer` function:  
+1) **`Mean.Annual.Temp`**  = mean annual temperature (C) derived from the [NASA POWER](https://power.larc.nasa.gov) dataset API at 0.5&deg resolution.   
+2) **`Mean.Annual.Precip`** = mean annual precipitation (mm) derived from the  [CHIRPS 2.0](https://www.chc.ucsb.edu/data/chirps) dataset API at 0.05&deg   resolution. *Note values less than zero come from a bug we need to fix, please ignore these*.
+
+```{r Climate Derived, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1}
+knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)),list(Code,Country,Site.ID,MAT,Mean.Annual.Temp,MAP,Mean.Annual.Precip)]), 5))
+
+Mean.Annual.Precip<-ERA.Compiled[,Mean.Annual.Precip:=as.numeric(Mean.Annual.Precip)
+                                 ][!is.na(Mean.Annual.Precip),list(Mean.Annual.Precip=mean(Mean.Annual.Precip)),
+                                   by=Site.Key
+                                   ][Mean.Annual.Precip>0,Mean.Annual.Precip] 
+
+# In the line above we filter out any negative CHIRPs values (there's a bug we need to fix!)
+
+hist(Mean.Annual.Precip,main="Mean.Annual.Precip hist",xlab="Mean annual precipitation (mm) - CHIRPS 2.0")
+
+```
+   
+### Soil
+#### Soil: Reported
+ERA harvests the following baseline soil variables from published data:  
+1) **`Soil.Type`** = *Depreciated & only available for 2018 version; soil classification/name as presented by author*  
+2) **`Soil.Classification`**  = *Depreciated & only available for 2018 version; taxonomic system used to classify the soil*  
+3) **`Soil.Texture`** =  soil texture at **start** of experiment as described by author or derived from reported % sand, silt or clay using the [USDA soil texture triangle](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/soils/survey/?cid=nrcs142p2_054167)  
+4) **`SOC`** = soil organic carbon at **start** of experiment  
+5) **`SOC.Unit`** = unit of reporting for `SOC` field  
+6) **`SOC.Depth`** = depth of `SOC` reporting; min and max depths in cm concatenated with a `-`, e.g. `0-30`  
+7) **`Soil.pH`**  = soil pH at **start** of experiment  
+8) **`Soil.pH.Method`** = the method used to calculate soil pH.
+  
+```{r Soil Published, echo=T, warning=FALSE}
+knitr::kable(head(unique(ERA.Compiled[!(is.na(SOC)|is.na(Soil.pH)|is.na(Soil.Texture)),
+                                      list(Code,Site.Key,Soil.Texture,SOC,SOC.Unit,SOC.Depth,Soil.pH,Soil.pH.Method)]), 5))
+```
+
+#### Soil: Derived
+Soil texture variables for depth 0-30 cm from the [SoilGrids 2018](https://doi.org/10.1371/journal.pone.0169748) dataset are also added to the `ERA.Complied` dataset:  
+1) **`CLY`** = weight percentage of clay particles (<0.0002 mm)  
+2) **`SLT`** = weight percentage of silt particles (0.0002–0.05 mm)  
+3) **`SND`** = weight percentage of the sand particles (0.05–2 mm)  
+These are averaged for each buffered site location with areas of slope > *insert value + unit* masked out.
+
+A near complete list of SoilGrids 2018 variables for depths 0-5, 5-15 and 15-30cm can be found in the `ERA_SoilGrids18` dataset. These variables can be matched to ERA observations using the `Site.Key` parameter. For a description of fields in this dataset see the SoilGrids Fields tab  [here](https://docs.google.com/spreadsheets/d/1WfcCKQgefVJnVYjIgnJ2u9g4ZcUWIiEVjhjbz7GCRYU/edit?usp=sharing).
+
+
+```{r SoilGrids, echo=T, warning=FALSE}
+# Lets look at Cation Exchange Capacity of soil (variable name = CECSOL) at 5-15cm (sl2)
+ Cols<-c("Site.Key",grep("CECSOL_M_sl2",colnames(ERA_SoilGrids18),value=T))
+ knitr::kable(head(ERA_SoilGrids18[,Cols],5))
+# There are a lot of SoilGrids variables in this dataset:
+  length(colnames(ERA_SoilGrids18))
+```
+
+### Elevation
+#### Elevation: Reported
+The reported elevation of a location in a publication can be found in the `Elevation` field.
+```{r Elevation, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1}
+
+Elevation<-ERA.Compiled[,Elevation:=as.numeric(Elevation)
+                        ][!is.na(Elevation),list(Elevation=mean(Elevation)),
+                          by=Site.Key][,Elevation]
+hist(Elevation,main="Elevation",xlab="Reported Elevation (m)")
+
+# We have checked the site at ~4000m it is a valid observation!
+
+```
+#### Elevation: Derived 
+Elevation data was derived from the [ASTER Global Digital Elevation Model](10.5067/ASTER/ASTGTM.003) at 1" resolution averaged for the spatial uncertainty buffer of each site location. The elevation data were also used to calculate mean slope and aspect. These variables can be found in the `ERA_Physical` dataset and can be matched to ERA observations using the `Site.Key` parameter.
+
+```{r Physical, echo=T, warning=FALSE}
+ knitr::kable(head(ERA_Physical[,4:10],5))
+```
+
+### Agroecological Zone
+Agroecological zones (AEZs) are defined for each `Site.ID` as the modal value from the buffer of uncertainty:  
+1) **`AEZ5`** 5-class AEZs Africa South of the Sahara (SSA) based on the methodology developed by FAO and IIASA  
+2) **`AEZ16`** 16-class AEZs for Africa South of the Sahara (SSA) based on the methodology developed by FAO and IIASA  
+3) **`AEZ16simple`** a simplified version of `AEZ16` removing the tropic/subtropic classification  
+We use the IFPRI [Agro-Ecological Zones for Africa South of the Sahara](https://doi.org/10.7910/DVN/M7XIUB) datasets available on the Harvard Dataverse.  
+* Note  AEZ maps do not cover northern Africa*.
+
+```{r AEZs, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.height=7}
+
+AEZ16Simple<-table(unique(ERA.Compiled[!is.na(AEZ16simple),list(Site.Key,AEZ16simple)])[,AEZ16simple])
+
+barplot(sort(AEZ16Simple), las=2,col = brewer.pal(8, "Set2"),ylab="No. Studies")
+```                                                            
+
+## Other Derived Variables
+Like other derived datasets these have been extracted for the spatial uncertainty buffer for each ERA location and are linked to `ERA/Compiled` using the `Site.Key` field.
+
+A number of datasets including many from the former HarvestChoice website now found on the [Harvard Dataverse](https://dataverse.harvard.edu/dataverse/harvestchoice)
+can be found in the `ERA_Other_Linked_Data` dataset. You can find details of these in the `ERA_Other_Linked_Data_Fields` object:
+
+```{r Other Datasets, echo=T, warning=FALSE}
+ knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
+```
+
+*To Do: Describe column suffixes*
+
+```{r Landuse, include = F, eval = F,echo=F}
+### Landuse
+*File is currently missing Site.Key for matching*
+#Another derived dataset that can be linked to ERA.Compiled via the 
+#CCI-LC Land Cover Maps - v2.0.7 http://maps.elie.ucl.ac.be/CCI/viewer/download.php
+#300 m resoltion
+#2015
+  
+#ERA_CCI_LC_15
+#ERA_CCI_LC_15_Fields
+  
+}
+```
+
+## Miscellaneous
+
+### Version + Analysis Function
+Data entry for ERA was undertaken in two tranches, one in 2018 and one in 2020. In 2018 valid control vs. treatment comparisons were decided by the person extracting the data, the amount of data extracted is as presented in the `ERA.Compiled` dataset provided in this package. In 2020 we increased the amount of data captured from a publication and automated the process of deciding valid comparisons using logic, data were simplified and reformatted to be compatible and merged with the 2018 dataset.  The **`Version`** field indicates which tranche of data entry an observation comes from.  
+
+There are a number of logical pathways in the 2020 analysis code that can determine a comparison of control and treatment, the `Analysis.Function` field in `ERA.Compiled` details which pathway an observation derives from. This is a field useful for developers.
