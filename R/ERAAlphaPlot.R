@@ -22,10 +22,10 @@
 #' @return AlphaD.Plot returns a `ggplot` object showing a map of point data density.
 #' @export
 ERAAlphaPlot<-function(Data = ERA.Compiled,
-                      Background ,
-                      Background.Labs,
-                      Background.Cols = c(rev(colorRampPalette(brewer.pal(11, "Spectral"))(16))),
-                      Background.Title = "Farming System",
+                      Background = NA,
+                      Background.Labs = NA,
+                      Background.Cols = NA,
+                      Background.Title = NA,
                       alpha.bandwidth = 4,
                       Showpoints = T,
                       Low = "black",
@@ -38,7 +38,9 @@ ERAAlphaPlot<-function(Data = ERA.Compiled,
   AfricaMap<-AfricaMap[AfricaMap$REGION=="Africa"&!is.na(AfricaMap$REGION),]
   AfricaMap <-st_as_sf(AfricaMap,crs = 4326)
 
-  Background<-crop(Background,AfricaMap)
+  if(!is.na(Background)){
+    Background<-crop(Background,AfricaMap)
+  }
 
   # See below for use of new_scale("fill")
   # https://eliocamp.github.io/codigo-r/2018/09/multiple-color-and-fill-scales-with-ggplot2/
@@ -53,6 +55,7 @@ ERAAlphaPlot<-function(Data = ERA.Compiled,
     Point.Data<-unique(Data[,list(Latitude,Longitude)])
   }
 
+  if(!is.na(Background)){
   g<-gplot(Background) +
     geom_tile(aes(fill = factor(value)))+
     scale_fill_manual(Background.Title,values=Background.Cols,labels=Background.Labs,na.value="white")+
@@ -69,12 +72,33 @@ ERAAlphaPlot<-function(Data = ERA.Compiled,
           panel.border = element_blank()
     )+
     geom_sf(data=AfricaMap,aes(x=LON,y=LAT),fill=NA,col="black")+
-    coord_sf(xlim=c(-25,65),ylim=c(-35,35))+
+    coord_sf(xlim=c(-26,65),ylim=c(-35,37.5))+
     new_scale("fill") +
     stat_density_2d(data = Data,
                     mapping = aes( x = Longitude, y = Latitude,fill = ..density.., alpha = (-..density..)), geom = "raster",
                     contour = FALSE,adjust=alpha.bandwidth,show.legend = F)+
     scale_fill_gradient2(low=Low,mid=Mid,high=High)
+  }else{
+    g<- ggplot(Data, aes(x = Longitude, y = Latitude)) +
+      geom_sf(data=AfricaMap,aes(x=LON,y=LAT),fill=NA,col="black")+
+      coord_sf(xlim=c(-26,65),ylim=c(-35,37.5))+
+      stat_density_2d(data = Data,
+                      mapping = aes( x = Longitude, y = Latitude,fill = ..density.., alpha = (-..density..)), geom = "raster",
+                      contour = FALSE,adjust=alpha.bandwidth,show.legend = F)+
+      scale_fill_gradient2(low=Low,mid=Mid,high=High)+
+      theme_bw()+
+      theme(panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.text = element_blank(),
+            axis.ticks = element_blank(),
+            axis.title = element_blank(),
+            legend.position = c(0.18,0.29),
+            legend.background = element_blank(),
+            legend.text = element_text(colour = "white",face="bold"),
+            legend.title = element_text(colour = "white",face="bold"),
+            panel.border = element_blank()
+      )
+  }
 
   if(Showpoints){
     g<- g + geom_point(data=Point.Data,aes( x = Longitude, y = Latitude),size=0.8,pch=16,col=Point.Col)

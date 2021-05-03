@@ -6,10 +6,10 @@
 \usage{
 ERAAlphaPlot(
   Data = ERA.Compiled,
-  Background,
-  Background.Labs,
-  Background.Cols = c(rev(colorRampPalette(brewer.pal(11, "Spectral"))(16))),
-  Background.Title = "Farming System",
+  Background = NA,
+  Background.Labs = NA,
+  Background.Cols = NA,
+  Background.Title = NA,
   alpha.bandwidth = 4,
   Showpoints = T,
   Low = "black",
