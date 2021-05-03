@@ -14,7 +14,7 @@
 #' @export
 Pbuffer<-function(Data,ID=NA,Projected=F){
   Data<-data.frame(Data)
-  Data<-Data[!(is.na(Data$Latitude)|is.na(Data$Longitude)),]
+  Data<-Data[!(is.na(Data$Latitude)|is.na(Data$Longitude)|Data$Buffer==""|is.na(Data$Buffer)),]
   if(!is.na(ID)){
     SS<-unique(Data[,c("Latitude","Longitude",ID,"Buffer")])
   }else{
