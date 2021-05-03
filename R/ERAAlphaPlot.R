@@ -38,7 +38,7 @@ ERAAlphaPlot<-function(Data = ERA.Compiled,
   AfricaMap<-AfricaMap[AfricaMap$REGION=="Africa"&!is.na(AfricaMap$REGION),]
   AfricaMap <-st_as_sf(AfricaMap,crs = 4326)
 
-  if(!is.na(Background)){
+  if(class(Background)[1]!="logical"){
     Background<-crop(Background,AfricaMap)
   }
 
@@ -55,8 +55,8 @@ ERAAlphaPlot<-function(Data = ERA.Compiled,
     Point.Data<-unique(Data[,list(Latitude,Longitude)])
   }
 
-  if(!is.na(Background)){
-  g<-gplot(Background) +
+  if(class(Background)[1]!="logical"){
+    g<-gplot(Background) +
     geom_tile(aes(fill = factor(value)))+
     scale_fill_manual(Background.Title,values=Background.Cols,labels=Background.Labs,na.value="white")+
     theme_bw()+
