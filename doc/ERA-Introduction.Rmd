@@ -1,4 +1,4 @@
-use---
+---
 title: "ERA-Introduction"
 author: "Peter Steward & Todd Rosenstock"
 date: "`r Sys.Date()`"
@@ -116,7 +116,12 @@ ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = 
 We can also use the `ERAAlphaPlot` function. We can add a background map to the plot using the Background parameters in the function, in this case we add a farming system map supplied from the [CELL5M](https://doi.org/10.7910/DVN/G4TBLF/7RIFT5) dataset.
 
 ```{r Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F}
+
 ERAAlphaPlot(Data = ERA.Compiled,
+            Background = NA,
+            Background.Labs = NA,
+            Background.Cols = NA,
+            Background.Title = NA,
             alpha.bandwidth = 4,
             Showpoints = T,
             Low = "black",
@@ -340,17 +345,18 @@ ERA harvests the following long-term average or seasonal climate variables when 
 
 These fields are `NA` where no information was available.
 
-```{r Climate Published, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1}
-knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)|is.na(TSP)),list(Code,Country,Site.ID,MAT,MAP,MSP,TAP,TSP)]), 5))
+```{r Climate Published, echo=T, warning=FALSE, fig.width=5, fig.align='center', fig.asp=1}
+knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)|is.na(TSP)),list(Code,Country,Site.Key,MAT,MAP,MSP,TAP,TSP)]), 5))
 
 # Make sure Mean.Annual.Precip variable is numeric
 # Average Mean.Annual.Precip for unique spatial locations
 # Select Mean.Annual.Precip variable from data.table
+
 MAP<-ERA.Compiled[,MAP:=as.numeric(MAP)
                   ][!is.na(MAP),list(MAP=mean(MAP)),by=Site.Key
                     ][,MAP] 
 
-hist(MAP,main="MAP hist",xlab="Mean annual precipitation (mm) - Published Data")
+hist(MAP,main="Reported MAP Histogram",xlab="Mean annual precipitation (mm)")
 
 ```
 
@@ -360,16 +366,16 @@ In `ERA.Compiled` we have also added two climate fields extracted from geo-spati
 2) **`Mean.Annual.Precip`** = mean annual precipitation (mm) derived from the  [CHIRPS 2.0](https://www.chc.ucsb.edu/data/chirps) dataset API at 0.05&deg   resolution. *Note values less than zero come from a bug we need to fix, please ignore these*.
 
 ```{r Climate Derived, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1}
-knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)),list(Code,Country,Site.ID,MAT,Mean.Annual.Temp,MAP,Mean.Annual.Precip)]), 5))
+knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)),list(Code,Country,Site.Key,MAT,Mean.Annual.Temp,MAP,Mean.Annual.Precip)]), 5))
 
 Mean.Annual.Precip<-ERA.Compiled[,Mean.Annual.Precip:=as.numeric(Mean.Annual.Precip)
                                  ][!is.na(Mean.Annual.Precip),list(Mean.Annual.Precip=mean(Mean.Annual.Precip)),
                                    by=Site.Key
                                    ][Mean.Annual.Precip>0,Mean.Annual.Precip] 
 
-# In the line above we filter out any negative CHIRPs values (there's a bug we need to fix!)
+# In the line above we filter out any negative CHIRPs values (there's a bug we need to fix)
 
-hist(Mean.Annual.Precip,main="Mean.Annual.Precip hist",xlab="Mean annual precipitation (mm) - CHIRPS 2.0")
+hist(Mean.Annual.Precip,main="CHIRPS 2.0 MAP Histogram",xlab="Mean annual precipitation (mm)")
 
 ```
    

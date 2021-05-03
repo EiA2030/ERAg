@@ -73,35 +73,19 @@ plot(SiteBuffers)
 ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
 
 ## ----Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F-----------------
-FSMap<-terra::rast(unzip(system.file("extdata", "FSMap.zip", package = "ERAg"),overwrite=T))
-FSMap[FSMap==0]<-NA
-FSMap[is.nan(FSMap)]<-NA
 
 ERAAlphaPlot(Data = ERA.Compiled,
-            Background = FSMap ,
-            Background.Labs =  FS.Map.Attributes[order(as.numeric(Number)),Label],
-            Background.Cols = c(rev(colorRampPalette(brewer.pal(11, "Spectral"))(16))),
-            Background.Title = "Farming System",
+            Background = NA,
+            Background.Labs = NA,
+            Background.Cols = NA,
+            Background.Title = NA,
             alpha.bandwidth = 4,
             Showpoints = T,
             Low = "black",
             Mid = "grey30",
             High = "white",
             Point.Col = "Black",
-            ALevel = NA)+
-            theme_bw(base_size=10)+
-            theme(panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(),
-            axis.text = element_blank(),
-            axis.ticks = element_blank(),
-            axis.title = element_blank(),
-            legend.position = c(0.18,0.29),
-            legend.background = element_blank(),
-            legend.text = element_text(colour = "white",face="bold"),
-            legend.title = element_text(colour = "white",face="bold"),
-            panel.background = element_blank(),
-            panel.border = element_blank()
-            )
+            ALevel = NA)
 
 
 ## ----Ag Sites, echo=T---------------------------------------------------------
@@ -155,30 +139,31 @@ knitr::kable(head(unique(ERA.Compiled[!is.na(Units),list(Outcode,Units,Out.SubIn
 ## ----Show EU Codes, echo=T----------------------------------------------------
 knitr::kable(EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
 
-## ----Climate Published, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1----
-knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)|is.na(TSP)),list(Code,Country,Site.ID,MAT,MAP,MSP,TAP,TSP)]), 5))
+## ----Climate Published, echo=T, warning=FALSE, fig.width=5, fig.align='center', fig.asp=1----
+knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)|is.na(TSP)),list(Code,Country,Site.Key,MAT,MAP,MSP,TAP,TSP)]), 5))
 
 # Make sure Mean.Annual.Precip variable is numeric
 # Average Mean.Annual.Precip for unique spatial locations
 # Select Mean.Annual.Precip variable from data.table
+
 MAP<-ERA.Compiled[,MAP:=as.numeric(MAP)
                   ][!is.na(MAP),list(MAP=mean(MAP)),by=Site.Key
                     ][,MAP] 
 
-hist(MAP,main="MAP hist",xlab="Mean annual precipitation (mm) - Published Data")
+hist(MAP,main="Reported MAP Histogram",xlab="Mean annual precipitation (mm)")
 
 
 ## ----Climate Derived, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1----
-knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)),list(Code,Country,Site.ID,MAT,Mean.Annual.Temp,MAP,Mean.Annual.Precip)]), 5))
+knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)),list(Code,Country,Site.Key,MAT,Mean.Annual.Temp,MAP,Mean.Annual.Precip)]), 5))
 
 Mean.Annual.Precip<-ERA.Compiled[,Mean.Annual.Precip:=as.numeric(Mean.Annual.Precip)
                                  ][!is.na(Mean.Annual.Precip),list(Mean.Annual.Precip=mean(Mean.Annual.Precip)),
                                    by=Site.Key
                                    ][Mean.Annual.Precip>0,Mean.Annual.Precip] 
 
-# In the line above we filter out any negative CHIRPs values (there's a bug we need to fix!)
+# In the line above we filter out any negative CHIRPs values (there's a bug we need to fix)
 
-hist(Mean.Annual.Precip,main="Mean.Annual.Precip hist",xlab="Mean annual precipitation (mm) - CHIRPS 2.0")
+hist(Mean.Annual.Precip,main="CHIRPS 2.0 MAP Histogram",xlab="Mean annual precipitation (mm)")
 
 
 ## ----Soil Published, echo=T, warning=FALSE------------------------------------
