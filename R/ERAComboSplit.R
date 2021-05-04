@@ -16,12 +16,8 @@ ERAComboSplit<-function(Data){
 
   X<-strsplit(unlist(Data[,SubPrName]),"-")
   Len<-rep(1:nrow(Data),unlist(lapply(X,length)))
-<<<<<<< HEAD
   Data<-Data[Len]
   Data[,SubPrName.Combo:=unlist(X)]
-=======
-  Data<-Data[Len,SubPrName.Combo:=unlist(X)]
->>>>>>> 4836cfb62c94b284bd90ca907ef06c7666767542
 
   PracticeCodes<-data.table(PracticeCodes)
   Data[,SubPrName.Code.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Subpractice.Code]]
@@ -35,12 +31,8 @@ ERAComboSplit<-function(Data){
 
   X<-strsplit(Data[,Product.Simple],"-")
   Len<-rep(1:nrow(Data),unlist(lapply(X,length)))
-<<<<<<< HEAD
   Data<-Data[Len]
   Data[,Product.Simple.Combo:=unlist(X)]
-=======
-  Data<-Data[Len,Product.Simple.Combo:=unlist(X)]
->>>>>>> 4836cfb62c94b284bd90ca907ef06c7666767542
 
   EUCodes<-data.table(EUCodes)
   Data[,Product.Code.Combo:=EUCodes[match(Data[,Product.Simple.Combo],Product.Simple),Product.Simple.Code]]
