@@ -459,17 +459,6 @@ can be found in the `ERA_Other_Linked_Data` dataset. You can find details of the
  knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
 ```
 
-```{r setup,include=F,eval=T,echo=T}
-require(ERAg)
-require(broom)
-require(ggplot2)
-require(metafor)
-require(pbapply)
-require(plyr)
-require(sfsmisc)
-require(MASS)
-```
-
 ```{r Landuse, include = F, eval = F,echo=F}
 ### Landuse
 *File is currently missing Site.Key for matching*
