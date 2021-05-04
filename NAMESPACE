@@ -3,6 +3,7 @@
 export(CreateConceptLevels)
 export(ERAAlphaPlot)
 export(ERAAnalyze)
+export(ERAComboSplit)
 export(ERAHexPlot)
 export(ERAMatrixPlot)
 export(ERAStabPlot)

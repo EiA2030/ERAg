@@ -459,7 +459,16 @@ can be found in the `ERA_Other_Linked_Data` dataset. You can find details of the
  knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
 ```
 
-
+```{r setup,include=F,eval=T,echo=T}
+require(ERAg)
+require(broom)
+require(ggplot2)
+require(metafor)
+require(pbapply)
+require(plyr)
+require(sfsmisc)
+require(MASS)
+```
 
 ```{r Landuse, include = F, eval = F,echo=F}
 ### Landuse
@@ -477,7 +486,8 @@ can be found in the `ERA_Other_Linked_Data` dataset. You can find details of the
 
 ## Miscellaneous
 
-### Version + Analysis Function
+### Version & Analysis Function Feilds
 Data entry for ERA was undertaken in two tranches, one in 2018 and one in 2020. In 2018 valid control vs. treatment comparisons were decided by the person extracting the data, the amount of data extracted is as presented in the `ERA.Compiled` dataset provided in this package. In 2020 we increased the amount of data captured from a publication and automated the process of deciding valid comparisons using logic, data were simplified and reformatted to be compatible and merged with the 2018 dataset.  The **`Version`** field indicates which tranche of data entry an observation comes from.  
 
 There are a number of logical pathways in the 2020 analysis code that can determine a comparison of control and treatment, the `Analysis.Function` field in `ERA.Compiled` details which pathway an observation derives from. This is a field useful for developers.
+
