@@ -39,7 +39,8 @@ Imports: lme4,
          broom,
          pbapply,
          reldist,
-         matrixStats
+         matrixStats,
+         treemap
 VignetteBuilder: knitr
 Suggests: BiocStyle, rmarkdown
 
