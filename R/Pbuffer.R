@@ -26,19 +26,19 @@ Pbuffer<-function(Data,ID=NA,Projected=F){
   CRS.new<-"+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 
   # Buffer points
-  points <- SpatialPoints(cbind(SS$Longitude, SS$Latitude),proj4string=CRS(CRS.old))
-  points <- spTransform(points, CRS.new)
+  points <- sp::SpatialPoints(cbind(SS$Longitude, SS$Latitude),proj4string=CRS(CRS.old))
+  points <- sp::spTransform(points, CRS.new)
 
   pbuf1<-lapply(1:nrow(SS),FUN=function(i){
-    pbuf<- gBuffer(points[i], widt=SS$Buffer[i])
-    pbuf<- spChFIDs(pbuf, paste(i, row.names(pbuf), sep="."))
+    pbuf<- rgeos::gBuffer(points[i], widt=SS$Buffer[i])
+    pbuf<- sp::spChFIDs(pbuf, paste(i, row.names(pbuf), sep="."))
   })
 
-  pbuf1<-SpatialPolygons(lapply(pbuf1, function(x){x@polygons[[1]]}),proj4string=CRS(CRS.new))
+  pbuf1<-sp::SpatialPolygons(lapply(pbuf1, function(x){x@polygons[[1]]}),proj4string=CRS(CRS.new))
 
   if(Projected==T){
     return(pbuf1)
   }else{
-    return(spTransform(pbuf1,CRS(CRS.old)))
+    return(sp::spTransform(pbuf1,CRS(CRS.old)))
   }
 }
