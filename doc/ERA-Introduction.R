@@ -196,19 +196,15 @@ AEZ16Simple<-table(unique(ERA.Compiled[!is.na(AEZ16simple),list(Site.Key,AEZ16si
 
 barplot(sort(AEZ16Simple), las=2,col = brewer.pal(8, "Set2"),ylab="No. Studies")
 
+## ----BioClim, include = T, eval = T,echo=T------------------------------------
+   knitr::kable(ERA_BioClim[1:5,1:9])
+
+## ----Landuse, include = T, eval = T,echo=T------------------------------------
+   knitr::kable(ERA_CCI_LC_15[1:5,1:9])
+
+## ----Landuse Fields, include = T, eval = T,echo=T-----------------------------
+   knitr::kable(ERA_CCI_LC_15_Fields[1:5,])
+
 ## ----Other Datasets, echo=T, warning=FALSE------------------------------------
  knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
-
-## ----Landuse, include = F, eval = F,echo=F------------------------------------
-#  ### Landuse
-#  *File is currently missing Site.Key for matching*
-#  #Another derived dataset that can be linked to ERA.Compiled via the
-#  #CCI-LC Land Cover Maps - v2.0.7 http://maps.elie.ucl.ac.be/CCI/viewer/download.php
-#  #300 m resoltion
-#  #2015
-#  
-#  #ERA_CCI_LC_15
-#  #ERA_CCI_LC_15_Fields
-#  
-#  }
 
