@@ -449,6 +449,29 @@ AEZ16Simple<-table(unique(ERA.Compiled[!is.na(AEZ16simple),list(Site.Key,AEZ16si
 barplot(sort(AEZ16Simple), las=2,col = brewer.pal(8, "Set2"),ylab="No. Studies")
 ```                                                            
 
+### Bioclimatic variables
+According to the [Worldclim 2.1 2020](https://www.worldclim.org/data/bioclim.html)  dataset there are  19 “bioclimatic” variables which are derived from the monthly temperature and rainfall values in order to generate biologically meaningful variables. These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter is a period of three months (1/4 of the year). Values are extracted for each unique ERA location plus its buffer of spatial uncertainty.  
+Bioclimatic data are extracted and summmarized for each unique ERA location plus its buffer of spatial uncertainty, these data can be found in the *`ERA_BioClim`* object. 
+
+```{r BioClim, include = T, eval = T,echo=T}
+   knitr::kable(ERA_BioClim[1:5,1:9])
+```
+Fields are described in the help for this object: `?ERA_BioClim`.
+
+### Landuse
+The [CCI-LC project](http://maps.elie.ucl.ac.be/CCI/viewer/index.php) delivers a new time series of 24 consistent global LC maps at 300 m spatial resolution on an annual basis from 1992 to 2015.  
+The number of raster cells of each landcover class for the year 2015 is summed for each unique ERA locations buffer of spatial uncertainty.  
+Landcover data can be found in the *`ERA_CCI_LC_15`* object and linked to the `ERA.Complied` dataset using the `Site.Key` field.  
+```{r Landuse, include = T, eval = T,echo=T}
+   knitr::kable(ERA_CCI_LC_15[1:5,1:9])
+```
+
+A description of the fields in this dataset can be found in the *`ERA_CCI_LC_15_Fields`* object.
+
+```{r Landuse Fields, include = T, eval = T,echo=T}
+   knitr::kable(ERA_CCI_LC_15_Fields[1:5,])
+```
+
 ## Other Derived Variables
 Like other derived datasets these have been extracted for the spatial uncertainty buffer for each ERA location and are linked to `ERA/Compiled` using the `Site.Key` field.
 
@@ -459,19 +482,6 @@ can be found in the `ERA_Other_Linked_Data` dataset. You can find details of the
  knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
 ```
 
-```{r Landuse, include = F, eval = F,echo=F}
-### Landuse
-*File is currently missing Site.Key for matching*
-#Another derived dataset that can be linked to ERA.Compiled via the 
-#CCI-LC Land Cover Maps - v2.0.7 http://maps.elie.ucl.ac.be/CCI/viewer/download.php
-#300 m resoltion
-#2015
-  
-#ERA_CCI_LC_15
-#ERA_CCI_LC_15_Fields
-  
-}
-```
 
 ## Miscellaneous
 
