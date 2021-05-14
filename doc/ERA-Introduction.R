@@ -197,10 +197,10 @@ AEZ16Simple<-table(unique(ERA.Compiled[!is.na(AEZ16simple),list(Site.Key,AEZ16si
 barplot(sort(AEZ16Simple), las=2,col = brewer.pal(8, "Set2"),ylab="No. Studies")
 
 ## ----BioClim, include = T, eval = T,echo=T------------------------------------
-   knitr::kable(ERA_BioClim[1:5,1:9])
+   knitr::kable(ERA_BioClim[1:5,1:5])
 
 ## ----Landuse, include = T, eval = T,echo=T------------------------------------
-   knitr::kable(ERA_CCI_LC_15[1:5,1:9])
+   knitr::kable(ERA_CCI_LC_15[1:5,1:15])
 
 ## ----Landuse Fields, include = T, eval = T,echo=T-----------------------------
    knitr::kable(ERA_CCI_LC_15_Fields[1:5,])

@@ -1433,18 +1433,14 @@ We use the IFPRI <a href="https://doi.org/10.7910/DVN/M7XIUB">Agro-Ecological Zo
 <h3>Bioclimatic variables</h3>
 <p>According to the <a href="https://www.worldclim.org/data/bioclim.html">Worldclim 2.1 2020</a> dataset there are 19 “bioclimatic” variables which are derived from the monthly temperature and rainfall values in order to generate biologically meaningful variables. These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter is a period of three months (1/4 of the year). Values are extracted for each unique ERA location plus its buffer of spatial uncertainty.<br />
 Bioclimatic data are extracted and summmarized for each unique ERA location plus its buffer of spatial uncertainty, these data can be found in the <em><code>ERA_BioClim</code></em> object.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>   knitr<span class="sc">::</span><span class="fu">kable</span>(ERA_BioClim[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>   knitr<span class="sc">::</span><span class="fu">kable</span>(ERA_BioClim[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
 <table>
 <colgroup>
-<col width="11%" />
-<col width="10%" />
-<col width="9%" />
-<col width="11%" />
-<col width="10%" />
-<col width="12%" />
-<col width="12%" />
-<col width="11%" />
-<col width="10%" />
+<col width="20%" />
+<col width="19%" />
+<col width="17%" />
+<col width="21%" />
+<col width="19%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1453,10 +1449,6 @@ Bioclimatic data are extracted and summmarized for each unique ERA location plus
 <th align="right">wc2.1_30s_bio_1.SD</th>
 <th align="right">wc2.1_30s_bio_1.Median</th>
 <th align="right">wc2.1_30s_bio_1.Mode</th>
-<th align="right">wc2.1_30s_bio_1.N.Cells</th>
-<th align="right">wc2.1_30s_bio_1.NA.Cells</th>
-<th align="right">wc2.1_30s_bio_10.Mean</th>
-<th align="right">wc2.1_30s_bio_10.SD</th>
 </tr>
 </thead>
 <tbody>
@@ -1466,10 +1458,6 @@ Bioclimatic data are extracted and summmarized for each unique ERA location plus
 <td align="right">0.0147305</td>
 <td align="right">27.14792</td>
 <td align="right">27.15833</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">30.35833</td>
-<td align="right">0.0117849</td>
 </tr>
 <tr class="even">
 <td align="left">13.2000 -4.8800 B550</td>
@@ -1477,10 +1465,6 @@ Bioclimatic data are extracted and summmarized for each unique ERA location plus
 <td align="right">0.0058925</td>
 <td align="right">27.41250</td>
 <td align="right">27.40833</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">31.05833</td>
-<td align="right">0.0117849</td>
 </tr>
 <tr class="odd">
 <td align="left">11.1200 -8.4400 B550</td>
@@ -1488,10 +1472,6 @@ Bioclimatic data are extracted and summmarized for each unique ERA location plus
 <td align="right">NA</td>
 <td align="right">26.82917</td>
 <td align="right">26.82917</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">29.83333</td>
-<td align="right">NA</td>
 </tr>
 <tr class="even">
 <td align="left">11.1555 -12.5285 B400</td>
@@ -1499,10 +1479,6 @@ Bioclimatic data are extracted and summmarized for each unique ERA location plus
 <td align="right">NA</td>
 <td align="right">22.40000</td>
 <td align="right">22.40000</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">24.95000</td>
-<td align="right">NA</td>
 </tr>
 <tr class="odd">
 <td align="left">13.2790 -5.9340 B600</td>
@@ -1510,10 +1486,6 @@ Bioclimatic data are extracted and summmarized for each unique ERA location plus
 <td align="right">0.0088394</td>
 <td align="right">27.82292</td>
 <td align="right">27.82917</td>
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">31.36667</td>
-<td align="right">0.0000000</td>
 </tr>
 </tbody>
 </table>
@@ -1523,8 +1495,8 @@ Bioclimatic data are extracted and summmarized for each unique ERA location plus
 <h3>Landuse</h3>
 <p>The <a href="http://maps.elie.ucl.ac.be/CCI/viewer/index.php">CCI-LC project</a> delivers a new time series of 24 consistent global LC maps at 300 m spatial resolution on an annual basis from 1992 to 2015.<br />
 The number of raster cells of each landcover class for the year 2015 is summed for each unique ERA locations buffer of spatial uncertainty.<br />
-Landcover data can be found in the <em><code>ERA_CCI_LC_15</code></em> object and linked to the <code>ERA.Complied</code> dataset using the <code>Site.Key</code> field.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>   knitr<span class="sc">::</span><span class="fu">kable</span>(ERA_CCI_LC_15[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>])</span></code></pre></div>
+Landcover data can be found in the <strong><code>ERA_CCI_LC_15</code></strong> object and linked to the <code>ERA.Complied</code> dataset using the <code>Site.Key</code> field.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>   knitr<span class="sc">::</span><span class="fu">kable</span>(ERA_CCI_LC_15[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>])</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1537,6 +1509,12 @@ Landcover data can be found in the <em><code>ERA_CCI_LC_15</code></em> object an
 <th align="right">40</th>
 <th align="right">50</th>
 <th align="right">60</th>
+<th align="right">61</th>
+<th align="right">62</th>
+<th align="right">70</th>
+<th align="right">80</th>
+<th align="right">90</th>
+<th align="right">100</th>
 </tr>
 </thead>
 <tbody>
@@ -1547,6 +1525,12 @@ Landcover data can be found in the <em><code>ERA_CCI_LC_15</code></em> object an
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">8</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
@@ -1561,6 +1545,12 @@ Landcover data can be found in the <em><code>ERA_CCI_LC_15</code></em> object an
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">11.1200 -8.4400 B550</td>
@@ -1570,6 +1560,12 @@ Landcover data can be found in the <em><code>ERA_CCI_LC_15</code></em> object an
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">74</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
@@ -1583,6 +1579,12 @@ Landcover data can be found in the <em><code>ERA_CCI_LC_15</code></em> object an
 <td align="right">37</td>
 <td align="right">0</td>
 <td align="right">8</td>
+<td align="right">0</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">13.2790 -5.9340 B600</td>
@@ -1594,10 +1596,16 @@ Landcover data can be found in the <em><code>ERA_CCI_LC_15</code></em> object an
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
-<p>A description of the fields in this dataset can be found in the <em><code>ERA_CCI_LC_15_Fields</code></em> object.</p>
+<p>A description of the fields in this dataset can be found in the <strong><code>ERA_CCI_LC_15_Fields</code></strong> object.</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>   knitr<span class="sc">::</span><span class="fu">kable</span>(ERA_CCI_LC_15_Fields[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,])</span></code></pre></div>
 <table>
 <thead>
