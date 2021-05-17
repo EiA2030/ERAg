@@ -34,7 +34,11 @@ Pbuffer<-function(Data,ID=NA,Projected=F){
     pbuf<- sp::spChFIDs(pbuf, paste(i, row.names(pbuf), sep="."))
   })
 
+  rownames(SS)<-lapply(pbuf1,names)
+
   pbuf1<-sp::SpatialPolygons(lapply(pbuf1, function(x){x@polygons[[1]]}),proj4string=CRS(CRS.new))
+
+  pbuf1<-sp::SpatialPolygonsDataFrame(pbuf1,data = SS)
 
   if(Projected==T){
     return(pbuf1)
