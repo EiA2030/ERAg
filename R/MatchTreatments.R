@@ -7,7 +7,7 @@
 #' `MID` to observations that have the same control and treatment practices, location, growing season and study. The `N.Focal` column of the output
 #'  dataset would tell you how many unique values of `Out.SubInd` are present in each group, and `Focal.List` would concatenate
 #'  these values.
-#`
+#'
 #' @param Data A prepared (ERA) dataset, see the `ERA.Prepare` function.
 #' @param Match.Cols The column name of the variable in `Data` that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = `PrName` (Practice).
 #' @param Focal.Col A vector of outcome codes to consider in the analysis. Default = `101` (Crop Yield).

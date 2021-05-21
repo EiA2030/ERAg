@@ -1,0 +1,176 @@
+---
+title: "ERA-Climate-Data"
+author: "Peter Steward"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ERA-Climate-Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette will explore how to download and extract climate information for ERA locations and for point locations with buffers of spatial uncertainty more generally.
+
+## Downloading and extracting climate data
+
+### Subset the data
+First we will subset the ERA.Compiled dataset to exclude locations with a large radius of spatial uncertainty (in this case >50km). It is difficult to define climate for locations with high levels of spatial uncertainty and their large areas increase the download and processing requirements for download and analysis of climate data.
+
+```{r Subset ERA,echo=T,eval=F}
+ERA.Data<-ERA.Compiled[Buffer<50000]
+```
+
+### Set a date of temporal origin
+When analyzing climate data it is convenient that each date has a unique and sequential number that indicates the number of days from a temporal point of origin. The point of origin is arbitrary, but should be before the date of the first observation in a dataset. 
+
+```{r set M.Origin,echo=T,eval=F}
+M.ORIGIN<-"1900-01-01"
+```
+
+### AgMERRA
+The `ExtractAgMERRA` function extracts daily climate data from AgMERRA .nc4 files. With larger datasets the function can take some hours to run and caution is advised when using parallelization (see `cores` argument) as memory requirements are high.
+
+Before running the function you will need to download all AgMERRA files from [this repository](https://data.giss.nasa.gov/impacts/agmipcf/agmerra/) to a local directory, then specify this directory as the `AgMERRA_dir` argument in the function call.  In the example below the AgMerra .nc4 files have downloaded to a folder called `AgMERRA Downloads` in the working directory.  
+
+The extracted dataset is returned and saved as an `AgMERRA.RData` object in the directory specified by the `Save_Dir` argument (in the example below this is the `AgMERRA` folder in the working directory.  
+
+```{r AgMERRA,echo = T, eval = F}
+
+AgMERRA<-ExtractAgMERRA(DATA=ERA.Data,
+              ID="Site.Key",
+              AgMERRA_dir = "/AgMERRA Downloads",
+              TempDir = "/Temp",
+              Save_Dir = "/AgMERRA",
+              cores=4,
+              Years = c(1980,2010),
+              M.ORIGIN = M.ORIGIN)
+```
+
+*AgMERRA is the AgMIP climate forcing dataset based on the NASA Modern-Era Retrospective Analysis for Research and Applications (MERRA). AgMERRA
+corrects to gridded temperature and precipitation, incorporates satellite precipitation, and derives solar radiation from NASA/GEWEX SRB to cover
+the 1980-2010 period. AgMERRA is somewhat dated, but our primary use for it is to gap fill missing solar radiation values in POWER values.*
+
+### CHIRPS
+There are three phases to extraction of CHIRPS precipitation data: 1) downloading the data using the `DownloadCHIRPS` function; 2) reformatting the data using the `ReformatCHIRPS` function; and 3) extracting the data using the `ExtractCHIRPS` function.  
+
+#### 1) Download
+This function download the CHIRPS 2.0 dataset as .tif.gz files with 0.05 degree resolution from an online [repository](https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/1981/) to the local directory specified in the `SaveDir` argument.
+
+```{r download CHIRPS,echo=T,eval=FALSE}
+DownloadCHIRPs(StartYear=1983,
+               EndYear=2019,
+               SaveDir=paste0(getwd(),"/CHIRPS Downloads"))
+```
+
+#### 2) Reformat
+The `ReformatCHIRPS` function transforms the CHIRPS data downloaded by the `DownloadCHIRPS` function to be an array object from which data can be quickly extracted. The directory containing the download CHIRPS data is specified by `CHIRPS_dir` argument.  
+
+```{r reformat CHIRPS,echo=T,eval=FALSE}
+ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS Downloads"),
+                         Save_dir=paste0(getwd(),"/CHIRPS Reformatted")
+```
+#### 3) Extract
+The `ExtractCHIRPS` function extracts daily climate data from a reformatted CHIRPS object created by the `ReformatCHIRPS` and located in the directory specified by the `CHIRPS_dir` argument.  The period for which data are extracted for, specified by the `YStart` and `YEnd` arguments, should not exceed the bounds of the years specified when the CHIRPS data were downloaded.  
+
+```{r extract CHIRPS,echo=T,eval=FALSE}
+CHIRPS<-ExtractCHIRPS(DATA = ERA.Data,
+                     ID = "Site.Key",
+                     CHIRPS_dir="/CHIRPS Reformatted",
+                     Save_Dir = "/CHIRPS",
+                     YStart = 1983,
+                     YEnd = 2019,
+                     ROUND=5,
+                     M.ORIGIN=M.ORIGIN)
+```
+
+### POWER
+The `ExtractPOWER` function downloads agroclimatogy data at 0.05&deg resolution from the [NASA POWER](https://power.larc.nasa.gov/) dataset using an AP query. As it is an API query the download process is slow and may take many hours.
+
+The code below will download chunks of data for combination of POWER parameter (specified in the `Parameters` argument) and `Site.Key` for the period 1983-07-01 to 2018-12-31. The parameters chosen allow the calculation of Penman-Montieth evapotranspiration.  
+
+Downloaded files are stored in the directory specified by the `Save_Dir` argument and once all the data have been downloaded they are combined together and saved as a `POWER.RData` object in the directory specified in the `PowerSave` argument. The `DELETE` argument removes downloaded files when set to `TRUE`.
+
+
+```{r POWER,echo = T, eval = F}
+POWER<-ExtractPOWER(DATA=ERA.Data,
+                   Parameters= paste0("ALLSKY_SFC_SW_DWN,", "PRECTOT,", "PS,","QV2M,","RH2M,","T2M,","T2M_MAX,","T2M_MIN,","WS2M"),
+                   StartDate=19830701,
+                   EndDate=20181231,
+                   ID="Site.Key",
+                   Save_Dir="/POWERdownloads",
+                   PowerSave="/POWER",
+                   DELETE=FALSE,
+                   M.ORIGIN=M.ORIGIN,
+                   MaxBuffer=50000) 
+
+```
+
+*NASA POWER Solar parameters are derived from NASA's GEWEX/SRB release 3.0 archive (July 1, 1983 – Dec. 31, 2007) and NASA’s CERES FLASHFlux project (Jan. 1, 2008 – to within about 7-days of real time). Meteorological parameters are derived from the NASA's GMAO MERRA-2 assimilation model (Jan. 1, 1981 to within a few months of real time) plus GEOS-5.12.4 FP-IT (End of MERRA-2 to within several days of real time). The data in POWER cover the period 1983-07-01 to near present.*
+
+### Calculate PET (potential evapotranspiration)
+Before we can calculate PET we need to add altitude and gap fill some missing solar radiation values in the POWER dataset.  
+
+#### Add altitude
+Altitude data can be added from the `ERA_Physical` object of the `ERAg` package.
+
+```{r add altitude, echo=T,eval=F}
+
+    funX<-function(ID){
+      ID.NAME<-ID
+      ERA_Physical[match(ID.NAME,unlist(ERA_Physical[,Site.Key])),Altitude.mean]
+    }
+    
+    POWER[,Altitude:=funX(Site.Key[1]),by=Site.Key]
+    rm(funX)
+    
+```
+
+#### Subsitute missing solar radiation values
+
+First we see if missing POWER solar radiation (`SRad`) values can be substituted from the AgMERRA dataset that covers 1980-2010.  
+
+We add a field `SRad.Sub` to indicate rows with substituted values and the source of substituted data.  
+
+```{r sub SRad AgMERRA, echo=T,eval=F}
+      N<-POWER[,which(is.na(SRad))]
+      M<-match(paste(unlist(POWER[N,..ID]),POWER[N,DayCount]),paste(unlist(AgMERRA[,..ID]),AgMERRA[,DayCount]))
+      NN<-which(!is.na(M))
+      POWER[N[NN],SRad:=AgMERRA[M[NN],Solar.Rad]]
+      POWER[N[NN],SRad.Sub:="AgMERRA"]
+      rm(N,NN)
+```
+
+For remaining values we use the `ReplaceSRAD` function to search withing the POWER dataset for temporally adjacent `SRad` values. The solar radiation value of the day with the most similar rainfall to the NA value within +/- a number of days specified by the `SeqLen` argument is substituted. Rainfall data is complete in POWER. So if `SeqLen = 3` then the function assesses rainfall similarity 3 days either side of a missing SRad value and chooses the most similar value with a corresponding SRad value.  
+
+```{r sub SRad nearby, echo=T,eval=F}
+      N<-POWER[,which(SRad<0|is.na(SRad))]
+      if(length(N)>0){
+      R<-ReplaceSRAD(SRad = POWER[,SRad],Rain = POWER[,Rain],N,SeqLen=3)
+      POWER[N,SRad:=R]
+      POWER[N,SRad.Sub:="Nearby"]
+      rm(N,R)
+      
+```
+
+#### Calculate PET
+The `PETcalc` function applies the  [FAO Penman-Monteith method](http://www.fao.org/docrep/X0490E/x0490e06.htm) to  calculate reference evapotranspiration. 
+
+```{r Add PET, echo =T, eval=F}
+    POWER[,ETo:=PETcalc(Tmin=Temp.Min,
+                      Tmax=Temp.Max,
+                      SRad=SRad,
+                      Wind=WindSpeed,
+                      Rain=Rain,
+                      Pressure=Pressure,
+                      Humid=Humid,
+                      YearDay=Day,
+                      Latitude=Latitude,
+                      Altitude=Altitude)$ETo]
+```
