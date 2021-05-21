@@ -49,10 +49,10 @@ knitr::kable(head(ERACompiledFields[c(1,7,10,19,50),c("Field.Name","Description"
 ```
 
 ## Bibliographic Variables
-Even bibliographic data can provide insights in to agricultural research. The **`Author`**, ,**`Date`** and **`Journal`** fields provide bibliographic information for the publication that has contributed the row of data. **`DataLoc`** field describes where data were extracted from in the publication (e.g. a table or figure). Here, a simple plot shows how the number of publications reporting different ERA practice themes changes over time:
+Even bibliographic data can provide insights in to agricultural research. The **`Author`**, ,**`Date`**, **`DOI`** and **`Journal`** fields provide bibliographic information for the publication that has contributed the row of data. **`DataLoc`** field describes where data were extracted from in the publication (e.g. a table or figure). Here, a simple plot shows how the number of publications reporting different ERA practice themes changes over time:
 
 ```{r Bibliographic, echo=T, fig.align='center', fig.asp=1, fig.width=6, warning=FALSE}
-knitr::kable(head(unique(ERA.Compiled[,list(Code,Author,Date,Journal,DataLoc)]), 5))
+knitr::kable(head(unique(ERA.Compiled[,list(Code,Author,Date,Journal,DOI,DataLoc)]), 5))
 
 # Plot no. studies x theme x year
 
