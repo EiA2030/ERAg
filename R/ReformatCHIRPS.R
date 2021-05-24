@@ -9,6 +9,9 @@
 ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS"),
                          Save_dir=paste0(getwd(),"/CHIRPS_Reformatted"))
                          {
+
+  # Add Improvement: as per TARCAT function add lat, lon and day as dim names to the R matrices so we don't need to get these by reading in a
+
   # List CHIRPS files
   FILES<-list.files(path = CHIRPS_dir,recursive = T)
   FILES<-data.frame(File=FILES[grep('.tif.gz', FILES)])
