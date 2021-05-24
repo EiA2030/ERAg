@@ -65,7 +65,7 @@ SS<-unique(DATA[,c("Latitude","Longitude","Buffer",ID)])
 if(file.exists(paste0(Save_Dir,"AgMERRA.RData"))){
 
   cat('\r                                                                                                                                          ')
-  cat('\r',paste("Cross-referencing against exisiting extracted data"))
+  cat('\r',paste("Cross-referencing against existing extracted data"))
   flush.console()
 
   X<-miceadds::load.Rdata2(file="AgMERRA.RData",path=Save_Dir)
