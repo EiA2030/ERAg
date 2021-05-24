@@ -91,7 +91,7 @@ CHIRPS<-ExtractCHIRPS(DATA = ERA.Data,
 ```
 
 ### POWER
-The `ExtractPOWER` function downloads agroclimatogy data at 0.05&deg resolution from the [NASA POWER](https://power.larc.nasa.gov/) dataset using an AP query. As it is an API query the download process is slow and may take many hours.
+The `ExtractPOWER` function downloads agroclimatology data at 0.05&deg resolution from the [NASA POWER](https://power.larc.nasa.gov/) dataset using an AP query. As it is an API query the download process is slow and may take many hours.
 
 The code below will download chunks of data for combination of POWER parameter (specified in the `Parameters` argument) and `Site.Key` for the period 1983-07-01 to 2018-12-31. The parameters chosen allow the calculation of Penman-Montieth evapotranspiration.  
 
@@ -114,8 +114,8 @@ POWER<-ExtractPOWER(DATA=ERA.Data,
 
 *NASA POWER Solar parameters are derived from NASA's GEWEX/SRB release 3.0 archive (July 1, 1983 – Dec. 31, 2007) and NASA’s CERES FLASHFlux project (Jan. 1, 2008 – to within about 7-days of real time). Meteorological parameters are derived from the NASA's GMAO MERRA-2 assimilation model (Jan. 1, 1981 to within a few months of real time) plus GEOS-5.12.4 FP-IT (End of MERRA-2 to within several days of real time). The data in POWER cover the period 1983-07-01 to near present.*
 
-### Calculate PET (potential evapotranspiration)
-Before we can calculate PET we need to add altitude and gap fill some missing solar radiation values in the POWER dataset.  
+### Calculating PET (potential evapotranspiration)
+Agroclimatology datasets such as POWER contain the variables needed to calculate PET, but before we can do this we need to add altitude and gap fill some missing solar radiation values.  
 
 #### Add altitude
 Altitude data can be added from the `ERA_Physical` object of the `ERAg` package.
@@ -175,3 +175,55 @@ The `PETcalc` function applies the  [FAO Penman-Monteith method](http://www.fao.
                       Altitude=Altitude)$ETo]
 ```
 
+#### Calculate annual and long-term climate stats
+Complete data for a year is require to calculate annual climate statistics, so first we remove any incomplete years (years with missing data)
+
+```{r remove missing years, echo =T, eval=F}
+      POWER<-POWER[!Year==POWER[Site.Key==POWER$Site.Key[1],list(N=.N),by=Year][N<365,Year]]
+```
+
+Next we calculate annual statistics using the `data.table` `by =` syntax to apply functions by groups, in this case the groups are the `Site.Key` and `Year`. In this example we use the POWER dataset but the approach can be applied to other daily climate datasets.
+
+```{r calculate annual, echo =T, eval=F}
+      POWER.Annual<-POWER[,list(Total.Rain=sum(Rain),
+                                Total.ETo=sum(ETo),
+                                S.Humid.Mean=mean(Specific.Humid),
+                                Humid.Mean=mean(Humid),
+                                Temp.Mean.Mean=mean(Temp.Mean),
+                                Mean.N.30.Days=sum(Temp.Mean>30),
+                                Temp.Max.Mean=mean(Temp.Max),
+                                Temp.Max=max(Temp.Max),
+                                Max.N.40.Days=sum(Temp.Max>40),
+                                Temp.Min.Mean=mean(Temp.Min),
+                                Temp.Min=min(Temp.Min)),by=c("Site.Key","Year")]
+```
+
+Now we use the annual climate statistics to calculate long-term averages from the  calculated above, this time the only grouping variable will use is `Year`.
+
+```{r calculate LTA, echo =T, eval=F}
+      POWER.LT<-POWER.Annual[,list(Total.Rain.Mean=mean(Total.Rain),
+                                   Total.ETo.Mean=mean(Total.ETo),
+                                   S.Humid.Mean=mean(S.Humid.Mean),
+                                   Humid.Mean=mean(Humid.Mean),
+                                   Temp.Mean.Mean=mean(Temp.Mean.Mean),
+                                   Mean.N.30.Days=mean(Mean.N.30.Days),
+                                   Temp.Max.Mean=mean(Temp.Max.Mean),
+                                   Temp.Max=mean(Temp.Max),
+                                   Max.N.40.Days=mean(Max.N.40.Days),
+                                   Temp.Min.Mean=mean(Temp.Min.Mean),
+                                   Temp.Min.Mean=mean(Temp.Min),
+                                   Total.Rain.sd=sd(Total.Rain),
+                                   Total.ETo.sd=mean(Total.ETo),
+                                   S.Humid.Mean.sd=sd(S.Humid.Mean),
+                                   Humid.Mean.sd=sd(Humid.Mean),
+                                   Temp.Mean.Mean.sd=sd(Temp.Mean.Mean),
+                                   Mean.N.30.Days.sd=sd(Mean.N.30.Days),
+                                   Temp.Max.Mean.sd=sd(Temp.Max.Mean),
+                                   Temp.Max.sd=sd(Temp.Max),
+                                   Max.N.40.Days.sd=sd(Max.N.40.Days),
+                                   Temp.Min.Mean.sd=sd(Temp.Min.Mean),
+                                   Temp.Min.sd=sd(Temp.Min)
+      ),by=c("Site.Key")]
+```
+
+To explore annual deviance from long-term averages subtract the long-term average from the annual values.
