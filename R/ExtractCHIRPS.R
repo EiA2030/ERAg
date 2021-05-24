@@ -102,7 +102,7 @@ ExtractCHIRPS<-function(DATA,
     }}else{X<-NULL}
 
   # Buffer Sites
-  pbuf<-Pbuffer(DATA,ID,Projected=F,VERBOSE=F)
+  pbuf<-Pbuffer(DATA,ID,Projected=F)
 
   p.xmin<-0
   p.xmax<-0

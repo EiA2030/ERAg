@@ -41,6 +41,22 @@ ExtractAgMERRA<-function(DATA,
                       cores=4,
                       Years = c(1980,2010),
                       M.ORIGIN = "1900-01-01"){
+
+# SPEED COULD BE IMPROVED BY CONVERTING .NC FILES TO ARRAYS SAVED AS .RDATA OBJECTS (SEE ExtractCHIRPS). ALSO ERROR CHECKING OF NON-MATCHES.SWAP FOR LOOPS FOR LAPPLY
+
+
+  if(substr(TempDir,nchar(TempDir),nchar(TempDir))!="/"){
+    TempDir<-paste0(TempDir,"/")
+  }
+
+  if(substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
+    Save_Dir<-paste0(Save_Dir,"/")
+  }
+
+  if(substr(AgMERRA_dir,nchar(AgMERRA_dir),nchar(AgMERRA_dir))!="/"){
+    AgMERRA_dir<-paste0(AgMERRA_dir,"/")
+  }
+
 DATA<-as.data.frame(DATA[!(is.na(DATA$Latitude)|is.na(DATA$Longitude)|is.na(DATA$Buffer))])
 # Create data.frame of unique locations
 SS<-unique(DATA[,c("Latitude","Longitude","Buffer",ID)])
@@ -80,10 +96,10 @@ if(file.exists(paste0(Save_Dir,"AgMERRA.RData"))){
 }
 
 # Buffer Sites
-pbufX<-Pbuffer(DATA,ID,Projected=F,VERBOSE=F)
+pbufX<-Pbuffer(DATA,ID,Projected=F)
 
 # Set temporary save directory for AgMERRA processing
-temp_dir<-paste0(TempDir,"/AgMERRA/",Sys.Date(),"/")
+temp_dir<-paste0(TempDir,"AgMERRA/",Sys.Date(),"/")
 if (!dir.exists(temp_dir)){dir.create(temp_dir,recursive = T)}
 
 # List Files

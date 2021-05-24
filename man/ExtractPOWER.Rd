@@ -11,7 +11,7 @@ ExtractPOWER(
     "T2M,", "T2M_MAX,", "T2M_MIN,", "WS2M"),
   StartDate = 19830701,
   EndDate = 20181231,
-  Save_Dir = NA,
+  Save_Dir = "POWER/",
   PowerSave = "POWER Downloads/",
   DELETE = F,
   M.ORIGIN = "1900-01-01",

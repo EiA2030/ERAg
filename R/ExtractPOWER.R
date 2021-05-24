@@ -44,11 +44,20 @@ ExtractPOWER<-function(DATA,
                     Parameters= paste0("ALLSKY_SFC_SW_DWN,", "PRECTOT,", "PS,","QV2M,","RH2M,","T2M,","T2M_MAX,","T2M_MIN,","WS2M"),
                     StartDate=19830701,
                     EndDate=20181231,
-                    Save_Dir=NA,
+                    Save_Dir="POWER/",
                     PowerSave = "POWER Downloads/",
                     DELETE = F,
                     M.ORIGIN = "1900-01-01",
                     MaxBuffer = 240000){
+
+
+  if(substr(PowerSave,nchar(PowerSave),nchar(PowerSave))!="/"){
+    PowerSave<-paste0(PowerSave,"/")
+  }
+
+  if(substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
+    Save_Dir<-paste0(Save_Dir,"/")
+  }
 
   DATA<-as.data.frame(DATA)
 
@@ -84,7 +93,7 @@ ExtractPOWER<-function(DATA,
 
 
   # Generate site buffers
-  pbuf<-Pbuffer(DATA=SS,ID=ID,Projected=F,VERBOSE=F)
+  pbuf<-Pbuffer(DATA=SS,ID=ID,Projected=F)
 
   # DOWNLOAD AVERAGE NASA POWER DATA FOR BUFFERED POINT LOCATIONS
 
