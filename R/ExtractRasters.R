@@ -22,7 +22,7 @@
 #' * `N.Cells` = total number of cells contained each locations bounding box
 #' * `NA.Cells` = number of NA cells contained each locations bounding box
 #' @export
-RasterExtract<-function(DATA,
+ExtractRasters<-function(DATA,
                         ID,
                         FILES,
                         Save_Dir,
