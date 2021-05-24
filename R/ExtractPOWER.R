@@ -215,7 +215,7 @@ ExtractPOWER<-function(DATA,
 
   # Display progress report
   cat('\r                                                                                                                                          ')
-  cat('\r',"Step 3a: Adding Date and Daycount since M.ORIGIN")
+  cat('\r',"Step 2: Adding Date and Daycount since M.ORIGIN")
   flush.console()
 
 
@@ -226,7 +226,7 @@ ExtractPOWER<-function(DATA,
   if(!is.na(Save_Dir)){
     # Display progress report
     cat('\r                                                                                                                                          ')
-    cat('\r',"Step 4: Saving Data")
+    cat('\r',"Step 3: Saving Data")
     flush.console()
 
     Save_Dir<-paste0(Save_Dir,"POWER/")
