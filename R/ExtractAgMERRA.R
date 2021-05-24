@@ -330,7 +330,7 @@ AgMERRA$Date<-as.Date(AgMERRA$Day - 1, origin = paste0(AgMERRA$Year,"-01-01"))
 AgMERRA$DayCount<-floor(unclass(AgMERRA$Date-as.Date(M.ORIGIN)))
 
 if(!is.null(X)){
-  AgMERRA<-cbind(X,AgMERRA)
+  AgMERRA<-rbind(X,AgMERRA)
 }
 
 
