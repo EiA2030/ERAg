@@ -93,7 +93,7 @@ ExtractPOWER<-function(DATA,
 
 
   # Generate site buffers
-  pbuf<-Pbuffer(DATA=SS,ID=ID,Projected=F)
+  pbuf<-Pbuffer(DATA=SS,ID=ID, Projected = F)
 
   # DOWNLOAD AVERAGE NASA POWER DATA FOR BUFFERED POINT LOCATIONS
 
