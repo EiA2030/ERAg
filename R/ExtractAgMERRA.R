@@ -75,16 +75,16 @@ if(file.exists(paste0(Save_Dir,"AgMERRA.RData"))){
   New.Years<-unique(X$Year)[!YStart:YEnd %in% unique(X$Year)]
 
   # Check if new sites have been added to Meta.Table that are not in the existing dataset using the ID column
-  XSites<-unlist(unique(X[,..ID]))
+  XSites<-unlist(unique(X[,ID]))
   New.Sites<-SS[,ID][!SS[,ID] %in% XSites]
 
   Removed.Sites<-XSites[!XSites %in% SS[,ID]]
-  X<-X[!unlist(X[,..ID]) %in% Removed.Sites,]
+  X<-X[!unlist(X[,ID]) %in% Removed.Sites,]
 
   if(length(New.Years)==0 & length(New.Sites)>0){
     # Keep new sites only
-    SS[SS[,ID] %in% New.Sites,]
-    DATA[DATA[,ID] %in% New.Sites,]
+    SS<-SS[SS[,ID] %in% New.Sites,]
+    DATA<-DATA[DATA[,ID] %in% New.Sites,]
   }else{
     if(length(New.Years)>0 & length(New.Sites)==0){
       YStart<-min(New.Years)
