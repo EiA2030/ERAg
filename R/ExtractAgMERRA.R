@@ -96,7 +96,9 @@ if(file.exists(paste0(Save_Dir,"AgMERRA.RData"))){
 }
 
 # Buffer Sites
-pbufX<-Pbuffer(DATA,ID,Projected=F)
+pbufX<-Pbuffer(Data=DATA,ID,Projected=F)
+# Get bounding boxes
+pbuf<-lapply(pbuf@polygons,bbox)
 
 # Set temporary save directory for AgMERRA processing
 temp_dir<-paste0(TempDir,"AgMERRA/",Sys.Date(),"/")
@@ -128,10 +130,10 @@ p.ymin<-0
 p.ymax<-0
 
 for(ib2 in 1:length(pbufX)){
-  p.xmin[ib2] <- which(abs(find_lon - pbufX[ib2]@bbox[1,1]) == min(abs(find_lon - pbufX[ib2]@bbox[1,1])))
-  p.xmax[ib2] <- which(abs(find_lon - pbufX[ib2]@bbox[1,2]) == min(abs(find_lon - pbufX[ib2]@bbox[1,2])))
-  p.ymin[ib2] <- which(abs(find_lat - pbufX[ib2]@bbox[2,1]) == min(abs(find_lat - pbufX[ib2]@bbox[2,1])))
-  p.ymax[ib2] <- which(abs(find_lat - pbufX[ib2]@bbox[2,2]) == min(abs(find_lat - pbufX[ib2]@bbox[2,2])))
+  p.xmin[ib2] <- which(abs(find_lon - pbufX[[ib2]][1,1]) == min(abs(find_lon - pbufX[[ib2]][1,1])))
+  p.xmax[ib2] <- which(abs(find_lon - pbufX[[ib2]][1,2]) == min(abs(find_lon - pbufX[[ib2]][1,2])))
+  p.ymin[ib2] <- which(abs(find_lat - pbufX[[ib2]][2,1]) == min(abs(find_lat - pbufX[[ib2]][2,1])))
+  p.ymax[ib2] <- which(abs(find_lat - pbufX[[ib2]][2,2]) == min(abs(find_lat - pbufX[[ib2]][2,2])))
 }
 
 # Remove non-matches from SS (often islands in other datasets)

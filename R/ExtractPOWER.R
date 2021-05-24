@@ -94,9 +94,10 @@ ExtractPOWER<-function(DATA,
 
   # Generate site buffers
   pbuf<-Pbuffer(Data=SS,ID=ID, Projected = F)
+  # Get bounding boxes
+  pbuf<-lapply(pbuf@polygons,bbox)
 
   # DOWNLOAD AVERAGE NASA POWER DATA FOR BUFFERED POINT LOCATIONS
-
   BaseURL<-"https://power.larc.nasa.gov/cgi-bin/v1/DataAccess.py?request=execute"
   n<-1
   nn<-1
@@ -128,10 +129,10 @@ ExtractPOWER<-function(DATA,
       flush.console()
 
       # Specify bounding box
-      lonmax<-round(max(pbuf[i]@bbox[1,]),5)
-      lonmin<-round(min(pbuf[i]@bbox[1,]),5)
-      latmax<-round(max(pbuf[i]@bbox[2,]),5)
-      latmin<-round(min(pbuf[i]@bbox[2,]),5)
+      lonmax<-round(max(pbuf[[i]][1,]),5)
+      lonmin<-round(min(pbuf[[i]][1,]),5)
+      latmax<-round(max(pbuf[[i]][2,]),5)
+      latmin<-round(min(pbuf[[i]][2,]),5)
 
       # Concatenate API query to POWER server
       URL<-paste0(

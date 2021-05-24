@@ -103,6 +103,8 @@ ExtractCHIRPS<-function(DATA,
 
   # Buffer Sites
   pbuf<-Pbuffer(DATA,ID,Projected=F)
+  # Get bounding boxes
+  pbuf<-lapply(pbuf@polygons,bbox)
 
   p.xmin<-0
   p.xmax<-0
@@ -112,19 +114,19 @@ ExtractCHIRPS<-function(DATA,
   # Calculate array extraction co-ordinates for each site
   for(i in 1:length(pbuf)){
     # Extract and convert lat/long values to dataset format
-    if(((pbuf[i]@bbox[1,1]<min(p_lon) & pbuf[i]@bbox[1,2]<min(p_lon))| (pbuf[i]@bbox[1,1]>max(p_lon) & pbuf[i]@bbox[1,2]>max(p_lon)))){
+    if(((pbuf[[i]][1,1]<min(p_lon) & pbuf[[i]][1,2]<min(p_lon))| (pbuf[[i]][1,1]>max(p_lon) & pbuf[[i]][1,2]>max(p_lon)))){
       p.xmin[i] <-NA
       p.xmax[i] <-NA
     }else{
-      p.xmin[i] <- which(abs(p_lon - pbuf[i]@bbox[1,1]) == min(abs(p_lon - pbuf[i]@bbox[1,1])))
-      p.xmax[i] <- which(abs(p_lon - pbuf[i]@bbox[1,2]) == min(abs(p_lon - pbuf[i]@bbox[1,2])))
+      p.xmin[i] <- which(abs(p_lon - pbuf[[i]][1,1]) == min(abs(p_lon - pbuf[[i]][1,1])))
+      p.xmax[i] <- which(abs(p_lon - pbuf[[i]][1,2]) == min(abs(p_lon - pbuf[[i]][1,2])))
     }
-    if(((pbuf[i]@bbox[2,1]<min(p_lat) & pbuf[i]@bbox[2,2]<min(p_lat))| (pbuf[i]@bbox[2,1]>max(p_lat) & pbuf[i]@bbox[2,2]>max(p_lat)))){
+    if(((pbuf[[i]][2,1]<min(p_lat) & pbuf[[i]][2,2]<min(p_lat))| (pbuf[[i]][2,1]>max(p_lat) & pbuf[[i]][2,2]>max(p_lat)))){
       p.ymin[i] <-NA
       p.ymax[i] <-NA
     }else{
-      p.ymin[i] <- which(abs(p_lat - pbuf[i]@bbox[2,1]) == min(abs(p_lat - pbuf[i]@bbox[2,1])))
-      p.ymax[i] <- which(abs(p_lat - pbuf[i]@bbox[2,2]) == min(abs(p_lat - pbuf[i]@bbox[2,2])))
+      p.ymin[i] <- which(abs(p_lat - pbuf[[i]][2,1]) == min(abs(p_lat - pbuf[[i]][2,1])))
+      p.ymax[i] <- which(abs(p_lat - pbuf[[i]][2,2]) == min(abs(p_lat - pbuf[[i]][2,2])))
     }
   }
 
