@@ -37,5 +37,5 @@ character vector pointing to the location of raster files or zipped files. Note 
 it is assumed to be a raster stack and the rasters must share the same extents, origin and  resolutions.
 }
 \details{
-Zipped files are unzipped to the working directory, we suggest running \code{unlink(unzip(zip.filename,list=T)$Name)} to remove these files.
+Zipped files are unzipped to the working directory, we suggest running \code{unlink(unzip(zip.filename,list=T)$Name)} to remove these files once extraction is complete.
 }
