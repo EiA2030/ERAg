@@ -65,6 +65,8 @@ ReplaceSRAD<-function(SRad,Rain,SeqLen){
     }
   }
 
-  return(ReplaceSRAD)
+  SRad[N]<-ReplaceSRAD
+
+  return(SRad)
 
 }
