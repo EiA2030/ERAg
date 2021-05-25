@@ -21,8 +21,7 @@ For NA values of planting date in the dataset supplied the function attempts to 
 which are spatially nearby.
 }
 \details{
-The function searches iteratively within five levels increasing distance corresponding to latitude and
-longitude measured using 5 to 1 decimal places. If there is more than one planting date value for a \code{Product} x season (\code{M.Year}) combination then
-values are averaged. If no corresponding planting dates are found matching on product then matching is attempted on \code{Product.Subtype} (e.g. cereals
-or legumes).#'
+#' The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
+places. If there is more than one planting date value for a \code{Product} x season (\code{M.Year}) combination then values are averaged. If no corresponding
+planting dates are found matching on product then matching is attempted on \code{Product.Subtype} (e.g. cereals or legumes).
 }

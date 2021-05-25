@@ -3,10 +3,9 @@
 #' For NA values of planting date in the dataset supplied the function attempts to substitute values for the same `Product`/`Product.Subtype` and growing season
 #' which are spatially nearby.
 #'
-#' The function searches iteratively within five levels increasing distance corresponding to latitude and
-#' longitude measured using 5 to 1 decimal places. If there is more than one planting date value for a `Product` x season (`M.Year`) combination then
-#' values are averaged. If no corresponding planting dates are found matching on product then matching is attempted on `Product.Subtype` (e.g. cereals
-#' or legumes).#'
+#' #' The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
+#' places. If there is more than one planting date value for a `Product` x season (`M.Year`) combination then values are averaged. If no corresponding
+#' planting dates are found matching on product then matching is attempted on `Product.Subtype` (e.g. cereals or legumes).
 #
 #' @param DATA An ERA dataset (e.g. `ERA.Compiled`)
 #' @return The following fields are appended to the input dataset:
