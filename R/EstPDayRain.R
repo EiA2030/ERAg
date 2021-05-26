@@ -136,7 +136,7 @@ Use.Data.Dates = F
           }}}
 
 
-      data.table(Rain.Start.End=sum(Rain[Date>=Y & Date<=Y+Diff,RAIN]),Est.PDate=R)
+      data.table(Rain.Start.End=sum(Rain[Date>=Y & Date<=Y+Diff,..Rain.Field]),Est.PDate=R)
 
     }))
 
