@@ -51,11 +51,11 @@ ExtractPOWER<-function(DATA,
                     MaxBuffer = 240000){
 
 
-  if(substr(PowerSave,nchar(PowerSave),nchar(PowerSave))!="/"){
+  if(!is.na(PowerSave) & substr(PowerSave,nchar(PowerSave),nchar(PowerSave))!="/"){
     PowerSave<-paste0(PowerSave,"/")
   }
 
-  if(substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
+  if(!is.na(Save_Dir) & substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
     Save_Dir<-paste0(Save_Dir,"/")
   }
 

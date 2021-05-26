@@ -114,8 +114,10 @@ POWER<-ExtractPOWER(DATA=ERA.Data,
 
 *NASA POWER Solar parameters are derived from NASA's GEWEX/SRB release 3.0 archive (July 1, 1983 – Dec. 31, 2007) and NASA’s CERES FLASHFlux project (Jan. 1, 2008 – to within about 7-days of real time). Meteorological parameters are derived from the NASA's GMAO MERRA-2 assimilation model (Jan. 1, 1981 to within a few months of real time) plus GEOS-5.12.4 FP-IT (End of MERRA-2 to within several days of real time). The data in POWER cover the period 1983-07-01 to near present.*
 
-### Calculating PET (potential evapotranspiration)
-Agroclimatology datasets such as POWER contain the variables needed to calculate PET, but before we can do this we need to add altitude and gap fill some missing solar radiation values.  
+### *Pending: BioClim*
+
+### Calculating reference PET (potential evapotranspiration)
+Agroclimatology datasets such as POWER contain the variables needed to calculate reference PET, but before we can do this we need to add altitude and gap fill some missing solar radiation values.  
 
 #### Add altitude
 Altitude data can be added from the `ERA_Physical` object of the `ERAg` package.

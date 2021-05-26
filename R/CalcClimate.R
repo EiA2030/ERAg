@@ -105,11 +105,11 @@ CalcClimate<-function(DATA,
                  ErrorDir="Climate Stats/Errors/",
                  ROUND=5){
 
-  if(substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
+  if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
     ErrorDir<-paste0(ErrorDir,"/")
   }
 
-  if(substr(SaveDir,nchar(SaveDir),nchar(SaveDir))!="/"){
+  if(!is.na(SaveDir) & substr(SaveDir,nchar(SaveDir),nchar(SaveDir))!="/"){
     SaveDir<-paste0(SaveDir,"/")
   }
 
@@ -346,16 +346,6 @@ CalcClimate<-function(DATA,
     # Determine years for which complete data is available (only to be used for annual calcs., e.g. BIOCLIM)
     Years<-table(CLIMATE[[1]]$Year)
     Years<-names(Years[Years>=365])
-
-    # Detect number of cores
-    #cores<-max(1, parallel::detectCores() - 1)
-    # Create Parallel Clusters
-    #cl<-makeCluster(cores)
-    #clusterEvalQ(cl, library(circular))
-    #clusterExport(cl,list("CLIMATE","SS","TName","RName","Do.LT.Avg","Windows","GDD","RAIN.Calc","ROUND","Sites","Rain.Threshold","Rain.Windows","Widths","ID"),envir=environment())
-    #registerDoSNOW(cl)
-    #B<-parLapply(cl,Sites,fun=function(Site))
-    #stopCluster(cl)
 
     B<-lapply(Sites,FUN=function(Site){
 

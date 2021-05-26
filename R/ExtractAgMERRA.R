@@ -45,15 +45,15 @@ ExtractAgMERRA<-function(DATA,
 # SPEED COULD BE IMPROVED BY CONVERTING .NC FILES TO ARRAYS SAVED AS .RDATA OBJECTS (SEE ExtractCHIRPS). ALSO ERROR CHECKING OF NON-MATCHES.SWAP FOR LOOPS FOR LAPPLY
 
 
-  if(substr(TempDir,nchar(TempDir),nchar(TempDir))!="/"){
+  if(!is.na(TempDir) & substr(TempDir,nchar(TempDir),nchar(TempDir))!="/"){
     TempDir<-paste0(TempDir,"/")
   }
 
-  if(substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
+  if(!is.na(Save_Dir) & substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
     Save_Dir<-paste0(Save_Dir,"/")
   }
 
-  if(substr(AgMERRA_dir,nchar(AgMERRA_dir),nchar(AgMERRA_dir))!="/"){
+  if(!is.na(AgMERRA_dir) & substr(AgMERRA_dir,nchar(AgMERRA_dir),nchar(AgMERRA_dir))!="/"){
     AgMERRA_dir<-paste0(AgMERRA_dir,"/")
   }
 

@@ -12,6 +12,15 @@ ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS"),
 
   # Add Improvement: as per TARCAT function add lat, lon and day as dim names to the R matrices so we don't need to get these by reading in a
 
+  if(!is.na(CHIRPS_dir) & substr(CHIRPS_dir,nchar(CHIRPS_dir),nchar(CHIRPS_dir))!="/"){
+    CHIRPS_dir<-paste0(CHIRPS_dir,"/")
+  }
+
+  if(!is.na(Save_Dir) & substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
+    Save_Dir<-paste0(Save_Dir,"/")
+  }
+
+
   # List CHIRPS files
   FILES<-list.files(path = CHIRPS_dir,recursive = T)
   FILES<-data.frame(File=FILES[grep('.tif.gz', FILES)])
@@ -30,7 +39,7 @@ ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS"),
     cat('\r',i)
     flush.console()
 
-    if(!file.exists(paste0(Save_dir,"/",i,".RData"))){
+    if(!file.exists(paste0(Save_dir,i,".RData"))){
       X<-FILES$File[FILES$Year==i]
 
         RAIN<-lapply(X,FUN=function(j){
@@ -40,9 +49,9 @@ ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS"),
           flush.console()
 
           if(grepl(".gz",j)){
-             Z<-as.matrix(raster::raster(R.utils::gunzip(paste0(CHIRPS_dir,"/",j))))
+             Z<-as.matrix(raster::raster(R.utils::gunzip(paste0(CHIRPS_dir,j))))
           }else{
-             Z<-as.matrix(raster::raster(paste0(CHIRPS_dir,"/",j)))
+             Z<-as.matrix(raster::raster(paste0(CHIRPS_dir,j)))
           }
 
           Z[Z== -9999]<-NA
@@ -51,7 +60,7 @@ ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS"),
 
 
       Y<-array(unlist(RAIN),dim=c(nrow(RAIN[[1]]),ncol=ncol(RAIN[[1]]),length(RAIN)))
-      save(Y,file=paste0(Save_dir,"/",i,".RData"))
+      save(Y,file=paste0(Save_dir,i,".RData"))
     }
   }
 }

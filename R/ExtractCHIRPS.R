@@ -39,6 +39,16 @@ ExtractCHIRPS<-function(DATA,
                      ROUND=5,
                      M.ORIGIN="1900-01-01"){
 
+
+  if(!is.na(CHIRPS_dir) & substr(CHIRPS_dir,nchar(CHIRPS_dir),nchar(CHIRPS_dir))!="/"){
+    CHIRPS_dir<-paste0(CHIRPS_dir,"/")
+  }
+
+  if(!is.na(Save_Dir) & substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
+    Save_Dir<-paste0(Save_Dir,"/")
+  }
+
+
   if(!is.na(Save_Dir)){
     Save_Dir<-paste0(Save_Dir,"CHIRPS/")
     if(!dir.exists(paste0(Save_Dir))){
@@ -46,14 +56,6 @@ ExtractCHIRPS<-function(DATA,
     }
   }
 
-
-  if(substr(CHIRPS_dir,nchar(CHIRPS_dir),nchar(CHIRPS_dir))!="/"){
-    CHIRPS_dir<-paste0(CHIRPS_dir,"/")
-  }
-
-  if(substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
-    Save_Dir<-paste0(Save_Dir,"/")
-  }
 
   DATA<-as.data.frame(DATA[!(is.na(DATA$Latitude)|is.na(DATA$Longitude)|is.na(DATA$Buffer)),])
 

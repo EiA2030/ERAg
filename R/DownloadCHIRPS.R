@@ -11,6 +11,11 @@ DownloadCHIRPs<-function(StartYear=1983,
                          EndYear=2020,
                          SaveDir=paste0(getwd(),"/CHIRPS")){
 
+  if(!is.na(SaveDir) & substr(SaveDir,nchar(SaveDir),nchar(SaveDir))!="/"){
+    SaveDir<-paste0(SaveDir,"/")
+  }
+
+
   numberOfDays <- function(date) {
     m <- format(date, format="%m")
 
@@ -25,7 +30,7 @@ DownloadCHIRPs<-function(StartYear=1983,
   if(StartYear<1983){StartYear<-1983}
 
   for(i in StartYear:EndYear){ # MinYear:MaxYear (Min = 1983 Max = Present)
-    SaveDir_i<-paste0(SaveDir,"/",i)
+    SaveDir_i<-paste0(SaveDir,i)
 
     if(!dir.exists(SaveDir_i)){
       dir.create(SaveDir_i,recursive=T)
