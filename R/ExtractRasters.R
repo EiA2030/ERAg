@@ -30,6 +30,11 @@ ExtractRasters<-function(DATA,
                         Save_Dir,
                         Save_Name){
 
+  if(!is.na(Save_Dir) & substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
+    Save_Dir<-paste0(Save_Dir,"/")
+  }
+
+
 # Make Mode function
 getmode <- function(v) {
   v<-v[!is.na(v)]
