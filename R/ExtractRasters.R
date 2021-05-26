@@ -85,7 +85,7 @@ X<-lapply(1:length(FILES),FUN=function(i){
   flush.console()
 
   # extract values from RASTER
-  X<-data.table(extract(RASTER,pbuf1))
+  X<-data.table(extract(RASTER,pbuf1,exact=TRUE))
 
   if(!ZIP){
     colnames(X)[2]<-"Values"

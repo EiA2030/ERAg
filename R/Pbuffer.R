@@ -43,6 +43,7 @@ Pbuffer<-function(Data,ID=NA,Projected=F){
   if(Projected==T){
     return(pbuf1)
   }else{
-    return(sp::spTransform(pbuf1,CRS(CRS.old)))
+    pbuf1<-sp::spTransform(pbuf1,CRS(CRS.old))
+    return(pbuf1)
   }
 }
