@@ -3,7 +3,7 @@
 #' For NA values of season length in the ERA dataset supplied the function attempts to substitute values for the same `Product`/`Product.Subtype` and growing season
 #' which are spatially nearby.
 #'
-#' Season length should be present as a numeric field `SLen` in the supplied dataset. It can be calculated as the mean difference between mean harvest date (midpoint of `Harvest.Start` and `Harvest.End` Date columns) and mean planting date
+#' Season length is calculated as the mean difference between mean harvest date (midpoint of `Harvest.Start` and `Harvest.End` Date columns) and mean planting date
 #' (midpoint of `Plant.Start` and `Plant.End` Date columns).
 #'
 #' The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
