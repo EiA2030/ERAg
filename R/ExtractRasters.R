@@ -4,6 +4,8 @@
 #' character vector pointing to the location of raster files or zipped files. Note if a zipped file containing muliple rasters is supplied
 #' it is assumed to be a raster stack and the rasters must share the same extents, origin and  resolutions.
 #'
+#' Extraction uses the
+#'
 #' Zipped files are unzipped to the working directory, we suggest running `unlink(unzip(zip.filename,list=T)$Name)` to remove these files once extraction is complete.
 #'
 #' @param DATA A data.table or data.frame containing decimal degree point locations as two numeric columns `Latitude` `Longitude`, an numeric field
