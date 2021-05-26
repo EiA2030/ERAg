@@ -36,11 +36,25 @@
 #'   described in the documentation for this function;
 #'  iii) **max and mean temperatures** are averaged with standard deviation (`Tmax.Mean`,`Tmax.sd`,`Tmean.mean` and `Tmean.sd` fields).
 #'
-#' 5) If `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product using the following steps:
+#' 5) If argument `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product using the following steps:
 #'  i) The median planting julian day of the year is taken for the location x product combination;
 #'  ii) For each year of complete climate data, the median planting date from i) is used as a starting point to estimate planting date from rainfall using the
-#'  `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `R.mm` as explained in the arguments for this function;
-#'  iii)
+#'  `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `R.mm` as explained in the arguments for this function. These data are
+#'   returned as `[[LongTerm]][[LT.PD.Years]]`;
+#'  iii) Estimated planting dates from ii) are averaged (mean, sd, median) across years and returned as `[[LongTerm]][[LT.PD.Avg]]`;
+#'  iv) Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to
+#'  the output of ii);
+#'  v) Annual climate statistics are calculated for each year x site x product combination using the rainfall estimated planting date and as per steps
+#'   3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`;
+#'  vi) Long-term climate statistics from v) are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are
+#'   returned `[[LongTerm]][[LT.Clim.Avg]]`;
+#'  vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v);
+#'
+#'  6) If argument `Do.BioClim==T` then:
+#'   i) Annual bioclimatic values are calculated using the \link[dismo]{biovars} function for each complete year of
+#'    data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
+#'   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`;
+#'   iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i)
 #'
 #' @param DATA An ERA dataset (e.g. `ERA.Compiled`) processed by the `AddEcoCrop`, `EstPDayData`, `EstSLenData` and `EstPDayRain` functions.
 #' @param CLIMATE A daily agroclimatology dataset with fields: 1) `Temp.Mean` = mean daily temperature - C; 2) `Temp.Max` = maximum daily temperature - C;
@@ -76,22 +90,29 @@
 #' *`[[Annual.BioClim]][[LT.Averages]]`* =
 #' *`[[Annual.BioClim]][[Key]]`* =
 #' @export
-C.Calc<-function(DATA,
+CalcClimate<-function(DATA,
                  CLIMATE,
                  ID,
                  Rain.Data.Name,
                  Temp.Data.Name,
-                 Rain.Windows,
-                 Widths,
-                 R.mm,
+                 Rain.Windows = c(6*7,4*7,2*7,2*7),
+                 Widths = c(3,3,2,2),
+                 R.mm = c(30,30,20,15),
                  Do.LT.Avg=T,
                  Max.LT.Avg=2010,
-                 Do.BioClim,
-                 Do.Validation,
-                 Windows,
-                 SaveDir,
-                 ErrorDir,
+                 Do.BioClim=T,
+                 Windows=data.table(Name="Plant.0-30",Start=1,End=30),
+                 SaveDir="Climate Stats/",
+                 ErrorDir="Climate Stats/Errors/",
                  ROUND){
+
+  if(substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
+    ErrorDir<-paste0(ErrorDir,"/")
+  }
+
+  if(substr(SaveDir,nchar(SaveDir),nchar(SaveDir))!="/"){
+    SaveDir<-paste0(SaveDir,"/")
+  }
 
   Est.Rain<-function(Rain,Date,Widths,R.mm,Rain.Windows){
 
@@ -327,6 +348,16 @@ C.Calc<-function(DATA,
     Years<-table(CLIMATE[[1]]$Year)
     Years<-names(Years[Years>=365])
 
+    # Detect number of cores
+    #cores<-max(1, parallel::detectCores() - 1)
+    # Create Parallel Clusters
+    #cl<-makeCluster(cores)
+    #clusterEvalQ(cl, library(circular))
+    #clusterExport(cl,list("CLIMATE","SS","TName","RName","Do.LT.Avg","Windows","GDD","RAIN.Calc","ROUND","Sites","R.mm","Rain.Windows","Widths","ID"),envir=environment())
+    #registerDoSNOW(cl)
+    #B<-parLapply(cl,Sites,fun=function(Site))
+    #stopCluster(cl)
+
     B<-lapply(Sites,FUN=function(Site){
 
       cat('\r                                                                                                                                          ')
@@ -477,7 +508,7 @@ C.Calc<-function(DATA,
 
                   Annual.Plant<-Annual.Plant[!is.na(Annual.Plant)]
 
-                  LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){
+                  LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){Dev
 
                     A.Harvest<-Annual.Plant+round(WINS[k,End])
                     A.Plant<-Annual.Plant+WINS[k,Start]
@@ -670,7 +701,7 @@ C.Calc<-function(DATA,
 
   if(Do.BioClim){
 
-    SaveName<-paste0(SaveDir1,"BioClim-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".RData")
+    SaveName<-paste0(SaveDir1,"ClimStatsB-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".RData")
 
     # Cross-reference to exisiting data
     S.existing1<-NULL
@@ -679,7 +710,7 @@ C.Calc<-function(DATA,
     MCode.D<-NULL
 
     if(file.exists(SaveName)){
-      S.existing1<-load.Rdata2(paste0("BioClim-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".RData"),path=SaveDir1)
+      S.existing1<-load.Rdata2(paste0("ClimStatsB-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".RData"),path=SaveDir1)
       MCode.D<-unlist(unique(DATA[,..ID]))
       MCode.E<-unlist(S.existing1[["Annual.Estimates"]][,"ID"])
 
