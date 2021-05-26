@@ -44,7 +44,8 @@ Imports: broom,
          sp,
          stats,
          terra,
-         treemap
+         treemap,
+         zoo
 VignetteBuilder: knitr
 Suggests: BiocStyle, 
           rmarkdown
