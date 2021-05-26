@@ -39,7 +39,7 @@
 #' 5) If argument `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product using the following steps:
 #'  i) The median planting julian day of the year is taken for the location x product combination;
 #'  ii) For each year of complete climate data, the median planting date from i) is used as a starting point to estimate planting date from rainfall using the
-#'  `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `R.mm` as explained in the arguments for this function. These data are
+#'  `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `Rain.Threshold` as explained in the arguments for this function. These data are
 #'   returned as `[[LongTerm]][[LT.PD.Years]]`;
 #'  iii) Estimated planting dates from ii) are averaged (mean, sd, median) across years and returned as `[[LongTerm]][[LT.PD.Avg]]`;
 #'  iv) Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to
@@ -60,24 +60,23 @@
 #' @param CLIMATE A daily agroclimatology dataset with fields: 1) `Temp.Mean` = mean daily temperature - C; 2) `Temp.Max` = maximum daily temperature - C;
 #' `Temp.Min` = minimum daily temperature - C; 4) `Rain` = daily rainfall - mm; 5) `ETo` = reference evapotranspiration - mm; 6) class `Date` field
 #'  named `Date`; and 7) location identity as per `ID` argument and named the same as per `DATA`.
-#' @param ID
-#' @param Rain.Data.Name The name of the rainfall dataset in `CLIMATE`, this must be the same has the rainfall data used when preparing `DATA` using
+#' @param ID A character vector of length one containing the column name for a unique id field naming each location in the dataset provided
+#' @param Rain.Data.Name A character vector of length one containing the name of the rainfall dataset in `CLIMATE`, this must be the same has the rainfall data used when preparing `DATA` using
 #' the `EstPDayRain` function. This can be the same as `Temp.Data.Name`.
-#' @param Temp.Data.Name The name of the agroclimatology dataset in `CLIMATE`
+#' @param Temp.Data.Name A character vector of length one containing the name of the agroclimatology dataset in `CLIMATE`.
 #' @param Rain.Windows An integer vector; the width in days of four temporal windows within which rainfall is assessed for potential planting dates. The first
 #'  value in the series specifies a period before the planting date, then subsequent values define three consecutive windows after the planting date.
 #' @param Widths An integer vector of length equivalent to length(`Window`); the width of the scanning window in days within which rainfall is summed for
 #' the corresponding `Rain.Windows` entry.
-#' @param R.mm An integer vector of length equivalent to length(`Rain.Windows`); the amount of rainfall that has to fall in the temporal windows considered.
+#' @param Rain.Threshold An integer vector of length equivalent to length(`Rain.Windows`); the amount of rainfall that has to fall in the temporal windows considered.
 #' @param Do.LT.Avg Logical `T/F;` if `T` long term averages and deviances are calculated.
 #' @param Max.LT.Avg Integer of length one only relevant if `Do.LT.Avg==T`; maximum year considered when calculating long-term averages.
-#' @param Do.BioClim
-#' @param Do.Validation
+#' @param Do.BioClim Logical `T/F`; if `T` calculate annual and long-term average bioclimatic variables from the agroclimatic data provided in `CLIMATE` using the \link[dismo]{biovars} function
 #' @param Windows A data.table with three columns `Name`, `Start` and `End` which specifies additional temporal periods for calculation of climate statistics.
 #' For example `data.table(Name="Plant.1-30",Start=1,End=30)` is a temporal period from the day after planting to 30 days after planting. Set to NA if no additional windows are required.
-#' @param SaveDir
-#' @param ErrorDir
-#' @param ROUND
+#' @param SaveDir A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned dataset.
+#' @param ErrorDir A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.
+#' @param ROUND An integer vector of length one indicating the number of decimal places to round output values to.
 #' @return The following fields are appended to the input dataset:
 #' **`[[Observed]]`** = A `data.table` of seasonal climate statistics for the planting
 #' **`[[LongTerm]]`** =
@@ -97,14 +96,14 @@ CalcClimate<-function(DATA,
                  Temp.Data.Name,
                  Rain.Windows = c(6*7,4*7,2*7,2*7),
                  Widths = c(3,3,2,2),
-                 R.mm = c(30,30,20,15),
+                 Rain.Threshold = c(30,30,20,15),
                  Do.LT.Avg=T,
                  Max.LT.Avg=2010,
                  Do.BioClim=T,
                  Windows=data.table(Name="Plant.0-30",Start=1,End=30),
                  SaveDir="Climate Stats/",
                  ErrorDir="Climate Stats/Errors/",
-                 ROUND){
+                 ROUND=5){
 
   if(substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
     ErrorDir<-paste0(ErrorDir,"/")
@@ -114,7 +113,7 @@ CalcClimate<-function(DATA,
     SaveDir<-paste0(SaveDir,"/")
   }
 
-  Est.Rain<-function(Rain,Date,Widths,R.mm,Rain.Windows){
+  Est.Rain<-function(Rain,Date,Widths,Rain.Threshold,Rain.Windows){
 
     Rain<-unlist(Rain)
     Date<-unlist(Date)
@@ -123,20 +122,20 @@ CalcClimate<-function(DATA,
     # Make sure the rainfall dataset is complete
     if(!sum(is.na(Rain))>0){
 
-      R<-which(rollapply(as.zoo(Rain[1:Rain.Windows[1]]),width=Widths[1],sum)>R.mm[1])
+      R<-which(rollapply(as.zoo(Rain[1:Rain.Windows[1]]),width=Widths[1],sum)>Rain.Threshold[1])
 
       if(length(R)>0){
         PD.N+R[1]
       }else{
-        R<-which(rollapply(as.zoo(Rain[(Rain.Windows[1]+1):sum(Rain.Windows[1:2])]),width=Widths[2],sum)>R.mm[2])
+        R<-which(rollapply(as.zoo(Rain[(Rain.Windows[1]+1):sum(Rain.Windows[1:2])]),width=Widths[2],sum)>Rain.Threshold[2])
         if(length(R)>0){
           PD.N+R[1]
         }else{
-          R<-which(rollapply(as.zoo(Rain[(sum(Rain.Windows[1:2])+1):sum(Rain.Windows[1:3])]),width=Widths[3],sum)>R.mm[3])
+          R<-which(rollapply(as.zoo(Rain[(sum(Rain.Windows[1:2])+1):sum(Rain.Windows[1:3])]),width=Widths[3],sum)>Rain.Threshold[3])
           if(length(R)>0){
             PD.N+R[1]
           }else{
-            R<-which(rollapply(as.zoo(Rain[(sum(Rain.Windows[1:3])+1):sum(Rain.Windows[1:4])]),width=Widths[4],sum)>R.mm[4])
+            R<-which(rollapply(as.zoo(Rain[(sum(Rain.Windows[1:3])+1):sum(Rain.Windows[1:4])]),width=Widths[4],sum)>Rain.Threshold[4])
             if(length(R)>0){
               PD.N+R[1]
             }else{
@@ -284,7 +283,7 @@ CalcClimate<-function(DATA,
   # Analysis parameter code for cross-reference of saved data to current analysis
   Params<-gsub(" ","",paste(paste0(Rain.Windows,collapse=""),
                             paste0(Widths,collapse=""),
-                            paste0(R.mm,collapse=""),
+                            paste0(Rain.Threshold,collapse=""),
                             Max.LT.Avg,
                             paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = "")))
 
@@ -353,7 +352,7 @@ CalcClimate<-function(DATA,
     # Create Parallel Clusters
     #cl<-makeCluster(cores)
     #clusterEvalQ(cl, library(circular))
-    #clusterExport(cl,list("CLIMATE","SS","TName","RName","Do.LT.Avg","Windows","GDD","RAIN.Calc","ROUND","Sites","R.mm","Rain.Windows","Widths","ID"),envir=environment())
+    #clusterExport(cl,list("CLIMATE","SS","TName","RName","Do.LT.Avg","Windows","GDD","RAIN.Calc","ROUND","Sites","Rain.Threshold","Rain.Windows","Widths","ID"),envir=environment())
     #registerDoSNOW(cl)
     #B<-parLapply(cl,Sites,fun=function(Site))
     #stopCluster(cl)
@@ -454,7 +453,7 @@ CalcClimate<-function(DATA,
             C<-C[Sequence %in% which(unlist(lapply(Y,length)) == sum(Rain.Windows)+1)]
 
             # Work out planting date for each sequence
-            Annual.Plant<-as.Date(unlist(C[,Est.Rain(Rain,Date,..Widths,..R.mm,..Rain.Windows),by=Sequence][,2]))
+            Annual.Plant<-as.Date(unlist(C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=Sequence][,2]))
 
             # Record the planting year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
             P.Years<-unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1)+Rain.Windows[1],"Year"][!is.na(Year)])
