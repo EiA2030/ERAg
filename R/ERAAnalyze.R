@@ -25,7 +25,7 @@
 #'    * *weighted means* use the \link[stats]{weighted.mean} function
 #'    * *weighted medians* use the \link[spatstat.geom]{weighted.median} function
 #'    * *weighted standard errors* use the \link[diagis]{weighted_se} function
-#'    * *weighted variance* uses the \link[Hmisc]{wtd.stats} function
+#'    * *weighted variance* uses the \link[Hmisc]{wtd.var} function
 #'    * *weighted quantiles* use the \link[spatstat.geom]{weighted.median} (`weighted.quantile`) function with `probs=seq(0,1,0.25)`
 #'
 #' 5) Response ratios are back-transformed and converted to % change using with and without a correction for the Jensen inequality.
@@ -61,13 +61,13 @@
 #' * `PC.se` = weighted standard error of PC
 #' * `PC.var` = weighted variance of PC
 #' * `PC.Quantiles05` = weighted quantiles of the PC
-#' * `PC.pc` = % change based on PC (`100*PC - 100`)
+#' * `PC.pc` = percent change based on PC (`100 x PC - 100`)
 #' * `PC.pc.se.low` = lower standard error confidence interval of % change based on PC
 #' * `PC.pc.se.high` = upper standard error confidence interval of % change based on PC
-#' * `RR.pc` = % change based on RR (`100*exp(RR) - 100`)
+#' * `RR.pc` = % change based on RR (`100 x exp(RR) - 100`)
 #' * `RR.pc.se.low` = lower standard error confidence interval of % change based on RR
 #' * `RR.pc.se.high` = upper standard error confidence interval of % change based on RR
-#' * `RR.pc.jen` = % change based on RR with correction for Jensen inequality (`100*exp(RR+RR.var/2) - 100`)
+#' * `RR.pc.jen` = % change based on RR with correction for Jensen inequality (`100 x exp(RR+RR.var/2) - 100`)
 #' * `RR.pc.jen.low` = lower standard error confidence interval of % change based on RR with correction for Jensen inequality
 #' * `RR.pc.jen.high` = upper standard error confidence interval of % change based on RR with correction for Jensen inequality
 #'
@@ -92,14 +92,16 @@
 #'  * `PC.Pr(>|t|)` = probability that the outcome is not equal to zero from PC model
 #'  * `PC.Sigma2` = PC model sigma2
 #' @export
-
 ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   options(scipen=999)
+
+  Data<-Data[!(is.na(yi)|is.infinite(yi))]
 
   # Remove Outliers
   if(rmOut){
 
     suppressWarnings(Data[,yi:=log(MeanT/MeanC)])
+
 
     Outliers<-unlist(Data[,R:=1:nrow(Data)
     ][,list(Outliers=list(R[OutCalc(yi)])), by=Aggregate.By
@@ -118,7 +120,7 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
 
 
   FunShap<-function(X){
-    tryCatch(shapiro.test(X)$p.val,error=function(cond) {as.numeric(NA)})
+    tryCatch(stats::shapiro.test(X)$p.val,error=function(cond) {as.numeric(NA)})
   }
 
   if(Fast){
@@ -134,17 +136,17 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               Studies=length(unique(Code)),
               Sites=length(unique(ID)),
               RR.Shapiro.Sig=round(FunShap(log(MeanT/MeanC)),ROUND),
-              RR=weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
-              RR.median=weightedMedian(log(MeanT/MeanC),Weight.Study,na.rm = T),
-              RR.se=weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
-              RR.var=suppressWarnings(abs(wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
-              RR.Quantiles0.5=paste(round(wtd.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              RR=stats::weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
+              RR.median=spatstat.geom::weighted.median(log(MeanT/MeanC),Weight.Study,na.rm = T),
+              RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
+              RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
+              RR.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               PC.Shapiro.Sig=round(FunShap(MeanT/MeanC),ROUND),
-              PC=weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
-              PC.median=weightedMedian(MeanT/MeanC,Weight.Study,na.rm = T),
-              PC.se=weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
-              PC.var=suppressWarnings(abs(wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
-              PC.Quantiles0.5=paste(round(wtd.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
+              PC.median=spatstat.geom::weighted.median(MeanT/MeanC,Weight.Study,na.rm = T),
+              PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
+              PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
+              PC.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"}
       ),by=Aggregate.By
       ][,PC.pc:=round(100*PC-100,ROUND)
@@ -161,8 +163,8 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
       ][,N.Obs.Study:=.N,by=Weight.Group # Recalculate Weightings by study within observations grouping
       ][,Weight.Study:=(Rep^2/(2*Rep))/N.Obs.Study # Recalculate Weightings
       ][,list(MeanT.Obs=.N,
-              MeanT=round(weighted.mean(MeanT,Weight.Study,na.rm=T),ROUND),
-              MeanT.se=suppressWarnings(abs(wtd.var(MeanT,Weight.Study,na.rm=T)))
+              MeanT=round(stats::weighted.mean(MeanT,Weight.Study,na.rm=T),ROUND),
+              MeanT.se=suppressWarnings(abs(Hmisc::wtd.var(MeanT,Weight.Study,na.rm=T)))
       ),
       by=Aggregate.By  # this
       ][,MeanT.se:=round(MeanT.se/MeanT.Obs^0.5,ROUND)
@@ -172,8 +174,8 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
       ][,N.Obs.Study:=.N,by=Weight.Group # Recalculate Weightings by study within obervations grouping
       ][,Weight.Study:=(Rep^2/(2*Rep))/N.Obs.Study # Recalculate Weightings
       ][,list(MeanC.Obs=.N,
-              MeanC=round(weighted.mean(MeanC,Weight.Study,na.rm=T),ROUND),
-              MeanC.se=suppressWarnings(abs(wtd.var(MeanC,Weight.Study,na.rm=T)))
+              MeanC=round(stats::weighted.mean(MeanC,Weight.Study,na.rm=T),ROUND),
+              MeanC.se=suppressWarnings(abs(Hmisc::wtd.var(MeanC,Weight.Study,na.rm=T)))
       ),
       by=Aggregate.By  # this
       ][,MeanC.se:=round(MeanC.se/MeanC.Obs^0.5,ROUND)
@@ -220,29 +222,29 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               Studies=length(unique(Code)),
               Sites=length(unique(ID)),
               RR.Shapiro.Sig=FunShap(log(MeanT/MeanC)),
-              RR=weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
-              RR.median=weightedMedian(x=log(MeanT/MeanC),w=Weight.Study,na.rm = T),
-              RR.var=suppressWarnings(abs(wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
-              RR.se=weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
-              RR.Quantiles0.5=paste(round(wtd.quantile(x=log(MeanT/MeanC),w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              RR=stats::weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
+              RR.median=spatstat.geom::weighted.median(x=log(MeanT/MeanC),w=Weight.Study,na.rm = T),
+              RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
+              RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
+              RR.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(x=log(MeanT/MeanC),w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               PC.Shapiro.Sig=FunShap(MeanT/MeanC),
-              PC=weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
-              PC.median=weightedMedian(x=MeanT/MeanC,w=Weight.Study,na.rm = T),
-              PC.se=weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
-              PC.var=suppressWarnings(abs(wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
-              PC.Quantiles0.5=paste(round(wtd.quantile(x=MeanT/MeanC,w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
+              PC.median=spatstat.geom::weighted.median(x=MeanT/MeanC,w=Weight.Study,na.rm = T),
+              PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
+              PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
+              PC.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(x=MeanT/MeanC,w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"},
               # To run the lmer the requirement of three or more sites of which two must have at least three observations must be met
               # If not sufficient data for random-effects model run a t-test if >5 observations
               RR.lmer=list(if(length(unique(ID))>2 & sum(table(ID)>2)>=2 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
-                lmer(log(MeanT/MeanC)~1 + (1|ID),weights=Weight.Study)
+                lmerTest::lmer(log(MeanT/MeanC)~1 + (1|ID),weights=Weight.Study)
               }else{
                 if(length(ID)>5 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
                   lm(log(MeanT/MeanC)~1,weights=Weight.Study)
                 }else{NA}
               }),
               PC.lmer=list(if(length(unique(ID))>2 & sum(table(ID)>2)>=2 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
-                lmer(MeanT/MeanC~1 + (1|ID),weights=Weight.Study)
+                lmerTest::lmer(MeanT/MeanC~1 + (1|ID),weights=Weight.Study)
               }else{
                 if(length(ID)>5 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
                   lm(MeanT/MeanC~1,weights=Weight.Study)
@@ -257,8 +259,8 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
       ][,N.Obs.Study:=.N,by=Weight.Group # Recalculate Weightings by study within obervations grouping
       ][,Weight.Study:=(Rep^2/(2*Rep))/N.Obs.Study # Recalculate Weightings
       ][,list(MeanT.Obs=.N,
-              MeanT=round(weighted.mean(MeanT,Weight.Study,na.rm=T),ROUND),
-              MeanT.se=suppressWarnings(abs(wtd.var(MeanT,Weight.Study,na.rm=T)))
+              MeanT=round(stats::weighted.mean(MeanT,Weight.Study,na.rm=T),ROUND),
+              MeanT.se=suppressWarnings(abs(Hmisc::wtd.var(MeanT,Weight.Study,na.rm=T)))
       ),
       by=Aggregate.By  # this
       ][,MeanT.se:=round(MeanT.se/MeanT.Obs^0.5,ROUND)
@@ -270,8 +272,8 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
       ][,N.Obs.Study:=.N,by=Weight.Group # Recalculate Weightings by study within obervations grouping
       ][,Weight.Study:=(Rep^2/(2*Rep))/N.Obs.Study # Recalculate Weightings
       ][,list(MeanC.Obs=.N,
-              MeanC=round(weighted.mean(MeanC,Weight.Study,na.rm=T),ROUND),
-              MeanC.se=suppressWarnings(abs(wtd.var(MeanC,Weight.Study,na.rm=T)))
+              MeanC=round(stats::weighted.mean(MeanC,Weight.Study,na.rm=T),ROUND),
+              MeanC.se=suppressWarnings(abs(Hmisc::wtd.var(MeanC,Weight.Study,na.rm=T)))
       ),
       by=Aggregate.By  # this
       ][,MeanC.se:=round(MeanC.se/MeanC.Obs^0.5,ROUND)
@@ -325,7 +327,10 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   ][,RR.se:=round(RR.se,ROUND)
   ][,PC:=round(PC,ROUND)
   ][,PC.var:=round(PC.var,ROUND)
-  ][,PC.se:=round(PC.se,ROUND)]
+  ][,PC.se:=round(PC.se,ROUND)
+  ][,PC.Shapiro.Sig=round(PC.Shapiro.Sig,ROUND)
+  ][,RR.Shapiro.Sig=round(RR.Shapiro.Sig,ROUND)]
 
   return(ANALYSED.Data)
 }
+
