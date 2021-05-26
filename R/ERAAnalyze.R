@@ -99,6 +99,8 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   # Remove Outliers
   if(rmOut){
 
+    suppressWarnings(Data[,yi:=log(MeanT/MeanC)])
+
     Outliers<-unlist(Data[,R:=1:nrow(Data)
     ][,list(Outliers=list(R[OutCalc(yi)])), by=Aggregate.By
     ][,Outliers])
