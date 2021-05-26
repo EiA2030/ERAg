@@ -20,7 +20,7 @@ For NA values of season length in the ERA dataset supplied the function attempts
 which are spatially nearby.
 }
 \details{
-Season length should be present as a numeric field \code{SLen} in the supplied dataset. It can be calculated as the mean difference between mean harvest date (midpoint of \code{Harvest.Start} and \code{Harvest.End} Date columns) and mean planting date
+Season length is calculated as the mean difference between mean harvest date (midpoint of \code{Harvest.Start} and \code{Harvest.End} Date columns) and mean planting date
 (midpoint of \code{Plant.Start} and \code{Plant.End} Date columns).
 
 The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
