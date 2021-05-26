@@ -16,7 +16,9 @@ RoxygenNote: 7.1.1
 Depends:  R (>= 2.10),
           data.table
 Imports: broom,
+         circular,
          diagis,
+         dismo,
          doSNOW,
          ggnewscale,
          ggplot2,
