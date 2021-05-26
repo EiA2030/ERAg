@@ -122,20 +122,20 @@ CalcClimate<-function(DATA,
     # Make sure the rainfall dataset is complete
     if(!sum(is.na(Rain))>0){
 
-      R<-which(rollapply(as.zoo(Rain[1:Rain.Windows[1]]),width=Widths[1],sum)>Rain.Threshold[1])
+      R<-which(zoo::rollapply(zoo::as.zoo(Rain[1:Rain.Windows[1]]),width=Widths[1],sum)>Rain.Threshold[1])
 
       if(length(R)>0){
         PD.N+R[1]
       }else{
-        R<-which(rollapply(as.zoo(Rain[(Rain.Windows[1]+1):sum(Rain.Windows[1:2])]),width=Widths[2],sum)>Rain.Threshold[2])
+        R<-which(zoo::rollapply(zoo::as.zoo(Rain[(Rain.Windows[1]+1):sum(Rain.Windows[1:2])]),width=Widths[2],sum)>Rain.Threshold[2])
         if(length(R)>0){
           PD.N+R[1]
         }else{
-          R<-which(rollapply(as.zoo(Rain[(sum(Rain.Windows[1:2])+1):sum(Rain.Windows[1:3])]),width=Widths[3],sum)>Rain.Threshold[3])
+          R<-which(zoo::rollapply(zoo::as.zoo(Rain[(sum(Rain.Windows[1:2])+1):sum(Rain.Windows[1:3])]),width=Widths[3],sum)>Rain.Threshold[3])
           if(length(R)>0){
             PD.N+R[1]
           }else{
-            R<-which(rollapply(as.zoo(Rain[(sum(Rain.Windows[1:3])+1):sum(Rain.Windows[1:4])]),width=Widths[4],sum)>Rain.Threshold[4])
+            R<-which(zoo::rollapply(zoo::as.zoo(Rain[(sum(Rain.Windows[1:3])+1):sum(Rain.Windows[1:4])]),width=Widths[4],sum)>Rain.Threshold[4])
             if(length(R)>0){
               PD.N+R[1]
             }else{
@@ -497,7 +497,7 @@ CalcClimate<-function(DATA,
 
                   Annual.Plant<-Annual.Plant[!is.na(Annual.Plant)]
 
-                  LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){Dev
+                  LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){
 
                     A.Harvest<-Annual.Plant+round(WINS[k,End])
                     A.Plant<-Annual.Plant+WINS[k,Start]
