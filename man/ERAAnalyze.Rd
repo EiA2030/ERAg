@@ -37,13 +37,13 @@ Output columns when \code{Fast} is \code{TRUE}:
 \item \code{PC.se} = weighted standard error of PC
 \item \code{PC.var} = weighted variance of PC
 \item \code{PC.Quantiles05} = weighted quantiles of the PC
-\item \code{PC.pc} = \% change based on PC (\code{100*PC - 100})
+\item \code{PC.pc} = percent change based on PC (\verb{100 x PC - 100})
 \item \code{PC.pc.se.low} = lower standard error confidence interval of \% change based on PC
 \item \code{PC.pc.se.high} = upper standard error confidence interval of \% change based on PC
-\item \code{RR.pc} = \% change based on RR (\code{100*exp(RR) - 100})
+\item \code{RR.pc} = \% change based on RR (\verb{100 x exp(RR) - 100})
 \item \code{RR.pc.se.low} = lower standard error confidence interval of \% change based on RR
 \item \code{RR.pc.se.high} = upper standard error confidence interval of \% change based on RR
-\item \code{RR.pc.jen} = \% change based on RR with correction for Jensen inequality (\code{100*exp(RR+RR.var/2) - 100})
+\item \code{RR.pc.jen} = \% change based on RR with correction for Jensen inequality (\verb{100 x exp(RR+RR.var/2) - 100})
 \item \code{RR.pc.jen.low} = lower standard error confidence interval of \% change based on RR with correction for Jensen inequality
 \item \code{RR.pc.jen.high} = upper standard error confidence interval of \% change based on RR with correction for Jensen inequality
 }
@@ -98,7 +98,7 @@ to judge whether values based on mean proportional change, mean response ratio o
 \item \emph{weighted means} use the \link[stats]{weighted.mean} function
 \item \emph{weighted medians} use the \link[spatstat.geom]{weighted.median} function
 \item \emph{weighted standard errors} use the \link[diagis]{weighted_se} function
-\item \emph{weighted variance} uses the \link[Hmisc]{wtd.stats} function
+\item \emph{weighted variance} uses the \link[Hmisc]{wtd.var} function
 \item \emph{weighted quantiles} use the \link[spatstat.geom]{weighted.median} (\code{weighted.quantile}) function with \code{probs=seq(0,1,0.25)}
 }
 \item Response ratios are back-transformed and converted to \% change using with and without a correction for the Jensen inequality.
