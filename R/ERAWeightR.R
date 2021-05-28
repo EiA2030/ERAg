@@ -14,14 +14,14 @@
 ERAWeight<-function(Data,Grouping.Cols){
 
   Data<-data.table(Data)
-  if(!is.na(Grouping.Cols)){
-    Grouping.Cols<-paste(Grouping.Cols,"Code")
+  if(!is.na(Grouping.Cols[1])){
+    Grouping.Cols<-unique(c(Grouping.Cols,"Code"))
   }else{
     Grouping.Cols<-"Code"
   }
 
-    Data[,N.Obs.Study:=.N,by=Weight.Group
-        ][,Weight.Study:=(Rep^2/(2*Rep))/N.Obs.Study]
+    Data[,N.Obs.Study:=.N,by=Grouping.Cols
+        ][,Weight:=(Rep^2/(2*Rep))/N.Obs.Study]
 
     return(Data)
 }
