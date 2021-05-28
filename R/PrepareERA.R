@@ -121,7 +121,7 @@ PrepareERA<-function(Data,
   OutcomeCodes$`Negative Values`[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
 
   # Remove outcomes where they are negative > Perc.Neg of the time
-  Data[!Neg.Vals=="Y"]
+  Data<-Data[!Neg.Vals=="Y"]
 
   # Recode Neg.Vals in FCR/PCR to be N (these are dealt with using a different system to RRs)
   # Data[Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),Neg.Vals:="N"]
@@ -201,7 +201,7 @@ PrepareERA<-function(Data,
 
   # Calculate response ratios &  exclude indicators that can have a negative value
   Data<-suppressWarnings(Data[Neg.Vals=="N"
-             ][,pc=100*((MeanT/MeanC)-1)
+             ][,pc:=100*((MeanT/MeanC)-1)
                ][,yi:=log(MeanT/MeanC)
                  ][,Neg.Vals:=NULL])
 
