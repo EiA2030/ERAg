@@ -20,15 +20,15 @@
 #' 9) *DISABLED: Where multiple products are present in a row the row is duplicated for the length of the products, each row being assigned to one of the products.*
 
 #' @param Data The compiled ERA dataset
-#' @param DoCombinations Logical T/F. When set to TRUE for each individual ERA practice in the practice codes file the function copies rows where a practice is present
+#' @param DoCombinations Logical `T/F`. When set to TRUE for each individual ERA practice in the practice codes file the function copies rows where a practice is present
 #' and in combination with other practices (no. practices >1) in the in the set difference practice codes (plist column). In the copied rows the PrName is changed by pasting
 #' the focal practice (e.g. "A") with  "Combinations" (giving "A Combinations"). The copied rows are joined and the function output changes to a list of two data.tables, "Data"
 #' and "Data.Combos" the latter containing data encoded as combinations. Note ONLY the PrName field is changed in the Data.Combos table, all other fields remain the same. This
-#' functionality is not implemented for subpractices. Default = F.
-#' @param CombineAll Logical T/F. Applies only when DoCombinations is TRUE. When set to TRUE all rows containing a practice (alone or in combination with other practices) are copied to the
+#' functionality is not implemented for subpractices. Default = `F`.
+#' @param CombineAll Logical `T/F`. Applies only when DoCombinations is `TRUE.` When set to TRUE all rows containing a practice (alone or in combination with other practices) are copied to the
 #' Data.Combos table and renamed. When set FALSE only the rows of a practice where it occurs in combination with other practice are copied to the Data.Combos table and renamed.
 #' Default = F.
-#' @param Perc.Neg The maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
+#' @param Perc.Neg A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
 #' it is filtered from the dataset. Default = 0.5.
 #' @param Cols A vector of column names to retain from the ERA dataset supplied. Default values are supplied.
 #' @return If DoCombinations = F a data.table of the processed ERA dataset. If DoCombinations = T a list of two data.tables, "Data" as per combinations = F and "Data.Combos" where
