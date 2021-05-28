@@ -10,24 +10,25 @@ ERAChordPlot(
   Alpha = 0.5,
   Value.Var = "yi",
   Value.Mid = 0,
-  Cont.Pallete = c("YlOrRd", "PuBuGn"),
-  Legend.Tit
+  Cont.Pallete = NA,
+  Legend.Tit = ""
 )
 }
 \arguments{
 \item{Chord.Data}{A \code{data.table} object output by the \code{ERAg::PrepareChordData}function.}
 
 \item{Type}{A character vector of either \code{"Chord"} or \code{"Grid"}. If \code{Type="Grid"} chords are coloured by the \code{from} objects in the plot, if \code{Type="Chord"}
-chords are coloured by the field specified by \code{Value.Var} eith response ratio r}
+chords are colored by the field specified by \code{Value.Var}.}
 
 \item{Alpha}{A numeric value between 0 and 1 indicating the transparency of chords}
 
 \item{Value.Var}{A character vector of either \code{"yi"} or \code{"vote"}. If \code{Type="Chord"} then this argument chooses the value statistic that colours chords, \code{"yi"}
 = response ratio and \code{"vote"} = vote count.}
 
-\item{Value.Mid}{A numeric vector of length one; choose the mid-value of the colour pallete, for response ratios (\code{Value.Var=="yi"}) this is typically 0.}
+\item{Value.Mid}{A numeric vector of length one; choose the mid-value of the colour palette, for response ratios (\code{Value.Var=="yi"}) this is typically 0.}
 
-\item{Cont.Pallete}{A character vector of length two describing two \code{brewer.pal}palletes from\verb{rownames(RColorBrewer::brewer.pal.info)[RColorBrewer::brewer.pal.info$category=="seq"])}.}
+\item{Cont.Pallete}{A character vector of length two describing two \code{brewer.pal}palettes from\verb{rownames(RColorBrewer::brewer.pal.info)[RColorBrewer::brewer.pal.info$category=="seq"])}.
+Set to \code{NA} to use default palettes,}
 
 \item{Legend.Tit}{A character vector of length one; title of the plot.}
 }
