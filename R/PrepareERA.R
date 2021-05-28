@@ -45,6 +45,10 @@ PrepareERA<-function(Data,
                                 "Product.Subtype.Code", "Product.Type.Code","Out.Pillar.Code","Out.SubPillar.Code","Out.Ind.Code", "Out.SubInd.Code","Theme.Code")
                      ){
 
+  OutcomeCodes<-data.table(ERAg::OutcomeCodes)
+  PracticeCodes<-data.table(ERAg::PracticeCodes)
+  EUCodes<-data.table(ERAg::EUCodes)
+
 
   Flip.Neg<-function(Data,OutcomeCodes){
     N1<-OutcomeCodes[match(Data[,Outcode],OutcomeCodes[,Code]),Sign]=="n"
