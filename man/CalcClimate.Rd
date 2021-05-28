@@ -60,8 +60,8 @@ For example \code{data.table(Name="Plant.1-30",Start=1,End=30)} is a temporal pe
 \item{ROUND}{An integer vector of length one indicating the number of decimal places to round output values to.}
 }
 \value{
-The following fields are appended to the input dataset:
-\strong{\verb{[[Observed]]}} = A \code{data.table} of seasonal climate statistics for the planting
+A list is output containing following data.tables:
+\strong{\verb{[[Observed]]}} = A \code{data.table} of seasonal climate statistics for
 \strong{\verb{[[LongTerm]]}} =
 \emph{\verb{[[LongTerm]][[LT.PD.Years]]}} =
 \emph{\verb{[[LongTerm]][[LT.PD.Avg]]}} =
@@ -73,7 +73,7 @@ The following fields are appended to the input dataset:
 \emph{\verb{[[Annual.BioClim]][[Key]]}} =
 }
 \description{
-\emph{ADD DESCRIPTION}
+The \code{CalcClimate} function
 }
 \details{
 Process:
@@ -119,10 +119,10 @@ v) Annual climate statistics are calculated for each year x site x product combi
 3 & 4. Data are return as \verb{[[LongTerm]][[LT.Clim.Years]]};
 vi) Long-term climate statistics from v) are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are
 returned \verb{[[LongTerm]][[LT.Clim.Avg]]};
-vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v);
+vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v).
 \item If argument \code{Do.BioClim==T} then:
 i) Annual bioclimatic values are calculated using the \link[dismo]{biovars} function for each complete year of
 data in \code{CLIMATE} per unique locationas (\code{ID} field) in \code{DATA}. The output data is return as [\link{Annual.BioClim}][\link{Annual.Estimates}]\verb{;   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]};
-iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i)
+iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 }
 }
