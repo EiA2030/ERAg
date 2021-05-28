@@ -23,17 +23,17 @@ PrepareERA(
 \arguments{
 \item{Data}{The compiled ERA dataset}
 
-\item{CombineAll}{Logical T/F. Applies only when DoCombinations is TRUE. When set to TRUE all rows containing a practice (alone or in combination with other practices) are copied to the
+\item{CombineAll}{Logical \code{T/F}. Applies only when DoCombinations is \code{TRUE.} When set to TRUE all rows containing a practice (alone or in combination with other practices) are copied to the
 Data.Combos table and renamed. When set FALSE only the rows of a practice where it occurs in combination with other practice are copied to the Data.Combos table and renamed.
 Default = F.}
 
-\item{DoCombinations}{Logical T/F. When set to TRUE for each individual ERA practice in the practice codes file the function copies rows where a practice is present
+\item{DoCombinations}{Logical \code{T/F}. When set to TRUE for each individual ERA practice in the practice codes file the function copies rows where a practice is present
 and in combination with other practices (no. practices >1) in the in the set difference practice codes (plist column). In the copied rows the PrName is changed by pasting
 the focal practice (e.g. "A") with  "Combinations" (giving "A Combinations"). The copied rows are joined and the function output changes to a list of two data.tables, "Data"
 and "Data.Combos" the latter containing data encoded as combinations. Note ONLY the PrName field is changed in the Data.Combos table, all other fields remain the same. This
-functionality is not implemented for subpractices. Default = F.}
+functionality is not implemented for subpractices. Default = \code{F}.}
 
-\item{Perc.Neg}{The maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
+\item{Perc.Neg}{A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
 it is filtered from the dataset. Default = 0.5.}
 
 \item{Cols}{A vector of column names to retain from the ERA dataset supplied. Default values are supplied.}
