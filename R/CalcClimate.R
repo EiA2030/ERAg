@@ -1,6 +1,6 @@
 #' Calculate climate statistics
 #'
-#' *ADD DESCRIPTION*
+#' The `CalcClimate` function
 #'
 #' Process:
 #' 1) Season Length `SLen` is calculated as difference between mean planting and harvest dates.
@@ -48,13 +48,13 @@
 #'   3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`;
 #'  vi) Long-term climate statistics from v) are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are
 #'   returned `[[LongTerm]][[LT.Clim.Avg]]`;
-#'  vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v);
+#'  vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v).
 #'
 #'  6) If argument `Do.BioClim==T` then:
 #'   i) Annual bioclimatic values are calculated using the \link[dismo]{biovars} function for each complete year of
 #'    data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
 #'   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`;
-#'   iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i)
+#'   iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 #'
 #' @param DATA An ERA dataset (e.g. `ERA.Compiled`) processed by the `AddEcoCrop`, `EstPDayData`, `EstSLenData` and `EstPDayRain` functions.
 #' @param CLIMATE A daily agroclimatology dataset with fields: 1) `Temp.Mean` = mean daily temperature - C; 2) `Temp.Max` = maximum daily temperature - C;
@@ -77,8 +77,8 @@
 #' @param SaveDir A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned dataset.
 #' @param ErrorDir A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.
 #' @param ROUND An integer vector of length one indicating the number of decimal places to round output values to.
-#' @return The following fields are appended to the input dataset:
-#' **`[[Observed]]`** = A `data.table` of seasonal climate statistics for the planting
+#' @return A list is output containing following data.tables:
+#' **`[[Observed]]`** = A `data.table` of seasonal climate statistics for
 #' **`[[LongTerm]]`** =
 #' *`[[LongTerm]][[LT.PD.Years]]`* =
 #' *`[[LongTerm]][[LT.PD.Avg]]`* =
