@@ -86,12 +86,12 @@ ERAChordPlot<-function(Chord.Data,
 
 
     lgd_high = ComplexHeatmap::Legend(at = High.Vals,
-                      col_fun = colorRamp2(High.Vals,HighPal[c(1000,500,1)]),
+                      col_fun = circlize::colorRamp2(High.Vals,HighPal[c(1000,500,1)]),
                       title_position = "topleft",
                       title = paste0(Legend.Tit," >=",Value.Mid))
 
     lgd_low = ComplexHeatmap::Legend(at = rev(Low.Vals),
-                     col_fun = colorRamp2(rev(Low.Vals),LowPal[c(1000,500,1)]),
+                     col_fun = circlize::colorRamp2(rev(Low.Vals),LowPal[c(1000,500,1)]),
                      title_position = "topleft",
                      title = paste0(Legend.Tit," <",Value.Mid))
 
