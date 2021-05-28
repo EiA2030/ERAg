@@ -21,7 +21,6 @@
 #' *`yi` = strength of relationship for from-to object pair as response ratio
 #' *`value` = strength of relationship for from-to object pair as response as vote count
 #' @export
-# Function to calculate stats for each temporal sequence x unique treatment x outcome x site
 PrepareChordData<-function(Data,
                            OutcomeCodes,
                            from,
