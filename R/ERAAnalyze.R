@@ -328,8 +328,8 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   ][,PC:=round(PC,ROUND)
   ][,PC.var:=round(PC.var,ROUND)
   ][,PC.se:=round(PC.se,ROUND)
-  ][,PC.Shapiro.Sig=round(PC.Shapiro.Sig,ROUND)
-  ][,RR.Shapiro.Sig=round(RR.Shapiro.Sig,ROUND)]
+  ][,PC.Shapiro.Sig:=round(PC.Shapiro.Sig,ROUND)
+  ][,RR.Shapiro.Sig:=round(RR.Shapiro.Sig,ROUND)]
 
   return(ANALYSED.Data)
 }
