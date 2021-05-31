@@ -27,7 +27,7 @@ DeriveOutcomes<-function(Data,
                          DoBCR_VC){
 
 # Remove partial practices?
-Data<-if(RmPartial=="Yes"){
+Data<-if(RmPartial==T){
   Data[Partial.Outcome.Name==""]
 }else{
   Data
