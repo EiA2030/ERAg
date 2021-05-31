@@ -14,7 +14,7 @@
 #' @param Value.Mid A numeric vector of length one; choose the mid-value of the colour palette, for response ratios (`Value.Var=="yi"`) this is typically 0.
 #' @param Cont.Pallete A character vector of length two describing two `brewer.pal`palettes from`rownames(RColorBrewer::brewer.pal.info)[RColorBrewer::brewer.pal.info$category=="seq"])`.
 #' Set to `NA` to use default palettes,
-#' @param Legend.Tit  A character vector of length one; title of the plot.
+#' @param Legend.Tit  A character vector of length one; title of the legend.
 #' @return Returns a \link[circlize]{chordDiagram} plot capture using `recordPlot()`.
 #' @export
 ERAChordPlot<-function(Chord.Data,

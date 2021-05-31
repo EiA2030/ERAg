@@ -4,16 +4,7 @@
 \alias{PrepareChordData}
 \title{Prepare Data for Chord Plot}
 \usage{
-PrepareChordData(
-  Data,
-  OutcomeCodes,
-  from,
-  to,
-  Perc.Neg = 0.5,
-  RmNeg = T,
-  Min.Chord.Perc = 1,
-  ALevel
-)
+PrepareChordData(Data, OutcomeCodes, from, to, Min.Chord.Perc = 1, ALevel)
 }
 \arguments{
 \item{Data}{a \code{data.frame} or \code{data.table} of ERA data with column names standardized using the \code{StandColNames} function.}
@@ -23,11 +14,6 @@ PrepareChordData(
 \item{from}{A character vector of length one defining the \code{from} column in the returned data to be supplied to the \link[circlize]{chordDiagram} function.}
 
 \item{to}{A character vector of length one defining the \code{to} column in the returned data to be supplied to the \link[circlize]{chordDiagram} function.}
-
-\item{Perc.Neg}{A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
-it is filtered from the dataset. Default = 0.5. Only applies if \code{RmNeg==T}.}
-
-\item{RmNeg}{Logical \code{T/F}. If \code{T} outcomes with negative values > \code{Min.Chord.Perc} are removed.}
 
 \item{Min.Chord.Perc}{A numeric vector of length one defining the minimum chord width to be considered, values less than \code{Perc.Neg} are combined and renamed to \code{Other}.}
 

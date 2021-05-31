@@ -30,7 +30,7 @@ chords are colored by the field specified by \code{Value.Var}.}
 \item{Cont.Pallete}{A character vector of length two describing two \code{brewer.pal}palettes from\verb{rownames(RColorBrewer::brewer.pal.info)[RColorBrewer::brewer.pal.info$category=="seq"])}.
 Set to \code{NA} to use default palettes,}
 
-\item{Legend.Tit}{A character vector of length one; title of the plot.}
+\item{Legend.Tit}{A character vector of length one; title of the legend.}
 }
 \value{
 Returns a \link[circlize]{chordDiagram} plot capture using \code{recordPlot()}.
