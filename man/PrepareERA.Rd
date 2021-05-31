@@ -18,7 +18,8 @@ PrepareERA(
     "T.NI", "T.NO", "PrName.Code",      "SubPrName.Code", "Product.Simple.Code",
     "Product.Subtype.Code", "Product.Type.Code", "Out.Pillar.Code", "Out.SubPillar.Code",
     "Out.Ind.Code", "Out.SubInd.Code", "Theme.Code", "PrName.Base.Code",
-    "SubPrName.Base.Code", "Theme.Base.Code")
+    "SubPrName.Base.Code", "Theme.Base.Code", "Partial.Outcome.Name",
+    "Partial.Outcome.Code")
 )
 }
 \arguments{
