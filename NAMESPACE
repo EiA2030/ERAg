@@ -3,6 +3,7 @@
 export(AddEcoCrop)
 export(CalcClimate)
 export(CreateConceptLevels)
+export(DeriveOutcomes)
 export(DownloadCHIRPs)
 export(ERAAlphaPlot)
 export(ERAAnalyze)
