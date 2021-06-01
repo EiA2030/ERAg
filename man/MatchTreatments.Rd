@@ -7,7 +7,7 @@
 MatchTreatments(Data, Match.Cols, Focal.Col)
 }
 \arguments{
-\item{Data}{A prepared (ERA) dataset, see the \code{ERA.Prepare} function.}
+\item{Data}{An ERA dataset (e.g. \code{ERAg::ERACompiled})}
 
 \item{Match.Cols}{A character vector of column names that must all contain identical values for rows in the dataset to match (i.e. share the same \code{MID})}
 

@@ -8,7 +8,7 @@
 #'  dataset would tell you how many unique values of `Out.SubInd` are present in each group, and `Focal.List` would concatenate
 #'  these values.
 #'
-#' @param Data A prepared (ERA) dataset, see the `ERA.Prepare` function.
+#' @param Data An ERA dataset (e.g. `ERAg::ERACompiled`)
 #' @param Match.Cols A character vector of column names that must all contain identical values for rows in the dataset to match (i.e. share the same `MID`)
 #' @param Focal.Col A character vector of a single column name; the number of unique values of `Focal.Col` for each combination of value of `Match.Cols` values
 #' (`MID`) are returned along with a concatened string of the values.
