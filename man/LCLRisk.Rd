@@ -4,7 +4,7 @@
 \alias{LCLRisk}
 \title{Calculate Risk}
 \usage{
-LCLRisk(Data, Prac = "PLevel", Out.Codes = 101, MinYear = 3)
+LCLRisk(Data, Prac, Out.Codes = 101, MinYear = 3)
 }
 \arguments{
 \item{Data}{A prepared (ERA) dataset, see the \code{ERA.Prepare} function.}
@@ -17,7 +17,6 @@ LCLRisk(Data, Prac = "PLevel", Out.Codes = 101, MinYear = 3)
 }
 \value{
 A list of two data.tables \code{Risk} and \code{Risk.Averages}.
-
 \code{Risk} contains statistics calculated for each value of \code{UID} and has the fields:
 \itemize{
 \item \code{UID} = a unique identifier based on the field \code{Outcome},\code{Practice},\code{Practice.Base},\code{Practice.Code},\code{Code},\code{ID},\code{Site.ID},\code{EU},\code{T.Descrip},\code{C.Descrip},\code{T.NI},\code{T.NO},\code{C.NI},\code{C.NO},\code{Tree},\code{Variety},\code{Diversity}, and \code{Rep}.

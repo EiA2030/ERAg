@@ -22,7 +22,6 @@
 #' @param Out.Codes A vector of outcome codes to consider in the analysis. Default = `101` (Crop Yield).
 #' @param MinYear An integer value for the minimum length of a MYO sequence. Sequences with fewer growing season than this number are excluded from analysis. Default = `3`.
 #' @return A list of two data.tables `Risk` and `Risk.Averages`.
-#'
 #' `Risk` contains statistics calculated for each value of `UID` and has the fields:
 #' * `UID` = a unique identifier based on the field `Outcome`,`Practice`,`Practice.Base`,`Practice.Code`,`Code`,`ID`,`Site.ID`,`EU`,`T.Descrip`,`C.Descrip`,`T.NI`,`T.NO`,`C.NI`,`C.NO`,`Tree`,`Variety`,`Diversity`, and `Rep`.
 #' * `N.Years`= the number of unique growing seasons reported for each value of `UID`.
@@ -47,7 +46,7 @@
 #'  * `Diff.p.val.se` = the standard error of `Risk$Diff.p.val`
 #'  * `Mean.p.val.se` = the standard error of `Risk$Mean.p.val`
 #'  @export
-LCLRisk<-function(Data,Prac="PLevel",Out.Codes=101,MinYear=3){
+LCLRisk<-function(Data,Prac,Out.Codes=101,MinYear=3){
   options(scipen=999)
   Risk<-data.table::copy(Data)
 
