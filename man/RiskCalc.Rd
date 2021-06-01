@@ -44,8 +44,6 @@ A list of two data.tables \code{Risk} and \code{Risk.Averages}.
 \item \code{Diff.p.val.se} = the standard error of \code{Risk$Diff.p.val}
 \item \code{Mean.p.val.se} = the standard error of \code{Risk$Mean.p.val}
 }
-
-@export
 }
 \description{
 This function estimates the production risk of an experimental treatment compared to the control treatment using time series data.  We suggest applying the \code{ERA.Prepare} function to
