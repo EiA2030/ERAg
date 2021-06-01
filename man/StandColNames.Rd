@@ -4,7 +4,7 @@
 \alias{StandColNames}
 \title{Rename Concept Columns}
 \usage{
-StandColNames(Data, PLevel, OLevel, EULevel)
+StandColNames(Data, PLevel = NA, OLevel = NA, EULevel = NA)
 }
 \arguments{
 \item{Data}{a \code{data.frame} or \code{data.table} of ERA data (e.g. \code{ERA.Compiled}).}
