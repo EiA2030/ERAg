@@ -55,10 +55,10 @@ RiskCalc<-function(Data,
   setnames(Risk,PLevel,"Practice")
   setnames(Risk,paste0(PLevel,".Base"),"Practice.Base")
   setnames(Risk,paste0(PLevel,".Code"),"Practice.Code")
-
   setnames(Risk,"Out.SubInd","Outcome")
 
   Risk<-Risk[Outcode %in% Out.Codes]
+
   Risk<-ExtractMYOs(Data=Risk)
   Risk<-Risk[N.Years>=MinYear]
   # Calculate probability the mean difference (trt-control) being <0
@@ -74,6 +74,7 @@ RiskCalc<-function(Data,
   Risk[,Mean.p.val:=pt(Mean.t.stat,N.Obs-1,lower.tail = T)]
   Risk[,N.Obs.Study:=.N,by=list(Practice,Code,Outcome)]
 
+  Cols<-c("Outcome","Practice","Practice.Base","Practice.Code","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")
   Cols<-c(Cols,"N.Years","N.Obs","N.Obs.Study","Diff.Mean","Diff.SD","Diff.t.stat","Diff.p.val","Mean.C","Mean.T","Mean.T.SD","Mean.t.stat","Mean.p.val")
   Risk<-unique(Risk[,..Cols])
   Risk[,Weight:=((Rep^2)/(Rep*2))/N.Obs.Study]
