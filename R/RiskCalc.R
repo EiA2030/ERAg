@@ -83,7 +83,7 @@ RiskCalc<-function(Data,
                                                   Diff.SD=weighted.mean(Diff.SD,Weight),
                                                   Diff.t.stat=weighted.mean(Diff.t.stat,Weight),
                                                   Diff.p.val=weighted.mean(Diff.p.val,Weight),
-                                                  Diff.p.val.se=weighted_se(Diff.p.val,Weight),
+                                                  Diff.p.val.se=diagis::weighted_se(Diff.p.val,Weight),
                                                   Mean.Seq.Len=mean(N.Years),
                                                   Median.Seq.Len=median(as.numeric(N.Years)),
                                                   N.Studies=length(unique(Code)),
@@ -95,7 +95,7 @@ RiskCalc<-function(Data,
                                                  Mean.T.SD=weighted.mean(Mean.T.SD,Weight),
                                                  Mean.t.stat=weighted.mean(Mean.t.stat,Weight),
                                                  Mean.p.val=weighted.mean(Mean.p.val,Weight),
-                                                 Mean.p.val.se=weighted_se(Mean.p.val,Weight)),
+                                                 Mean.p.val.se=diagis::weighted_se(Mean.p.val,Weight)),
                   by=c("Practice","Practice.Code","Outcome")]
 
 
