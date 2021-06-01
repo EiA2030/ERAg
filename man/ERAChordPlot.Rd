@@ -11,26 +11,38 @@ ERAChordPlot(
   Value.Var = "yi",
   Value.Mid = 0,
   Cont.Pallete = NA,
-  Legend.Tit = ""
+  Legend.Tit = "",
+  Rotate.Labs = F,
+  Lab.Adjust = 0,
+  Lab.Cex = 0.2,
+  Axis.Cex = 0.3
 )
 }
 \arguments{
-\item{Chord.Data}{A \code{data.table} object output by the \code{ERAg::PrepareChordData}function.}
+\item{Chord.Data}{A \code{data.table} object output by the \code{ERAg::PrepareChordData}function}
 
 \item{Type}{A character vector of either \code{"Chord"} or \code{"Grid"}. If \code{Type="Grid"} chords are coloured by the \code{from} objects in the plot, if \code{Type="Chord"}
-chords are colored by the field specified by \code{Value.Var}.}
+chords are colored by the field specified by \code{Value.Var}}
 
 \item{Alpha}{A numeric value between 0 and 1 indicating the transparency of chords}
 
 \item{Value.Var}{A character vector of either \code{"yi"} or \code{"vote"}. If \code{Type="Chord"} then this argument chooses the value statistic that colours chords, \code{"yi"}
-= response ratio and \code{"vote"} = vote count.}
+= response ratio and \code{"vote"} = vote count}
 
-\item{Value.Mid}{A numeric vector of length one; choose the mid-value of the colour palette, for response ratios (\code{Value.Var=="yi"}) this is typically 0.}
+\item{Value.Mid}{A numeric vector of length one; choose the mid-value of the colour palette, for response ratios (\code{Value.Var=="yi"}) this is typically 0}
 
 \item{Cont.Pallete}{A character vector of length two describing two \code{brewer.pal}palettes from\verb{rownames(RColorBrewer::brewer.pal.info)[RColorBrewer::brewer.pal.info$category=="seq"])}.
-Set to \code{NA} to use default palettes,}
+Set to \code{NA} to use default palettes}
 
-\item{Legend.Tit}{A character vector of length one; title of the legend.}
+\item{Legend.Tit}{A character vector of length one; title of the legend}
+
+\item{Rotate.Labs}{Logical \code{T/F}. If \code{T} labels are rotated perpendicular to the plot track}
+
+\item{Lab.Adjust}{A numeric vector of length one; adjust the spacing between rotated labels and the track}
+
+\item{Lab.Cex}{A numeric vector of length one; adjusts the size of sector labels}
+
+\item{Axis.Cex}{A numeric vector of length one; adjusts the size of track axis labels}
 }
 \value{
 Returns a \link[circlize]{chordDiagram} plot capture using \code{recordPlot()}.

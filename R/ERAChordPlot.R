@@ -96,7 +96,7 @@ ERAChordPlot<-function(Chord.Data,
         xlim = get.cell.meta.data("xlim")
         ylim = get.cell.meta.data("ylim")
         sector.name = get.cell.meta.data("sector.index")
-        circos.text(mean(xlim), ylim[1] + Lab.Adjust, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5),labels.cex = Lab.Cex)
+        circos.text(mean(xlim), ylim[1] + Lab.Adjust, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5),cex = Lab.Cex)
         circos.axis(h = "top", major.tick.length = 0.2, sector.index = sector.name, track.index = 2,labels.cex = Axis.Cex)
       }, bg.border = NA)
     }else{
