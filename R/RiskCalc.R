@@ -46,7 +46,7 @@
 #'  * `Diff.p.val.se` = the standard error of `Risk$Diff.p.val`
 #'  * `Mean.p.val.se` = the standard error of `Risk$Mean.p.val`
 #'  @export
-LCLRisk<-function(Data,Prac,Out.Codes=101,MinYear=3){
+RiskCalc<-function(Data,Prac,Out.Codes=101,MinYear=3){
   options(scipen=999)
   Risk<-data.table::copy(Data)
 
