@@ -11,7 +11,7 @@
 #' @param Data An ERA dataset (e.g. `ERAg::ERACompiled`)
 #' @param Match.Cols A character vector of column names that must all contain identical values for rows in the dataset to match (i.e. share the same `MID`)
 #' @param Focal.Col A character vector of a single column name; the number of unique values of `Focal.Col` for each combination of value of `Match.Cols` values
-#' (`MID`) are returned along with a concatened string of the values.
+#' (`MID`) are returned along with a concatenated string of the values.
 #' @return A data.table with three columns appended::
 #' * `MID` = a unique identifier for each combination of the grouping variables (column names) supplied `Match.Cols`
 #' * `N.Focal`= the number of unique values of `Focal.Col` for each value of `MID`
