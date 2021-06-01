@@ -37,14 +37,15 @@
 #' * `Mean.p.val` = probability of `MeanT` < `MeanC`   (`pt(Mean.t.stat,N.Obs-1,lower.tail = T)`)
 #' * `N.Obs.Study` = number of observations a study (`Code` column) contributes to a combination of practice x outcome
 #'
-#'  `Risk.Averages` is the data in the `Risk` table averaged with weighting across practice x outcome combinations. Additional fields are:
-#'  * `Mean.Seq.Len`= the mean value of `Risk$N.Years`
-#'  * `Median.Seq.Len`= the median value of `Risk$N.Years`
-#'  * `N.Studies` = the number of studies contributing MYOs
-#'  * `Total.Obs`= the total number of observations contributing to MYOs
-#'  * `N.Obs`= the total number of MYOs
-#'  * `Diff.p.val.se` = the standard error of `Risk$Diff.p.val`
-#'  * `Mean.p.val.se` = the standard error of `Risk$Mean.p.val`
+#' `Risk.Averages` is the data in the `Risk` table averaged with weighting across practice x outcome combinations. Additional fields are:
+#' * `Mean.Seq.Len`= the mean value of `Risk$N.Years`
+#' * `Median.Seq.Len`= the median value of `Risk$N.Years`
+#' * `N.Studies` = the number of studies contributing MYOs
+#' * `Total.Obs`= the total number of observations contributing to MYOs
+#' * `N.Obs`= the total number of MYOs
+#' * `Diff.p.val.se` = the standard error of `Risk$Diff.p.val`
+#' * `Mean.p.val.se` = the standard error of `Risk$Mean.p.val`
+#'
 #'  @export
 RiskCalc<-function(Data,Prac,Out.Codes=101,MinYear=3){
   options(scipen=999)
