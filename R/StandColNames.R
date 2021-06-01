@@ -19,7 +19,10 @@
 #' `Practice.Base.Code`, `Outcome`, `Outcome.Code`, `Product`, and `Product Code`.
 #' @export
 #'
-StandColNames<-function(Data,PLevel,OLevel,EULevel){
+StandColNames<-function(Data,
+                        PLevel=NA,
+                        OLevel=NA,
+                        EULevel=NA){
   Data<-data.table(Data)
 
   if(!is.na(PLevel)){
