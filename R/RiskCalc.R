@@ -18,7 +18,7 @@
 #' Weightings are applied to mean and error estimates as per the methods described in the `ERA.Analyze` function.
 #`
 #' @param Data A prepared (ERA) dataset, see the `ERA.Prepare` function.
-#' @param Prac The column name of the variable in `Data` that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = `PrName` (Practice).
+#' @param PLevel The column name of the variable in `Data` that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = `PrName` (Practice).
 #' @param Out.Codes A vector of outcome codes to consider in the analysis. Default = `101` (Crop Yield).
 #' @param MinYear An integer value for the minimum length of a MYO sequence. Sequences with fewer growing season than this number are excluded from analysis. Default = `3`.
 #' @return A list of two data.tables `Risk` and `Risk.Averages`.
@@ -46,13 +46,17 @@
 #' * `Diff.p.val.se` = the standard error of `Risk$Diff.p.val`
 #' * `Mean.p.val.se` = the standard error of `Risk$Mean.p.val`
 #' @export
-RiskCalc<-function(Data,Prac,Out.Codes=101,MinYear=3){
+RiskCalc<-function(Data,
+                   PLevel = "PrName",
+                   Out.Codes=101,
+                   MinYear=3){
   Risk<-data.table::copy(Data)
 
   setnames(Risk,PLevel,"Practice")
   setnames(Risk,paste0(PLevel,".Base"),"Practice.Base")
-  setnames(Risk,"Out.SubInd","Outcome")
   setnames(Risk,paste0(PLevel,".Code"),"Practice.Code")
+
+  setnames(Risk,"Out.SubInd","Outcome")
 
   Risk<-Risk[Outcode %in% Out.Codes]
   Risk<-ExtractMYOs(Data=Risk)

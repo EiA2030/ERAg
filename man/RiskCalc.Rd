@@ -4,12 +4,12 @@
 \alias{RiskCalc}
 \title{Calculate Risk}
 \usage{
-RiskCalc(Data, Prac, Out.Codes = 101, MinYear = 3)
+RiskCalc(Data, PLevel = "PrName", Out.Codes = 101, MinYear = 3)
 }
 \arguments{
 \item{Data}{A prepared (ERA) dataset, see the \code{ERA.Prepare} function.}
 
-\item{Prac}{The column name of the variable in \code{Data} that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = \code{PrName} (Practice).}
+\item{PLevel}{The column name of the variable in \code{Data} that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = \code{PrName} (Practice).}
 
 \item{Out.Codes}{A vector of outcome codes to consider in the analysis. Default = \code{101} (Crop Yield).}
 
