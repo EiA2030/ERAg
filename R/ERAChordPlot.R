@@ -47,6 +47,7 @@ ERAChordPlot<-function(Chord.Data,
   Chord.Pal.to.Spectral<-colorRampPalette(RColorBrewer ::brewer.pal(9, "Set1"))(Chord.N.to)
   Chord.Pal.to.Viridis<-viridisLite:: viridis(Chord.N.to)
   Grid.Cols2<-Chord.Pal.to.Spectral
+  names(Grid.Cols2)<-Chord.Data[,unique(to)]
 
   Grid.Cols<-c(Grid.Cols,Grid.Cols2)
 
@@ -71,20 +72,18 @@ ERAChordPlot<-function(Chord.Data,
       LowPal<-colorRampPalette(RColorBrewer ::brewer.pal(9, "YlOrRd"))(1000)
       Low<-LowPal[round(1000*((Low.Vals/Max.Val)^2)^0.5,0)]
 
-      HighPal<-rev(colorRampPalette(RColorBrewer ::brewer.pal(9, "PuBuGn"))(1000))
-      High<-HighPal[round(1000*((High.Vals/Max.Val)^2)^0.5,0)]
+      HighPal<-colorRampPalette(RColorBrewer ::brewer.pal(9, "PuBuGn"))(1001)
+      High<-HighPal[round(1000*((High.Vals/Max.Val)^2)^0.5,0)+1]
     }else{
       LowPal<-colorRampPalette(RColorBrewer ::brewer.pal(9, Cont.Pallete[1]))(1000)
       Low<-LowPal[round(1000*((Low.Vals/Max.Val)^2)^0.5,0)]
 
-      HighPal<-rev(colorRampPalette(RColorBrewer ::brewer.pal(9, Cont.Pallete[2]))(1000))
-      High<-HighPal[round(1000*((High.Vals/Max.Val)^2)^0.5,0)]
+      HighPal<-colorRampPalette(RColorBrewer ::brewer.pal(9, Cont.Pallete[2]))(1001)
+      High<-HighPal[round(1000*((High.Vals/Max.Val)^2)^0.5,0)+1]
 
     }
 
     PAL<-c(High,Low)
-
-
     Low.Vals<-round(c(Value.Mid,-Max.Val/2,-Max.Val),2)
     High.Vals<-round(c(Value.Mid,Max.Val/2,Max.Val),2)
 
@@ -105,14 +104,14 @@ ERAChordPlot<-function(Chord.Data,
     }
 
     lgd_high = ComplexHeatmap::Legend(at = High.Vals,
-                      col_fun = circlize::colorRamp2(High.Vals,HighPal[c(1000,500,1)]),
-                      title_position = "topleft",
-                      title = paste0(Legend.Tit," >=",Value.Mid))
+                                      col_fun = circlize::colorRamp2(High.Vals,HighPal[c(1,500,1001)]),
+                                      title_position = "topleft",
+                                      title = paste0(Legend.Tit," >=",Value.Mid))
 
     lgd_low = ComplexHeatmap::Legend(at = rev(Low.Vals),
-                     col_fun = circlize::colorRamp2(rev(Low.Vals),LowPal[c(1000,500,1)]),
-                     title_position = "topleft",
-                     title = paste0(Legend.Tit," <",Value.Mid))
+                                     col_fun = circlize::colorRamp2(rev(Low.Vals),LowPal[c(1000,500,1)]),
+                                     title_position = "topleft",
+                                     title = paste0(Legend.Tit," <",Value.Mid))
 
     ComplexHeatmap::draw(lgd_high, x = unit(0.1, "npc"), y = unit(0.30, "npc"), just = c("left", "bottom"))
     ComplexHeatmap::draw(lgd_low, x = unit(0.1, "npc"), y = unit(0.1, "npc"), just = c("left", "bottom"))
@@ -121,3 +120,5 @@ ERAChordPlot<-function(Chord.Data,
   return(p)
 
 }
+
+
