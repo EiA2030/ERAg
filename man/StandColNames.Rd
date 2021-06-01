@@ -10,13 +10,13 @@ StandColNames(Data, PLevel, OLevel, EULevel)
 \item{Data}{a \code{data.frame} or \code{data.table} of ERA data (e.g. \code{ERA.Compiled}).}
 
 \item{PLevel}{character vector of length one; accepted values:  \code{T} theme, \code{P} practice or \code{S} subpractice. This parameter indicates the \strong{practice}
-level for analysis.}
+level for analysis. Set to argument to \code{NA} to leave \code{Data} practice column names unchanged.}
 
 \item{OLevel}{character vector of length one; accepted values:  \code{P} pillar, \code{SP} subpillar, \code{I} indicator or \code{SI} subindicator. This parameter
-indicates the \strong{outcome} level for analysis.}
+indicates the \strong{outcome} level for analysis. Set to argument to \code{NA} to leave \code{Data} outcome column names unchanged.}
 
 \item{EULevel}{character vector of length one; accepted values:  \code{T} type, \code{S} subtype  or \code{P} product. This parameter indicates the \strong{product}
-level for analysis. \emph{Note products are also referred to as experimental units (EU) in ERA}.}
+level for analysis. \emph{Note products are also referred to as experimental units (EU) in ERA}. Set to argument to \code{NA} to leave \code{Data} product column names unchanged.}
 }
 \value{
 \code{StandColNames} returns a \code{data.table} of the supplied dataset with focal columns renamed to \code{Practice}, \code{Practice.Code}, \code{Practice.Base},
