@@ -9,9 +9,10 @@ MatchTreatments(Data, Match.Cols, Focal.Col)
 \arguments{
 \item{Data}{A prepared (ERA) dataset, see the \code{ERA.Prepare} function.}
 
-\item{Match.Cols}{The column name of the variable in \code{Data} that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = \code{PrName} (Practice).}
+\item{Match.Cols}{A character vector of column names that must all contain identical values for rows in the dataset to match (i.e. share the same \code{MID})}
 
-\item{Focal.Col}{A vector of outcome codes to consider in the analysis. Default = \code{101} (Crop Yield).}
+\item{Focal.Col}{A character vector of a single column name; the number of unique values of \code{Focal.Col} for each combination of value of \code{Match.Cols} values
+(\code{MID}) are returned along with a concatened string of the values.}
 }
 \value{
 A data.table with three columns appended::
@@ -22,7 +23,7 @@ A data.table with three columns appended::
 }
 }
 \description{
-This simple function will add a identfication field \code{MID} to the table supplied for unique combinations of the grouping columns supplied.
+This simple function will add a identification field \code{MID} to the table supplied for unique combinations of the grouping columns supplied.
 }
 \details{
 For example, if you wish to know which outcomes are shared between the same pairings of experimental and control treatments you could specify
