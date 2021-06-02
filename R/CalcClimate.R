@@ -467,7 +467,7 @@ CalcClimate<-function(DATA,
             C<-C[Sequence %in% which(unlist(lapply(Y,length)) == sum(Rain.Windows)+1)]
 
             # Work out planting date for each sequence
-            Annual.Plant<-as.Date(unlist(C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=Sequence][,2]))
+            Annual.Plant<-zoo::as.Date(unlist(C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=Sequence][,2]))
 
             # Record the planting year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
             P.Years<-unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1)+Rain.Windows[1],"Year"][!is.na(Year)])
