@@ -15,19 +15,21 @@ ERAChordPlot(
   Rotate.Labs = F,
   Lab.Adjust = 0,
   Lab.Cex = 0.2,
-  Axis.Cex = 0.3
+  Axis.Cex = 0.3,
+  Reduce = 0.01,
+  Cat.Pal = NA
 )
 }
 \arguments{
 \item{Chord.Data}{A \code{data.table} object output by the \code{ERAg::PrepareChordData}function}
 
-\item{Type}{A character vector of either \code{"Chord"} or \code{"Grid"}. If \code{Type="Grid"} chords are coloured by the \code{from} objects in the plot, if \code{Type="Chord"}
-chords are colored by the field specified by \code{Value.Var}}
+\item{Type}{A character vector of either \code{"Chord"},\code{"Grid"} or \code{"Category"}. If \code{Type="Grid"} chords are coloured by the \code{from} objects in the plot, if \code{Type="Chord"}
+chords are colored by continuous numeric field specified by \code{Value.Var}, and if \code{Type="Category"}chords are coloured by a categorical variable.}
 
 \item{Alpha}{A numeric value between 0 and 1 indicating the transparency of chords}
 
-\item{Value.Var}{A character vector of either \code{"yi"} or \code{"vote"}. If \code{Type="Chord"} then this argument chooses the value statistic that colours chords, \code{"yi"}
-= response ratio and \code{"vote"} = vote count}
+\item{Value.Var}{A character vector of either \code{"yi"},\code{"vote"} or \code{"cat"}. If \code{Type="Chord"} then this argument chooses the value statistic that colours chords, \code{"yi"}
+= response ratio and \code{"vote"} = vote count. If \code{Type="Category"} then this argument should be set to \code{"cat"}; a column of class \code{character} in \code{Chord.Data} containing a categorical variable.}
 
 \item{Value.Mid}{A numeric vector of length one; choose the mid-value of the colour palette, for response ratios (\code{Value.Var=="yi"}) this is typically 0}
 
@@ -43,6 +45,11 @@ Set to \code{NA} to use default palettes}
 \item{Lab.Cex}{A numeric vector of length one; adjusts the size of sector labels}
 
 \item{Axis.Cex}{A numeric vector of length one; adjusts the size of track axis labels}
+
+\item{Reduce}{A numeric vector of length one; a proportion between 0-1, chords widths below this proportion are excluded from the plot}
+
+\item{Cat.Pal}{A character vector of length = \code{length(unique(Chord.Data$cat))}; the vector should contain colour values corresponding to the values in
+\code{Chord.Data$cat} which should form the vector names, for example  \code{Cat.Pal=setNames(c("blue", "green","Red"), c("A", "B","C"))}.}
 }
 \value{
 Returns a \link[circlize]{chordDiagram} plot capture using \code{recordPlot()}.
