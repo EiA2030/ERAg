@@ -225,15 +225,17 @@ CalcClimate<-function(DATA,
   }
 
   C.Med<-function(X,FUN){
+
+    C.Val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(X), 5, 10))),"%j"))*360/365*pi/180)[[1]]
+    N<-round(as.numeric(FUN(C.Val)*180/pi*365/360),0)
+
     if(length(X)>1){
-      N<-round(as.numeric(FUN(circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(X), 5, 10))),"%j"))*360/365*pi/180))*180/pi*365/360),0)
       if(N<=0){
         sprintf("%03d",365+N)
       }else{
         sprintf("%03d",N)
       }
     }else{
-      N<-round(as.numeric(FUN(circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(X), 5, 10))),"%j"))*360/365*pi/180))*180/pi*365/360),0)
       sprintf("%03s",format(X,"%j"),N)
     }
   }
@@ -283,12 +285,12 @@ CalcClimate<-function(DATA,
 
   # Analysis parameter code for cross-reference of saved data to current analysis
   Params<-paste0(paste0(Rain.Windows,collapse=""),
-                            paste0(Widths,collapse=""),
-                            paste0(Rain.Threshold,collapse=""),
-                            Max.LT.Avg,
-                            paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = ""),
-                            substr(Temp.Data.Name,1,3),
-                            substr(Rain.Data.Name,1,3))
+                 paste0(Widths,collapse=""),
+                 paste0(Rain.Threshold,collapse=""),
+                 Max.LT.Avg,
+                 paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = ""),
+                 substr(Temp.Data.Name,1,3),
+                 substr(Rain.Data.Name,1,3))
 
   if(!is.na(SaveDir)){
     SaveDir1<-paste0(SaveDir,"Analysis/",Params,"/")
@@ -435,7 +437,7 @@ CalcClimate<-function(DATA,
             cat('\r',paste0(Temp.Data.Name," x ",Rain.Data.Name,": Estimating Long-term averages for  site: ",match(Site,Sites),"/",length(Sites), " | EU: ",EU.N.S$EU[i]))
             flush.console()
 
-            PDates<-as.Date(paste0(Year.Range,"-",SS.N[EU==EU.N.S$EU[i] & M.Year.Code==EU.N.S$M.Year.Code[i],C.Med(P.Date.Merge,FUN=median)]),format="%Y-%j")
+            PDates<-as.Date(paste0(Year.Range,"-",SS.N[EU==EU.N.S$EU[i] & M.Year.Code==EU.N.S$M.Year.Code[i],C.Med(P.Date.Merge,FUN=stats::median)]),format="%Y-%j")
 
             C<-data.table(Start=which(Climate$Date %in% PDates)-Rain.Windows[1])[,End:=Start+sum(Rain.Windows)][!Start<0][!End>nrow(Climate)]
             C<-Climate[unlist(lapply(1:nrow(C),FUN=function(l){unlist(C[l,1]):unlist(C[l,2])})),][!is.na(Year)]
@@ -477,8 +479,9 @@ CalcClimate<-function(DATA,
 
               if(length(N1)>0){
 
-                LT.Mean<-as.numeric(round(mean(circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180))*180/pi*365/360,ROUND))
-                LT.Median<-as.numeric(round(median(circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180))*180/pi*365/360,ROUND))
+                C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)[[1]]
+                LT.Mean<-as.numeric(round(mean(C.val)*180/pi*365/360,ROUND))
+                LT.Median<-as.numeric(round(median(C.val)*180/pi*365/360,ROUND))
 
                 if(LT.Mean<=0){
                   LT.Mean<-365+LT.Mean
@@ -489,15 +492,15 @@ CalcClimate<-function(DATA,
                 }
 
                 # Calculate LT.Avg Planting date standard deviation
-                LT.SD<-round(sd(circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180))*180/pi*365/360,ROUND)
+                LT.SD<-round(sd(C.val)*180/pi*365/360,ROUND)
 
                 # Calculate Annual Deviation of Planting Date From LT.Avg
-                Annual.Dev.Mean<-as.numeric(circular (as.numeric(format(Annual.Plant[N],"%j"))*360/365*pi/180)- # Annual Estimate
-                                              circular (as.numeric(LT.Mean)*360/365*pi/180)        # Long Term Average
-                )*365/360*180/pi
+                # Annual Estimate - Long Term Average
 
-                Annual.Dev.Median<-as.numeric(circular (as.numeric(format(Annual.Plant[N],"%j"))*360/365*pi/180)- # Annual Estimate
-                                                circular (as.numeric(LT.Median)*360/365*pi/180)        # Long Term Average
+                Annual.Dev.Mean<-as.numeric(circular::circular(as.numeric(format(Annual.Plant[N],"%j"))*360/365*pi/180)[[1]]-circular::circular(as.numeric(LT.Mean)*360/365*pi/180)[[1]])*365/360*180/pi
+
+                Annual.Dev.Median<-as.numeric(circular::circular (as.numeric(format(Annual.Plant[N],"%j"))*360/365*pi/180)[[1]]- # Annual Estimate
+                                                circular::circular(as.numeric(LT.Median)*360/365*pi/180)[[1]]        # Long Term Average
                 )*365/360*180/pi
 
                 NYear.LT.Avg<-sum(N1)
@@ -870,3 +873,4 @@ CalcClimate<-function(DATA,
   return(Seasonal)
 
 }
+
