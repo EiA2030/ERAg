@@ -12,7 +12,7 @@ MatchTreatments(Data, Match.Cols, Focal.Col)
 \item{Match.Cols}{A character vector of column names that must all contain identical values for rows in the dataset to match (i.e. share the same \code{MID})}
 
 \item{Focal.Col}{A character vector of a single column name; the number of unique values of \code{Focal.Col} for each combination of value of \code{Match.Cols} values
-(\code{MID}) are returned along with a concatened string of the values.}
+(\code{MID}) are returned along with a concatenated string of the values.}
 }
 \value{
 A data.table with three columns appended::
