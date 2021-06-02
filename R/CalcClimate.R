@@ -74,7 +74,7 @@
 #' @param Do.BioClim Logical `T/F`; if `T` calculate annual and long-term average bioclimatic variables from the agroclimatic data provided in `CLIMATE` using the \link[dismo]{biovars} function
 #' @param Windows A data.table with three columns `Name`, `Start` and `End` which specifies additional temporal periods for calculation of climate statistics.
 #' For example `data.table(Name="Plant.1-30",Start=1,End=30)` is a temporal period from the day after planting to 30 days after planting. Set to NA if no additional windows are required.
-#' @param SaveDir A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned dataset.
+#' @param SaveDir A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned datasets.
 #' @param ErrorDir A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.
 #' @param ROUND An integer vector of length one indicating the number of decimal places to round output values to.
 #' @return A list is output containing following data.tables:
@@ -91,20 +91,20 @@
 #' *`[[Parameters]]`* = List of argument values supplied to the function
 #' @export
 CalcClimate<-function(DATA,
-                 CLIMATE,
-                 ID,
-                 Rain.Data.Name,
-                 Temp.Data.Name,
-                 Rain.Windows = c(6*7,4*7,2*7,2*7),
-                 Widths = c(3,3,2,2),
-                 Rain.Threshold = c(30,30,20,15),
-                 Do.LT.Avg=T,
-                 Max.LT.Avg=2010,
-                 Do.BioClim=T,
-                 Windows=data.table(Name="Plant.0-30",Start=1,End=30),
-                 SaveDir="Climate Stats/",
-                 ErrorDir="Climate Stats/Errors/",
-                 ROUND=5){
+                      CLIMATE,
+                      ID,
+                      Rain.Data.Name,
+                      Temp.Data.Name,
+                      Rain.Windows = c(6*7,4*7,2*7,2*7),
+                      Widths = c(3,3,2,2),
+                      Rain.Threshold = c(30,30,20,15),
+                      Do.LT.Avg=T,
+                      Max.LT.Avg=2010,
+                      Do.BioClim=T,
+                      Windows=data.table(Name="Plant.0-30",Start=1,End=30),
+                      SaveDir="Climate Stats/",
+                      ErrorDir="Climate Stats/Errors/",
+                      ROUND=5){
 
   if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
     ErrorDir<-paste0(ErrorDir,"/")
@@ -278,15 +278,17 @@ CalcClimate<-function(DATA,
     SS<-SS[,c(..ID,"Latitude","Longitude","EU","Product","M.Year","M.Year.Code","P.Date.Merge","SLen.Merge","SLen.EcoCrop","Topt.low", "Topt.high","Tlow", "Thigh")]
     SS<-SS[!((abs(SLen.Merge-SLen.EcoCrop)/SLen.EcoCrop)>0.6 & !((is.na( SLen.Merge) & !is.na(SLen.EcoCrop))) | (!is.na( SLen.Merge) & is.na(SLen.EcoCrop))),][!(is.na(SLen.Merge) & is.na(SLen.EcoCrop)),]
 
-    return(SS)
+    return(list(SS=SS,DATA=DATA))
   }
 
   # Analysis parameter code for cross-reference of saved data to current analysis
-  Params<-gsub(" ","",paste(paste0(Rain.Windows,collapse=""),
+  Params<-paste0(paste0(Rain.Windows,collapse=""),
                             paste0(Widths,collapse=""),
                             paste0(Rain.Threshold,collapse=""),
                             Max.LT.Avg,
-                            paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = "")))
+                            paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = ""),
+                            substr(Temp.Data.Name,1,3),
+                            substr(Rain.Data.Name,1,3))
 
   if(!is.na(SaveDir)){
     SaveDir1<-paste0(SaveDir,"Analysis/",Params,"/")
@@ -310,7 +312,7 @@ CalcClimate<-function(DATA,
       unlink(paste0(SaveDir1,"/parameters.txt"))
     }
 
-    lapply(ParamSave, cat, "\n", file=paste0(SaveDir1,"/parameters.txt"), append=TRUE)
+    lapply(ParamSave, cat, "\n", file=paste0(SaveDir1,"parameters.txt"), append=TRUE)
   }
 
 
@@ -324,13 +326,14 @@ CalcClimate<-function(DATA,
   # Refine Season Length where uncertainty in the timing of planting or harvest exists
   DATA[,PDiff:=Plant.End-Plant.Start][,H.Diff:=Harvest.End-Harvest.Start]
 
-
   # Create unique Site x EU x Date combinations
   SS<-SLen(RName=Rain.Data.Name,DATA,ErrorDir)
+  DATA<-SS$DATA
+  SS<-SS$SS
   MCode.SS<-apply(SS[,c(..ID,"EU","P.Date.Merge","M.Year")],1,paste,collapse="_")
 
   # Read in previous saved analysis
-  SaveName<-paste0(SaveDir1,"ClimStatsA-",Params,substr(Temp.Data.Name,1,3),substr(Temp.Data.Name,1,3),".RData")
+  SaveName<-paste0(SaveDir1,"ClimStatsA.RData")
 
   # Cross-reference to exisiting data
   #Missing<-NULL
@@ -654,9 +657,9 @@ CalcClimate<-function(DATA,
 
     if(length(MCode)>0){
       if(!is.null(MissingLines)){
-        fwrite(data.table(Missing=unique(c(MissingLines,MCode))),paste0(SaveDir1,"MissingLines-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".csv"))
+        fwrite(data.table(Missing=unique(c(MissingLines,MCode))),paste0(SaveDir1,"MissingLines.csv"))
       }else{
-        fwrite(data.table(Missing=unique(MCode)),paste0(SaveDir1,"MissingLines-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".csv"))
+        fwrite(data.table(Missing=unique(MCode)),paste0(SaveDir1,"MissingLines.csv"))
       }
     }
 
@@ -709,7 +712,7 @@ CalcClimate<-function(DATA,
 
   if(Do.BioClim){
 
-    SaveName<-paste0(SaveDir1,"ClimStatsB-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".RData")
+    SaveName<-paste0(SaveDir1,"ClimStatsB.RData")
 
     # Cross-reference to exisiting data
     S.existing1<-NULL
@@ -718,7 +721,7 @@ CalcClimate<-function(DATA,
     MCode.D<-NULL
 
     if(file.exists(SaveName)){
-      S.existing1<-load.Rdata2(paste0("ClimStatsB-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".RData"),path=SaveDir1)
+      S.existing1<-load.Rdata2("ClimStatsB.RData",path=SaveDir1)
       MCode.D<-unlist(unique(DATA[,..ID]))
       MCode.E<-unlist(S.existing1[["Annual.Estimates"]][,"ID"])
 
@@ -843,6 +846,7 @@ CalcClimate<-function(DATA,
     }
   }
 
+  # Save Parameters
   ParamSave<-list(Rain.Windows=Rain.Windows,
                   Widths=Widths,
                   Rain.Threshold=Rain.Threshold,
@@ -851,7 +855,17 @@ CalcClimate<-function(DATA,
                   Rain.Data.Name=Rain.Data.Name,
                   Temp.Data.Name=Temp.Data.Name)
 
+  if(!is.na(SaveDir)){
+    save(ParamSave,file=paste0(SaveDir1,"parameters.RData"))
+  }
   Seasonal$Parameters<-ParamSave
+
+  # Save Dataset Used
+  if(!is.na(SaveDir)){
+    save(DATA,file=paste0(SaveDir1,"Data.RData"))
+  }
+
+  Seasonal$DATA<-DATA
 
   return(Seasonal)
 

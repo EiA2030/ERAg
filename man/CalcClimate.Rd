@@ -53,7 +53,7 @@ the corresponding \code{Rain.Windows} entry.}
 \item{Windows}{A data.table with three columns \code{Name}, \code{Start} and \code{End} which specifies additional temporal periods for calculation of climate statistics.
 For example \code{data.table(Name="Plant.1-30",Start=1,End=30)} is a temporal period from the day after planting to 30 days after planting. Set to NA if no additional windows are required.}
 
-\item{SaveDir}{A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned dataset.}
+\item{SaveDir}{A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned datasets.}
 
 \item{ErrorDir}{A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.}
 
