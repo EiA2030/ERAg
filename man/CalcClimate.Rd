@@ -71,6 +71,7 @@ A list is output containing following data.tables:
 \emph{\verb{[[Annual.BioClim]][[Annual.Estimates]]}} =
 \emph{\verb{[[Annual.BioClim]][[LT.Averages]]}} =
 \emph{\verb{[[Annual.BioClim]][[Key]]}} =
+\emph{\verb{[[Parameters]]}} = List of argument values supplied to the function
 }
 \description{
 The \code{CalcClimate} function

@@ -88,6 +88,7 @@
 #' *`[[Annual.BioClim]][[Annual.Estimates]]`* =
 #' *`[[Annual.BioClim]][[LT.Averages]]`* =
 #' *`[[Annual.BioClim]][[Key]]`* =
+#' *`[[Parameters]]`* = List of argument values supplied to the function
 #' @export
 CalcClimate<-function(DATA,
                  CLIMATE,
@@ -294,6 +295,24 @@ CalcClimate<-function(DATA,
       dir.create(SaveDir1,recursive = T)
     }
   }
+
+  # Create a text file detailing parameters used in analysis
+  if(!is.na(SaveDir)){
+    ParamSave<-list(Rain.Windows=c("Rain.Windows:",Rain.Windows),
+                    Widths=c("Widths:",Widths),
+                    Rain.Threshold=c("Rain.Threshold:",Rain.Threshold),
+                    Max.LT.Avg=c("Max.LT.Avg:",Max.LT.Avg),
+                    Windows=c("Windows:",unlist(Windows)),
+                    Rain.Data.Name=c("Rain.Data.Name:",Rain.Data.Name),
+                    Temp.Data.Name=c("Temp.Data.Name:",Temp.Data.Name))
+
+    if(file.exists(paste0(SaveDir1,"/parameters.txt"))){
+      unlink(paste0(SaveDir1,"/parameters.txt"))
+    }
+
+    lapply(ParamSave, cat, "\n", file=paste0(SaveDir1,"/parameters.txt"), append=TRUE)
+  }
+
 
   DATA<-data.table(DATA)
 
@@ -824,7 +843,15 @@ CalcClimate<-function(DATA,
     }
   }
 
+  ParamSave<-list(Rain.Windows=Rain.Windows,
+                  Widths=Widths,
+                  Rain.Threshold=Rain.Threshold,
+                  Max.LT.Avg=Max.LT.Avg,
+                  Windows=Windows,
+                  Rain.Data.Name=Rain.Data.Name,
+                  Temp.Data.Name=Temp.Data.Name)
 
+  Seasonal$Parameters<-ParamSave
 
   return(Seasonal)
 
