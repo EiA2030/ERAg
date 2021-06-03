@@ -29,8 +29,7 @@
 #' Data.Combos table and renamed. When set FALSE only the rows of a practice where it occurs in combination with other practice are copied to the Data.Combos table and renamed.
 #' Default = F.
 #' @param Perc.Neg A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
-#' it is filtered from the dataset. Applies only if `RmNeg = T`, default = 0.5.
-#' @param RmNeg Logical `T/F`. If `T` negative outcomes are filtered from the return dataset according to `Perc.Neg` argument.
+#' it is filtered from the dataset. Default = 0.5.
 #' @param Cols A vector of column names to retain from the ERA dataset supplied. Default values are supplied.
 #' @return If DoCombinations = F a data.table of the processed ERA dataset. If DoCombinations = T a list of two data.tables, "Data" as per combinations = F and "Data.Combos" where
 #' PrNames have modified to reflect combination practices.
@@ -123,9 +122,8 @@ PrepareERA<-function(Data,
   OutcomeCodes$`Negative Values`[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
 
   # Remove outcomes where they are negative > Perc.Neg of the time
-  if(RmNeg){
     Data<-Data[!Neg.Vals=="Y"]
-  }
+
 
   # Recode Neg.Vals in FCR/PCR to be N (these are dealt with using a different system to RRs)
   # Data[Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),Neg.Vals:="N"]
