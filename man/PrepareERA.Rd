@@ -9,6 +9,7 @@ PrepareERA(
   CombineAll = F,
   DoCombinations = F,
   Perc.Neg = 0.5,
+  RmNeg = T,
   Cols = c("Code", "Country", "Latitude", "Longitude", "Site.Type", "ID", "Site.ID",
     "Rep", "Diversity", "Tree", "Variety", "Duration", "M.Year", "EU", "EUlist",
     "Outcode", "MeanC", "MeanT", "Units", "TID", "CID", "MeanFlip", "Neg.Vals", "plist",
@@ -36,7 +37,9 @@ and "Data.Combos" the latter containing data encoded as combinations. Note ONLY 
 functionality is not implemented for subpractices. Default = \code{F}.}
 
 \item{Perc.Neg}{A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
-it is filtered from the dataset. Default = 0.5.}
+it is filtered from the dataset. Applies only if \code{RmNeg = T}, default = 0.5.}
+
+\item{RmNeg}{Logical \code{T/F}. If \code{T} negative outcomes are filtered from the return dataset according to \code{Perc.Neg} argument.}
 
 \item{Cols}{A vector of column names to retain from the ERA dataset supplied. Default values are supplied.}
 }

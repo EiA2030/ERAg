@@ -29,7 +29,8 @@
 #' Data.Combos table and renamed. When set FALSE only the rows of a practice where it occurs in combination with other practice are copied to the Data.Combos table and renamed.
 #' Default = F.
 #' @param Perc.Neg A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
-#' it is filtered from the dataset. Default = 0.5.
+#' it is filtered from the dataset. Applies only if `RmNeg = T`, default = 0.5.
+#' @param RmNeg Logical `T/F`. If `T` negative outcomes are filtered from the return dataset according to `Perc.Neg` argument.
 #' @param Cols A vector of column names to retain from the ERA dataset supplied. Default values are supplied.
 #' @return If DoCombinations = F a data.table of the processed ERA dataset. If DoCombinations = T a list of two data.tables, "Data" as per combinations = F and "Data.Combos" where
 #' PrNames have modified to reflect combination practices.
@@ -38,6 +39,7 @@ PrepareERA<-function(Data,
                      CombineAll=F,
                      DoCombinations=F,
                      Perc.Neg = 0.5,
+                     RmNeg = T,
                      Cols = c("Code","Country","Latitude","Longitude","Site.Type","ID","Site.ID","Rep","Diversity","Tree","Variety","Duration","M.Year","EU","EUlist",
                                "Outcode","MeanC","MeanT","Units","TID","CID","MeanFlip","Neg.Vals","plist","base.list","Product","Product.Type","Product.Subtype",
                                "Product.Simple","Out.Pillar","Out.SubPillar","Out.Ind","Out.SubInd","SubPrName","PrName","Theme","SubPrName.Base","PrName.Base",
@@ -80,7 +82,7 @@ PrepareERA<-function(Data,
   Data<-Data[!PrName==""]
 
   # Remove Energy from Practice Theme
-  Data<-Data[!grepl("Energy",Theme)]
+  # Data<-Data[!grepl("Energy",Theme)]
 
   # Convert 267.1 and 265.1 conversion ratio outcomes (In/Out) into 267 and 265 outcomes (Out/In)
   Data[,MeanC:=as.numeric(as.character(MeanC))][,MeanT:=as.numeric(as.character(MeanT))]
@@ -100,7 +102,7 @@ PrepareERA<-function(Data,
              ][Outcode==265.1,Outcode:=265]
 
 
-  # Filter out outcomes with >0.5% negative values
+  # Filter out outcomes with >Perc.Neg% negative values
 
   Data[,Neg.Vals:=OutcomeCodes[match(Data[,Outcode],Code),`Negative Values`]]
 
@@ -121,7 +123,9 @@ PrepareERA<-function(Data,
   OutcomeCodes$`Negative Values`[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
 
   # Remove outcomes where they are negative > Perc.Neg of the time
-  Data<-Data[!Neg.Vals=="Y"]
+  if(RmNeg){
+    Data<-Data[!Neg.Vals=="Y"]
+  }
 
   # Recode Neg.Vals in FCR/PCR to be N (these are dealt with using a different system to RRs)
   # Data[Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),Neg.Vals:="N"]
@@ -137,7 +141,7 @@ PrepareERA<-function(Data,
   # Remove unecessary cols
   Data<-Data[,..Cols]
 
-  Practices<-unique(unlist(strsplit(Data$PrName,"-")))
+  Practices<-unique(unlist(strsplit(unique(Data$PrName),"-")))
 
   if(DoCombinations){
     if(CombineAll){
