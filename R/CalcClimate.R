@@ -336,7 +336,6 @@ CalcClimate<-function(DATA,
   SS<-SS$SS
   MCode.SS<-apply(SS[,c(..ID,"EU","P.Date.Merge","M.Year")],1,paste,collapse="_")
 
-  # Read in previous saved analysis
   SaveName<-paste0(SaveDir1,"ClimStatsA.RData")
 
   # Cross-reference to exisiting data
@@ -441,38 +440,26 @@ CalcClimate<-function(DATA,
 
             PDates<-as.Date(paste0(Year.Range,"-",SS.N[EU==EU.N.S$EU[i] & M.Year.Code==EU.N.S$M.Year.Code[i],C.Med(P.Date.Merge,FUN=stats::median)]),format="%Y-%j")
 
-            C<-data.table(Start=which(Climate$Date %in% PDates)-Rain.Windows[1])[,End:=Start+sum(Rain.Windows)][!Start<0][!End>nrow(Climate)]
-            C<-Climate[unlist(lapply(1:nrow(C),FUN=function(l){unlist(C[l,1]):unlist(C[l,2])})),][!is.na(Year)]
-
-            # Give sequence codes to years using date
-            X<-as.numeric(C$Date)
-            X<-c(1,X[2:length(X)]-X[1:(length(X)-1)])
-            X.N<-c(which(X>1),length(X))
-
-            # Determine sequences of consecutive days & check they are complete
-            Y<-lapply(1:length(X.N),FUN=function(i){
-              if(i==1){
-                rep(i,length(X[1:(X.N[i]-1)]))
-              }else{
-                if(i!=length(X.N)){
-                  rep(i,length(X[X.N[i-1]:(X.N[i]-1)]))
-                }else{
-                  rep(i,length(X[(X.N[i-1]):X.N[i]]))
-                }
-              }
-            })
+            # Excise temporal windows from climate data
+            C1<-data.table(Start=which(Climate$Date %in% PDates)-Rain.Windows[1])[,End:=Start+sum(Rain.Windows)][!Start<0][!End>nrow(Climate)]
+            C<-Climate[unlist(lapply(1:nrow(C1),FUN=function(l){unlist(C1[l,1]):unlist(C1[l,2])})),][!is.na(Year)]
 
             # Add sequences to climate data
-            C$Sequence<-unlist(Y)
+            C[,Sequence:=C1[,Nrow:=1:nrow(C1)][,rep(Nrow,length(Start:End)),by=Nrow][,1]]
+
 
             # Remove incomplete sequences by cross referencing the width the window should be
             C<-C[Sequence %in% which(unlist(lapply(Y,length)) == sum(Rain.Windows)+1)]
 
+            # Add "data" year
+            C[,YearX:=Year[1],by=Sequence]
+
             # Work out planting date for each sequence
-            XX<-C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=list(Year,Sequence)]
+            XX<-C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=list(YearX,Sequence)]
+
 
             Annual.Plant<-zoo::as.Date(unlist(XX[,3]))
-            names(Annual.Plant)<-XX[,Year]
+            names(Annual.Plant)<-XX[,YearX]
 
 
             # Record the planting year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
@@ -552,7 +539,7 @@ CalcClimate<-function(DATA,
                     N1<-which(Climate$Date %in% A.Plant)
                     N2<-which(Climate$Date %in% A.Harvest)
 
-                    C<-cbind(which(Climate$Date %in% A.Plant),which(Climate$Date %in% A.Harvest))
+                    C<-cbind(N1,N2)
 
                     C<-Climate[unlist(lapply(1:nrow(C),FUN=function(l){C[l,1]:C[l,2]})),]
 
@@ -579,8 +566,8 @@ CalcClimate<-function(DATA,
                     # Add sequences to climate data
                     C<-C[,Sequence:=unlist(Y)
                          # Remove incomplete sequences by cross referencing to the width the window should be
-                    ][Sequence %in% which(unlist(lapply(Y,length)) >= floor(WINS[k,End]))
-                    ]
+                    ][Sequence %in% which(unlist(lapply(Y,length)) >= floor(WINS[k,End]))]
+
 
                     C<-C[,P.Year:=rep(unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1),"Year"][!is.na(Year)]),each=WINS[k,End])
                     ][,H.Year:=rep(unlist(C[cumsum(rle(C$Sequence)$lengths),"Year"][!is.na(Year)]),each=WINS[k,End])
