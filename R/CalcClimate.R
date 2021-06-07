@@ -435,28 +435,25 @@ CalcClimate<-function(DATA,
           LT.A<-lapply(1:nrow(EU.N.S),FUN=function(i){
 
             cat('\r                                                                                                                                          ')
-            cat('\r',paste0(Temp.Data.Name," x ",Rain.Data.Name,": Estimating Long-term averages for  site: ",match(Site,Sites),"/",length(Sites), " | EU: ",EU.N.S$EU[i]))
+            cat('\r',paste0(Temp.Data.Name," x ",Rain.Data.Name,": Estimating Long-term averages for  site: ",match(Site,Sites),"/",length(Sites)," | Season: ",EU.N.S$M.Year.Code[i]," | EU: ",EU.N.S$EU[i]))
             flush.console()
 
             PDates<-as.Date(paste0(Year.Range,"-",SS.N[EU==EU.N.S$EU[i] & M.Year.Code==EU.N.S$M.Year.Code[i],C.Med(P.Date.Merge,FUN=stats::median)]),format="%Y-%j")
 
             # Excise temporal windows from climate data
-            C1<-data.table(Start=which(Climate$Date %in% PDates)-Rain.Windows[1])[,End:=Start+sum(Rain.Windows)][!Start<0][!End>nrow(Climate)]
+            C1<-data.table(Start=which(Climate$Date %in% PDates)-Rain.Windows[1])[,End:=Start+sum(Rain.Windows)][!Start<=0][!End>nrow(Climate)]
             C<-Climate[unlist(lapply(1:nrow(C1),FUN=function(l){unlist(C1[l,1]):unlist(C1[l,2])})),][!is.na(Year)]
 
-            # Add sequences to climate data
-            C[,Sequence:=C1[,Nrow:=1:nrow(C1)][,rep(Nrow,length(Start:End)),by=Nrow][,1]]
-
+            C[,Sequence:=C1[,Nrow:=1:nrow(C1)][,rep(Nrow,length(Start:End)),by=Nrow][,V1]]
 
             # Remove incomplete sequences by cross referencing the width the window should be
-            C<-C[Sequence %in% which(unlist(lapply(Y,length)) == sum(Rain.Windows)+1)]
+            C<-C[Sequence %in%  C[,.N == sum(Rain.Windows)+1,by=Sequence][,Sequence]]
 
             # Add "data" year
             C[,YearX:=Year[1],by=Sequence]
 
             # Work out planting date for each sequence
             XX<-C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=list(YearX,Sequence)]
-
 
             Annual.Plant<-zoo::as.Date(unlist(XX[,3]))
             names(Annual.Plant)<-XX[,YearX]
@@ -735,31 +732,6 @@ CalcClimate<-function(DATA,
     MissingSites<-NULL
     MCode.D<-NULL
 
-    if(file.exists(SaveName)){
-      S.existing1<-load.Rdata2("ClimStatsB.RData",path=SaveDir1)
-      MCode.D<-unlist(unique(DATA[,..ID]))
-      MCode.E<-unlist(S.existing1[["Annual.Estimates"]][,"ID"])
-
-      if(file.exists(paste0(SaveDir1,"MissingSites-BIOC-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".csv"))){
-        MissingSites<-unlist(fread(paste0(SaveDir1,"MissingSites-BIOC-",Params,substr(Temp.Data.Name,1,3),substr(Rain.Data.Name,1,3),".csv"),sep=","))
-        MCode.D<-MCode.D[!MCode.D %in% MissingSites]
-      }
-
-      if(nrow(SS)>0){
-        MCode<-unlist(CLIMATE1[,..ID])
-        N<-MCode %in% MCode.E
-        CLIMATE1<-CLIMATE1[!N]
-      }
-
-      S.existing1[["Annual.Estimates"]]<-S.existing1[["Annual.Estimates"]][MCode.E %in% MCode.D]
-
-      MCode.E1<-unlist(S.existing1[["LT.Averages"]][,"ID"])
-      S.existing1[["LT.Averages"]]<-S.existing1[["LT.Averages"]][MCode.E1 %in% MCode.D]
-
-      MCode1<-unlist(MCode.D[!MCode.D %in% unique(MCode.E)])
-
-    }
-
     if(!(!is.null(MCode1) & length(MCode1)==0)){
 
       if(nrow(SS)==0){
@@ -885,4 +857,5 @@ CalcClimate<-function(DATA,
   return(Seasonal)
 
 }
+
 
