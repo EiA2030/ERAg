@@ -619,8 +619,6 @@ CalcClimate<-function(DATA,
                 NA
               }
 
-            }
-
           })
 
           names(LT.A)<-apply(unique(SS.N[,c("EU","Product","M.Year.Code")]),1,paste,collapse="-")
