@@ -36,7 +36,8 @@
 #'   described in the documentation for this function;
 #'  iii) **max and mean temperatures** are averaged with standard deviation (`Tmax.Mean`,`Tmax.sd`,`Tmean.mean` and `Tmean.sd` fields).
 #'
-#' 5) If argument `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product using the following steps:
+#' 5) If argument `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product. Note
+#' that each season in the data is treated separately. The process logic is as follows:
 #'  i) The median planting julian day of the year is taken for the location x product combination;
 #'  ii) For each year of complete climate data, the median planting date from i) is used as a starting point to estimate planting date from rainfall using the
 #'  `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `Rain.Threshold` as explained in the arguments for this function. These data are
@@ -45,7 +46,8 @@
 #'  iv) Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to
 #'  the output of ii);
 #'  v) Annual climate statistics are calculated for each year x site x product combination using the rainfall estimated planting date and as per steps
-#'   3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`;
+#'   3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`. Where insufficient rainfall fell to meet the thresholds specified in ii) then the a median
+#'   planting date is substituted from those years that did have sufficient rainfall in ii);
 #'  vi) Long-term climate statistics from v) are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are
 #'   returned `[[LongTerm]][[LT.Clim.Avg]]`;
 #'  vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v).
@@ -467,7 +469,11 @@ CalcClimate<-function(DATA,
             C<-C[Sequence %in% which(unlist(lapply(Y,length)) == sum(Rain.Windows)+1)]
 
             # Work out planting date for each sequence
-            Annual.Plant<-zoo::as.Date(unlist(C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=Sequence][,2]))
+            XX<-C[,Est.Rain(Rain,Date,..Widths,..Rain.Threshold,..Rain.Windows),by=list(Year,Sequence)]
+
+            Annual.Plant<-zoo::as.Date(unlist(XX[,3]))
+            names(Annual.Plant)<-XX[,Year]
+
 
             # Record the planting year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
             P.Years<-unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1)+Rain.Windows[1],"Year"][!is.na(Year)])
@@ -479,7 +485,7 @@ CalcClimate<-function(DATA,
 
               if(length(N1)>0){
 
-                C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)[[1]]
+                C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
                 LT.Mean<-as.numeric(round(mean(C.val)*180/pi*365/360,ROUND))
                 LT.Median<-as.numeric(round(median(C.val)*180/pi*365/360,ROUND))
 
@@ -497,16 +503,27 @@ CalcClimate<-function(DATA,
                 # Calculate Annual Deviation of Planting Date From LT.Avg
                 # Annual Estimate - Long Term Average
 
-                Annual.Dev.Mean<-as.numeric(circular::circular(as.numeric(format(Annual.Plant[N],"%j"))*360/365*pi/180)[[1]]-circular::circular(as.numeric(LT.Mean)*360/365*pi/180)[[1]])*365/360*180/pi
+                Annual.Dev.Mean<-as.numeric(circular::circular(as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)-circular::circular(as.numeric(LT.Mean)*360/365*pi/180))*365/360*180/pi
 
-                Annual.Dev.Median<-as.numeric(circular::circular (as.numeric(format(Annual.Plant[N],"%j"))*360/365*pi/180)[[1]]- # Annual Estimate
+                Annual.Dev.Median<-as.numeric(circular::circular (as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)- # Annual Estimate
                                                 circular::circular(as.numeric(LT.Median)*360/365*pi/180)[[1]]        # Long Term Average
                 )*365/360*180/pi
 
                 NYear.LT.Avg<-sum(N1)
 
-                LT.PlantDates<-list(Annual.Estimates=data.table(P.Year=P.Years[N],P.Date=Annual.Plant[N],Dev.Mean=Annual.Dev.Mean,Dev.Med=Annual.Dev.Median,EU=EU.N.S$EU[i],Season=EU.N.S$M.Year.Code[i],ID=Site),
-                                    LT.Averages=data.table(Mean=LT.Mean,Median=LT.Median,SD=LT.SD,N=NYear.LT.Avg,EU=EU.N.S$EU[i],Season=EU.N.S$M.Year.Code[i],ID=Site))
+                LT.PlantDates<-list(Annual.Estimates=data.table(P.Year=P.Years,
+                                                                P.Date=Annual.Plant,
+                                                                Dev.Mean=Annual.Dev.Mean,
+                                                                Dev.Med=Annual.Dev.Median,
+                                                                EU=EU.N.S$EU[i],
+                                                                Season=EU.N.S$M.Year.Code[i],
+                                                                ID=Site),
+                                    LT.Averages=data.table(Mean=LT.Mean,
+                                                           Median=LT.Median,
+                                                           SD=LT.SD,N=NYear.LT.Avg,
+                                                           EU=EU.N.S$EU[i],
+                                                           Season=EU.N.S$M.Year.Code[i],
+                                                           ID=Site))
 
                 # Now Estimate Temperature and Rainfall LTAvgs using the average season lengths and pre-set windows
                 WINS<-rbind(data.table(
@@ -520,7 +537,8 @@ CalcClimate<-function(DATA,
 
                 if(nrow(WINS)>0){
 
-                  Annual.Plant<-Annual.Plant[!is.na(Annual.Plant)]
+                  # For seasons that do not meet planting thresholds then substitute median planting date from LT data
+                  Annual.Plant[is.na(Annual.Plant)]<- zoo::as.Date(paste0(names(Annual.Plant[is.na(Annual.Plant)]),"-",round(LT.Median)),"%Y-%j")
 
                   LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){
 
@@ -581,7 +599,9 @@ CalcClimate<-function(DATA,
                                                                               round(median(X,na.rm=T),ROUND),
                                                                               round(sd(X,na.rm=T),ROUND),
                                                                               min(X,na.rm=T),
-                                                                              max(X,na.rm=T))}),.SDcols=3:ncol(C)][,Variable:=c("Mean","Median","SD","Min","Max")][,N:=nrow(C[H.Year<=Max.LT.Avg,1])]
+                                                                              max(X,na.rm=T))}),.SDcols=3:ncol(C)
+                    ][,Variable:=c("Mean","Median","SD","Min","Max")
+                    ][,N:=nrow(C[H.Year<=Max.LT.Avg,1])]
 
                     suppressWarnings(Annual.Estimates<-as.data.table(rbind(
                       (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Mean",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Mean"],
@@ -645,6 +665,7 @@ CalcClimate<-function(DATA,
 
     B<-B[unlist(lapply(B,length)>1)]
 
+
     # Bind lists together
     Seasonal.Clim<-rbindlist(lapply(B,"[[","Seasonal Stats"))
 
@@ -669,16 +690,20 @@ CalcClimate<-function(DATA,
     if(Do.LT.Avg){
 
       # Deal with NA values in LT climate data
-      NotNA<-lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(X){length(X[[1]])})>1
-      B<-B[NotNA]
+      for(i in 1:length(B)){
+        X<-B[[i]][["LT Avg & Dev"]]
+        X<-X[!unlist(lapply(X,FUN=function(Z){is.na(Z)[1]}))]
+        B[[i]][["LT Avg & Dev"]]<-X
+      }
 
       # Rbind LT climate data stats together from lists
-      for(i in 1:length(B)){
-        LT.PD.Years<-rbindlist(lapply(lapply(B[i],"[[",c("LT Avg & Dev")),FUN=function(Y){
-          rbindlist(lapply(Y,"[[",c("LT.PlantDates","Annual.Estimates")))
-        }))
 
-      }
+      LT.PD.Years<-rbindlist(lapply(1:length(B),FUN=function(i){
+        X<-B[[i]][["LT Avg & Dev"]]
+        X<-rbindlist(lapply(X,"[[",c("LT.PlantDates","Annual.Estimates")))
+        X
+
+      }))
 
       LT.PD.Avg<-rbindlist(lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(Y){rbindlist(lapply(Y,"[[",c("LT.PlantDates","LT.Averages")))}))
 

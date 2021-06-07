@@ -108,7 +108,8 @@ The \code{GDDcalc} function outputs four fields \code{GDDlow}, \code{GDDopt}, \c
 ii) \strong{precipitation and reference evapotranspiration (ETo)} statistics are estimated using the \code{RAIN.Calc} function which outputs a number of variables
 described in the documentation for this function;
 iii) \strong{max and mean temperatures} are averaged with standard deviation (\code{Tmax.Mean},\code{Tmax.sd},\code{Tmean.mean} and \code{Tmean.sd} fields).
-\item If argument \code{Do.LT.Avg==T} annual and long-term climate statistics an planting dates are calculated  for each combination of location and product using the following steps:
+\item If argument \code{Do.LT.Avg==T} annual and long-term climate statistics an planting dates are calculated  for each combination of location and product. Note
+that each season in the data is treated separately. The process logic is as follows:
 i) The median planting julian day of the year is taken for the location x product combination;
 ii) For each year of complete climate data, the median planting date from i) is used as a starting point to estimate planting date from rainfall using the
 \code{Est.Rain} function which takes the arguments \code{Rain.Windows}, \code{Widths} and \code{Rain.Threshold} as explained in the arguments for this function. These data are
@@ -117,7 +118,8 @@ iii) Estimated planting dates from ii) are averaged (mean, sd, median) across ye
 iv) Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to
 the output of ii);
 v) Annual climate statistics are calculated for each year x site x product combination using the rainfall estimated planting date and as per steps
-3 & 4. Data are return as \verb{[[LongTerm]][[LT.Clim.Years]]};
+3 & 4. Data are return as \verb{[[LongTerm]][[LT.Clim.Years]]}. Where insufficient rainfall fell to meet the thresholds specified in ii) then the a median
+planting date is substituted from those years that did have sufficient rainfall in ii);
 vi) Long-term climate statistics from v) are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are
 returned \verb{[[LongTerm]][[LT.Clim.Avg]]};
 vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v).
