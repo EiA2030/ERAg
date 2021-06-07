@@ -462,8 +462,6 @@ CalcClimate<-function(DATA,
             # Record the planting year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
             P.Years<-unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1)+Rain.Windows[1],"Year"][!is.na(Year)])
 
-            if(!sum(is.na(Annual.Plant))>length(Annual.Plant)/1.5){
-
               N<-!is.na(Annual.Plant)
               N1<-!is.na(Annual.Plant) &  as.integer(format(Annual.Plant,"%Y"))<=Max.LT.Avg
 
@@ -620,14 +618,7 @@ CalcClimate<-function(DATA,
               }else{
                 NA
               }
-            }else{
 
-              if(!dir.exists(paste0(SaveDir1,"Low Rainfall Sites/"))){
-                dir.create(paste0(SaveDir1,"Low Rainfall Sites/"))
-              }
-
-              fwrite(SS.N,paste0(paste0(SaveDir1,"Low Rainfall Sites/",SS.N[1,Site.Key],".csv")))
-              NA
             }
 
           })
