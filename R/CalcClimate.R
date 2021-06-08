@@ -58,6 +58,10 @@
 #'   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`;
 #'   iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 #'
+#'   If you are finding there are observations with suspiciously short reported season lengths in the ERA dataset (i.e. errors in the reporting of
+#'   planting and/or harvest dates) you can exclude observations (`Exclude.EC.Diff`) where the absolute difference between reported and EcoCrop estimated season lengths
+#'   is greater than a specified proportion (`EC.Diff`).
+#'
 #' @param DATA An ERA dataset (e.g. `ERA.Compiled`) processed by the `AddEcoCrop`, `EstPDayData`, `EstSLenData` and `EstPDayRain` functions.
 #' @param CLIMATE A daily agroclimatology dataset with fields: 1) `Temp.Mean` = mean daily temperature - C; 2) `Temp.Max` = maximum daily temperature - C;
 #' `Temp.Min` = minimum daily temperature - C; 4) `Rain` = daily rainfall - mm; 5) `ETo` = reference evapotranspiration - mm; 6) class `Date` field
@@ -78,6 +82,9 @@
 #' For example `data.table(Name="Plant.1-30",Start=1,End=30)` is a temporal period from the day after planting to 30 days after planting. Set to NA if no additional windows are required.
 #' @param SaveDir A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned datasets.
 #' @param ErrorDir A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.
+#' @param Exclude.EC.Diff Logical `T/F`; if `T` observations with a proportional difference of greater than `EC.Diff` between reported (or data estimated) and ecocrop season length are excluded.
+#' @param EC.Diff A numeric vector of length one; a value 0-1 to be used in combination with the `Exclude.EC.Diff` argument.
+#' If `Exclude.EC.Diff==T` and `abs(Reported.Season.Length-EcoCrop.Season.Length)/EcoCrop.Season.Length>EC.Diff` then observations are excluded from analysis.
 #' @param ROUND An integer vector of length one indicating the number of decimal places to round output values to.
 #' @return A list is output containing following data.tables:
 #' **`[[Observed]]`** = A `data.table` of seasonal climate statistics for
@@ -106,6 +113,8 @@ CalcClimate<-function(DATA,
                       Windows=data.table(Name="Plant.0-30",Start=1,End=30),
                       SaveDir="Climate Stats/",
                       ErrorDir="Climate Stats/Errors/",
+                      Exclude.EC.Diff=F,
+                      EC.Diff=0.6,
                       ROUND=5){
 
   if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
@@ -242,7 +251,7 @@ CalcClimate<-function(DATA,
     }
   }
 
-  SLen<-function(RName,DATA,ErrorDir){
+  SLen<-function(RName,DATA,ErrorDir,EC.Diff,Exclude.EC.Diff){
     RName<-paste0("UnC.",RName,".P.Date")
 
     DATA$Focus<-DATA[,..RName]
@@ -280,7 +289,10 @@ CalcClimate<-function(DATA,
     # Fix below this doesn't work when one SLen value is NA
 
     SS<-SS[,c(..ID,"Latitude","Longitude","EU","Product","M.Year","M.Year.Code","P.Date.Merge","SLen.Merge","SLen.EcoCrop","Topt.low", "Topt.high","Tlow", "Thigh")]
-    SS<-SS[!((abs(SLen.Merge-SLen.EcoCrop)/SLen.EcoCrop)>0.6 & !((is.na( SLen.Merge) & !is.na(SLen.EcoCrop))) | (!is.na( SLen.Merge) & is.na(SLen.EcoCrop))),][!(is.na(SLen.Merge) & is.na(SLen.EcoCrop)),]
+
+    if(Exclude.EC.Diff){
+      SS<-SS[!((abs(SLen.Merge-SLen.EcoCrop)/SLen.EcoCrop)>EC.Diff & !((is.na( SLen.Merge) & !is.na(SLen.EcoCrop))) | (!is.na( SLen.Merge) & is.na(SLen.EcoCrop))),][!(is.na(SLen.Merge) & is.na(SLen.EcoCrop)),]
+    }
 
     return(list(SS=SS,DATA=DATA))
   }
@@ -292,7 +304,9 @@ CalcClimate<-function(DATA,
                  Max.LT.Avg,
                  paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = ""),
                  substr(Temp.Data.Name,1,3),
-                 substr(Rain.Data.Name,1,3))
+                 substr(Rain.Data.Name,1,3),
+                 Exclude.EC.Diff,
+                 EC.Diff)
 
   if(!is.na(SaveDir)){
     SaveDir1<-paste0(SaveDir,"Analysis/",Params,"/")
@@ -310,7 +324,9 @@ CalcClimate<-function(DATA,
                     Max.LT.Avg=c("Max.LT.Avg:",Max.LT.Avg),
                     Windows=c("Windows:",unlist(Windows)),
                     Rain.Data.Name=c("Rain.Data.Name:",Rain.Data.Name),
-                    Temp.Data.Name=c("Temp.Data.Name:",Temp.Data.Name))
+                    Temp.Data.Name=c("Temp.Data.Name:",Temp.Data.Name),
+                    Exclude.EC.Diff=Exclude.EC.Diff,
+                    EC.Diff=EC.Diff)
 
     if(file.exists(paste0(SaveDir1,"/parameters.txt"))){
       unlink(paste0(SaveDir1,"/parameters.txt"))
@@ -331,7 +347,7 @@ CalcClimate<-function(DATA,
   DATA[,PDiff:=Plant.End-Plant.Start][,H.Diff:=Harvest.End-Harvest.Start]
 
   # Create unique Site x EU x Date combinations
-  SS<-SLen(RName=Rain.Data.Name,DATA,ErrorDir)
+  SS<-SLen(RName=Rain.Data.Name,DATA,ErrorDir,EC.Diff,Exclude.EC.Diff)
   DATA<-SS$DATA
   SS<-SS$SS
   MCode.SS<-apply(SS[,c(..ID,"EU","P.Date.Merge","M.Year")],1,paste,collapse="_")
@@ -825,7 +841,9 @@ CalcClimate<-function(DATA,
                   Max.LT.Avg=Max.LT.Avg,
                   Windows=Windows,
                   Rain.Data.Name=Rain.Data.Name,
-                  Temp.Data.Name=Temp.Data.Name)
+                  Temp.Data.Name=Temp.Data.Name,
+                  Exclude.EC.Diff=Exclude.EC.Diff,
+                  EC.Diff=EC.Diff)
 
   if(!is.na(SaveDir)){
     save(ParamSave,file=paste0(SaveDir1,"parameters.RData"))
@@ -842,6 +860,5 @@ CalcClimate<-function(DATA,
   return(Seasonal)
 
 }
-
 
 

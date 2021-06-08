@@ -19,6 +19,8 @@ CalcClimate(
   Windows = data.table(Name = "Plant.0-30", Start = 1, End = 30),
   SaveDir = "Climate Stats/",
   ErrorDir = "Climate Stats/Errors/",
+  Exclude.EC.Diff = F,
+  EC.Diff = 0.6,
   ROUND = 5
 )
 }
@@ -56,6 +58,11 @@ For example \code{data.table(Name="Plant.1-30",Start=1,End=30)} is a temporal pe
 \item{SaveDir}{A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned datasets.}
 
 \item{ErrorDir}{A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.}
+
+\item{Exclude.EC.Diff}{Logical \code{T/F}; if \code{T} observations with a proportional difference of greater than \code{EC.Diff} between reported (or data estimated) and ecocrop season length are excluded.}
+
+\item{EC.Diff}{A numeric vector of length one; a value 0-1 to be used in combination with the \code{Exclude.EC.Diff} argument.
+If \code{Exclude.EC.Diff==T} and \code{abs(Reported.Season.Length-EcoCrop.Season.Length)/EcoCrop.Season.Length>EC.Diff} then observations are excluded from analysis.}
 
 \item{ROUND}{An integer vector of length one indicating the number of decimal places to round output values to.}
 }
@@ -128,4 +135,8 @@ i) Annual bioclimatic values are calculated using the \link[dismo]{biovars} func
 data in \code{CLIMATE} per unique locationas (\code{ID} field) in \code{DATA}. The output data is return as [\link{Annual.BioClim}][\link{Annual.Estimates}]\verb{;   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]};
 iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 }
+
+If you are finding there are observations with suspiciously short reported season lengths in the ERA dataset (i.e. errors in the reporting of
+planting and/or harvest dates) you can exclude observations (\code{Exclude.EC.Diff}) where the absolute difference between reported and EcoCrop estimated season lengths
+is greater than a specified proportion (\code{EC.Diff}).
 }
