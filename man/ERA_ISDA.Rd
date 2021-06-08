@@ -8,15 +8,16 @@
 An object of class \code{data.table} (inherits from \code{data.frame}) with 48741 rows and 9 columns.
 }
 \source{
-https://www.isda-africa.com/isdasoil/
+ISDA: https://www.isda-africa.com/isdasoil/  African Soil and Agronomy Data Cube: https://gitlab.com/openlandmap/africa-soil-and-agronomy-data-cube.
 }
 \usage{
 ERA_ISDA
 }
 \description{
-
+\describe{
+Using the  African Soil and Agronomy Data Cube ISDA soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
+uncertainty. Variable information & descriptions can be found on the African Soil and Agronomy Data Cube website.
+...
 }
-\details{
-
 }
 \keyword{datasets}
