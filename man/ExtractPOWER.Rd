@@ -61,7 +61,7 @@ A data.table of daily climate data including the fields:
 }
 \description{
 For a dataset containing point locations with a buffer of spatial uncertainty this function downloads and summarizes daily climate information from
-the ref {NASA POWER}{https://power.larc.nasa.gov/} agroclimatology dataset at 0.5&deg resolution.
+the  \href{NASA POWER}{https://power.larc.nasa.gov/} agroclimatology dataset at 0.5&deg resolution.
 }
 \details{
 NASA POWER Solar parameters are derived from NASA's GEWEX/SRB release 3.0 archive (July 1, 1983 – Dec. 31, 2007) and
