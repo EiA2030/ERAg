@@ -16,7 +16,7 @@ ERA_CCI_LC_15
 \description{
 \describe{
 The CCI-LC project delivers a new time series of 24 consistent global LC maps at 300 m spatial resolution on an annual basis from 1992 to 2015.
-The number of raster cells of each landcover class for the year 2015 is summed for each unique ERA locations buffer of spatial uncertainty.
+The number of raster cells of each landcover class for the year 2015 is summed for each unique ERA location and its buffer of spatial uncertainty.
 A description of the landcover classes (fields) in this dataset can be found in the \emph{\code{ERA_CCI_LC_15_Fields}} object.
 ...
 }
