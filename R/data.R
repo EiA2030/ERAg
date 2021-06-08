@@ -67,13 +67,10 @@
 #' ISDA Soil Parameters
 #'
 #' \describe{
-#' Using the  \href{African Soil and Agronomy Data Cube}{https://gitlab.com/openlandmap/africa-soil-and-agronomy-data-cube}
-#' \href{ISDA}{https://www.isda-africa.com/isdasoil/} soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
-#' uncertainty.
-#'
-#' Variable information & descriptions can be found on the African Soiland Agronomy Data Cube.
+#' Using the  African Soil and Agronomy Data Cube ISDA soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
+#' uncertainty. Variable information & descriptions can be found on the African Soil and Agronomy Data Cube website.
 #'   ...
 #' }
-#' @source https://www.isda-africa.com/isdasoil/
+#' @source ISDA: https://www.isda-africa.com/isdasoil/  African Soil and Agronomy Data Cube: https://gitlab.com/openlandmap/africa-soil-and-agronomy-data-cube.
 "ERA_ISDA"
 
