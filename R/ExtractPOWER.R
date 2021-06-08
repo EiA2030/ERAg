@@ -1,7 +1,7 @@
 #' Extract Climate Data from NASA POWER agriclimatology dataset
 #'
 #' For a dataset containing point locations with a buffer of spatial uncertainty this function downloads and summarizes daily climate information from
-#' the ref {NASA POWER}{https://power.larc.nasa.gov/} agroclimatology dataset at 0.5&deg resolution.
+#' the  \href{NASA POWER}{https://power.larc.nasa.gov/} agroclimatology dataset at 0.5&deg resolution.
 #'
 #' NASA POWER Solar parameters are derived from NASA's GEWEX/SRB release 3.0 archive (July 1, 1983 – Dec. 31, 2007) and
 #' NASA’s CERES FLASHFlux project (Jan. 1, 2008 – to within about 7-days of real time). Meteorological parameters are derived from the NASA's GMAO
