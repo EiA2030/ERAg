@@ -468,165 +468,152 @@ CalcClimate<-function(DATA,
             No.PDate.Flag<-""
 
             if(sum(N1)==0){
-              Annual.Plant<-SS.N[EU==EU.N.S[i,EU] &  M.Year.Code==EU.N.S[i,M.Year.Code],P.Date.Merge]
-              No.PDate.Flag<-"No seasons met rainfall threshold"
+              Annual.Plant<-rep(as.Date(NA),length(P.Years))
+              names(Annual.Plant)<-P.Years
+              PD.Date.Pub<-SS.N[EU==EU.N.S[i,EU] &  M.Year.Code==EU.N.S[i,M.Year.Code] & P.Date.Merge>="1983-07-01",P.Date.Merge]
+              Annual.Plant[match(format(PD.Date.Pub,"%Y"),Year.Range)]<-PD.Date.Pub
+
+              No.PDate.Flag<-"No seasons met rainfall threshold, mid-point of published planting period used."
+              C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[!is.na(Annual.Plant)]), 5, 10))),"%j"))*360/365*pi/180)
+            }else{
+              C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
             }
 
-            if(sum(N1)>0){
 
-              C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
-              LT.Mean<-as.numeric(round(mean(C.val)*180/pi*365/360,ROUND))
-              LT.Median<-as.numeric(round(median(C.val)*180/pi*365/360,ROUND))
+            LT.Mean<-as.numeric(round(mean(C.val)*180/pi*365/360,ROUND))
+            LT.Median<-as.numeric(round(median(C.val)*180/pi*365/360,ROUND))
 
-              if(LT.Mean<=0){
-                LT.Mean<-365+LT.Mean
-              }
+            if(LT.Mean<=0){
+              LT.Mean<-365+LT.Mean
+            }
 
-              if(LT.Median<=0){
-                LT.Median<-365+LT.Median
-              }
+            if(LT.Median<=0){
+              LT.Median<-365+LT.Median
+            }
 
-              # Calculate LT.Avg Planting date standard deviation
-              LT.SD<-round(sd(C.val)*180/pi*365/360,ROUND)
+            # Calculate LT.Avg Planting date standard deviation
+            LT.SD<-round(sd(C.val)*180/pi*365/360,ROUND)
 
-              # Calculate Annual Deviation of Planting Date From LT.Avg
-              # Annual Estimate - Long Term Average
-
+            # Calculate Annual Deviation of Planting Date From LT.Avg
+            # Annual Estimate - Long Term Average
+            if(sum(N1)==0){
+              Annual.Dev.Mean<-NA
+              Annual.Dev.Median<-NA
+            }else{
               Annual.Dev.Mean<-as.numeric(circular::circular(as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)-circular::circular(as.numeric(LT.Mean)*360/365*pi/180))*365/360*180/pi
 
               Annual.Dev.Median<-as.numeric(circular::circular (as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)- # Annual Estimate
                                               circular::circular(as.numeric(LT.Median)*360/365*pi/180)[[1]]        # Long Term Average
               )*365/360*180/pi
+            }
 
-              NYear.LT.Avg<-sum(N1)
+            NYear.LT.Avg<-sum(N1)
 
-              LT.PlantDates<-list(Annual.Estimates=data.table(P.Year=P.Years,
-                                                              P.Date=Annual.Plant,
-                                                              Dev.Mean=Annual.Dev.Mean,
-                                                              Dev.Med=Annual.Dev.Median,
-                                                              EU=EU.N.S$EU[i],
-                                                              Season=EU.N.S$M.Year.Code[i],
-                                                              ID=Site,
-                                                              P.Data.Flag=No.PDate.Flag),
-                                  LT.Averages=data.table(Mean=LT.Mean,
-                                                         Median=LT.Median,
-                                                         SD=LT.SD,N=NYear.LT.Avg,
-                                                         EU=EU.N.S$EU[i],
-                                                         Season=EU.N.S$M.Year.Code[i],
-                                                         ID=Site,
-                                                         P.Data.Flag=No.PDate.Flag))
+            LT.PlantDates<-list(Annual.Estimates=data.table(P.Year=P.Years,
+                                                            P.Date=Annual.Plant,
+                                                            Dev.Mean=Annual.Dev.Mean,
+                                                            Dev.Med=Annual.Dev.Median,
+                                                            EU=EU.N.S$EU[i],
+                                                            Season=EU.N.S$M.Year.Code[i],
+                                                            ID=Site,
+                                                            P.Data.Flag=No.PDate.Flag),
+                                LT.Averages=data.table(Mean=LT.Mean,
+                                                       Median=LT.Median,
+                                                       SD=LT.SD,N=NYear.LT.Avg,
+                                                       EU=EU.N.S$EU[i],
+                                                       Season=EU.N.S$M.Year.Code[i],
+                                                       ID=Site,
+                                                       P.Data.Flag=No.PDate.Flag))
 
-              # Now Estimate Temperature and Rainfall LTAvgs using the average season lengths and pre-set windows
-              WINS<-rbind(data.table(
-                Name=c("Data","EcoCrop"),
-                Start=c(1,1),
-                End=c(SS.N[i,SLen.Merge][1], SS.N[i,SLen.EcoCrop][1])),
-                Windows
-              )[,End:=round(End,0)][,Start:=round(Start,0)]
+            # Now Estimate Temperature and Rainfall LTAvgs using the average season lengths and pre-set windows
+            WINS<-rbind(data.table(
+              Name=c("Data","EcoCrop"),
+              Start=c(1,1),
+              End=c(SS.N[i,SLen.Merge][1], SS.N[i,SLen.EcoCrop][1])),
+              Windows
+            )[,End:=round(End,0)][,Start:=round(Start,0)]
 
-              WINS<-WINS[!is.na(End),]
+            WINS<-WINS[!is.na(End),]
 
-              if(nrow(WINS)>0){
+            if(nrow(WINS)>0){
 
-                # For seasons that do not meet planting thresholds then substitute median planting date from LT data
-                Annual.Plant[is.na(Annual.Plant)]<- zoo::as.Date(paste0(names(Annual.Plant[is.na(Annual.Plant)]),"-",round(LT.Median)),"%Y-%j")
+              # For seasons that do not meet planting thresholds then substitute median planting date from LT data
+              Annual.Plant[is.na(Annual.Plant)]<- zoo::as.Date(paste0(names(Annual.Plant[is.na(Annual.Plant)]),"-",round(LT.Median)),"%Y-%j")
 
-                LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){
+              LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){
 
-                  A.Harvest<-Annual.Plant+round(WINS[k,End])
-                  A.Plant<-Annual.Plant+WINS[k,Start]
+                A.Harvest<-Annual.Plant+round(WINS[k,End])
+                A.Plant<-Annual.Plant+WINS[k,Start]
 
-                  A.P.H<-A.Plant %in% Climate$Date & A.Harvest %in% Climate$Date
-                  A.Harvest<-A.Harvest[A.P.H]
-                  A.Plant<-A.Plant[A.P.H]
+                A.P.H<-A.Plant %in% Climate$Date & A.Harvest %in% Climate$Date
+                A.Harvest<-A.Harvest[A.P.H]
+                A.Plant<-A.Plant[A.P.H]
 
-                  N1<-which(Climate$Date %in% A.Plant)
-                  N2<-which(Climate$Date %in% A.Harvest)
+                N1<-which(Climate$Date %in% A.Plant)
+                N2<-which(Climate$Date %in% A.Harvest)
 
-                  C<-cbind(N1,N2)
-
-                  C<-Climate[unlist(lapply(1:nrow(C),FUN=function(l){C[l,1]:C[l,2]})),]
+                C<-rbindlist(lapply(1:length(N1),FUN=function(i){
+                  X<-Climate[N1[i]:N2[i]]
+                  X[,P.Year:=X[1,Year]]
+                  X[,H.Year:=X[nrow(X),Year]]
 
                   # Check that climate dataset is complete
+                  if(nrow(X)>=floor(WINS[k,End])){
+                    X
+                  }else{
+                    NULL
+                  }
+                }))
 
-                  # Give sequence codes to years using date
-                  X<-as.numeric(C$Date)
-                  X<-c(1,X[2:length(X)]-X[1:(length(X)-1)])
-                  X.N<-c(which(X>1),length(X))
+                # Calculate climate stats
+                C<-cbind(
+                  C[,GDD(Tmax=Temp.Max,Tmin=Temp.Min,Tlow=SS.N[i,mean(Tlow)],Thigh=SS.N[i,mean(Thigh)],Topt.low = SS.N[i,mean(Topt.low)],Topt.high = SS.N[i,mean(Topt.high)],ROUND=2),by=c("P.Year","H.Year")
+                  ][,lapply(.SD,sum),.SDcol=3:6,by=c("P.Year","H.Year")],
+                  C[,RAIN.Calc(Rain,ETo),by=c("P.Year","H.Year")][,-c(1:2)],
+                  C[,list(Tmax.mean=mean(Temp.Max),Tmax.sd=sd(Temp.Max),Tmean.mean=mean(Temp.Mean),Tmean.sd=sd(Temp.Mean)),by=c("P.Year","H.Year")][,-c(1:2)]
+                )
 
-                  # Determine sequences of consecutive days & check they are complete
-                  Y<-lapply(1:length(X.N),FUN=function(i){
-                    if(i==1){
-                      rep(i,length(X[1:(X.N[i]-1)]))
-                    }else{
-                      if(i!=length(X.N)){
-                        rep(i,length(X[X.N[i-1]:(X.N[i]-1)]))
-                      }else{
-                        rep(i,length(X[(X.N[i-1]):X.N[i]]))
-                      }
-                    }
-                  })
+                LT.Avg<-C[H.Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){c(round(mean(X,na.rm=T),ROUND),
+                                                                          round(median(X,na.rm=T),ROUND),
+                                                                          round(sd(X,na.rm=T),ROUND),
+                                                                          min(X,na.rm=T),
+                                                                          max(X,na.rm=T))}),.SDcols=3:ncol(C)
+                ][,Variable:=c("Mean","Median","SD","Min","Max")
+                ][,N:=nrow(C[H.Year<=Max.LT.Avg,1])]
 
-                  # Add sequences to climate data
-                  C<-C[,Sequence:=unlist(Y)
-                       # Remove incomplete sequences by cross referencing to the width the window should be
-                  ][Sequence %in% which(unlist(lapply(Y,length)) >= floor(WINS[k,End]))]
+                suppressWarnings(Annual.Estimates<-as.data.table(rbind(
+                  (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Mean",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Mean"],
+                  (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Median",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Med"],
+                  C[,Variable:="Annual Value"]
+                ))[,!"ETo.NA"])
 
+                LT.Avg$EU<-EU.N.S$EU[i]
+                LT.Avg$Season<-EU.N.S$M.Year.Code[i]
+                LT.Avg$ID<-Site
+                LT.Avg$W.Start<-WINS[k,Start]
+                LT.Avg$W.End<-WINS[k,End]
+                LT.Avg$W.Name<-WINS[k,Name]
+                LT.Avg$P.Data.Flag<-No.PDate.Flag
 
-                  C<-C[,P.Year:=rep(unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1),"Year"][!is.na(Year)]),each=WINS[k,End])
-                  ][,H.Year:=rep(unlist(C[cumsum(rle(C$Sequence)$lengths),"Year"][!is.na(Year)]),each=WINS[k,End])
-                  ][,!"Sequence"]
-                  # Record the harvest year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
+                Annual.Estimates$EU<-EU.N.S$EU[i]
+                Annual.Estimates$Season<-EU.N.S$M.Year.Code[i]
+                Annual.Estimates$ID<-Site
+                Annual.Estimates$W.Start<-WINS[k,Start]
+                Annual.Estimates$W.End<-WINS[k,End]
+                Annual.Estimates$W.Name<-WINS[k,Name]
+                Annual.Estimates$P.Data.Flag<-No.PDate.Flag
 
-                  # Calculate climate stats
-                  C<-cbind(
-                    C[,GDD(Tmax=Temp.Max,Tmin=Temp.Min,Tlow=SS.N[i,mean(Tlow)],Thigh=SS.N[i,mean(Thigh)],Topt.low = SS.N[i,mean(Topt.low)],Topt.high = SS.N[i,mean(Topt.high)],ROUND=2),by=c("P.Year","H.Year")
-                    ][,lapply(.SD,sum),.SDcol=3:6,by=c("P.Year","H.Year")],
-                    C[,RAIN.Calc(Rain,ETo),by=c("P.Year","H.Year")][,-c(1:2)],
-                    C[,list(Tmax.mean=mean(Temp.Max),Tmax.sd=sd(Temp.Max),Tmean.mean=mean(Temp.Mean),Tmean.sd=sd(Temp.Mean)),by=c("P.Year","H.Year")][,-c(1:2)]
-                  )
+                list(Annual.Estimates=Annual.Estimates,LT.Averages=LT.Avg)
 
-                  LT.Avg<-C[H.Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){c(round(mean(X,na.rm=T),ROUND),
-                                                                            round(median(X,na.rm=T),ROUND),
-                                                                            round(sd(X,na.rm=T),ROUND),
-                                                                            min(X,na.rm=T),
-                                                                            max(X,na.rm=T))}),.SDcols=3:ncol(C)
-                  ][,Variable:=c("Mean","Median","SD","Min","Max")
-                  ][,N:=nrow(C[H.Year<=Max.LT.Avg,1])]
-
-                  suppressWarnings(Annual.Estimates<-as.data.table(rbind(
-                    (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Mean",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Mean"],
-                    (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Median",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Med"],
-                    C[,Variable:="Annual Value"]
-                  ))[,!"ETo.NA"])
-
-                  LT.Avg$EU<-EU.N.S$EU[i]
-                  LT.Avg$Season<-EU.N.S$M.Year.Code[i]
-                  LT.Avg$ID<-Site
-                  LT.Avg$W.Start<-WINS[k,Start]
-                  LT.Avg$W.End<-WINS[k,End]
-                  LT.Avg$W.Name<-WINS[k,Name]
-
-                  Annual.Estimates$EU<-EU.N.S$EU[i]
-                  Annual.Estimates$Season<-EU.N.S$M.Year.Code[i]
-                  Annual.Estimates$ID<-Site
-                  Annual.Estimates$W.Start<-WINS[k,Start]
-                  Annual.Estimates$W.End<-WINS[k,End]
-                  Annual.Estimates$W.Name<-WINS[k,Name]
-
-                  list(Annual.Estimates=Annual.Estimates,LT.Averages=LT.Avg)
-
-                })
-                names(LT.Climate)<-WINS[,Name]
-              }else{
-                LT.Climate<-NA
-              }
-
-              list(LT.PlantDates=LT.PlantDates,LT.Climate=LT.Climate)
-
+              })
+              names(LT.Climate)<-WINS[,Name]
             }else{
-              NA
+              LT.Climate<-NA
             }
+
+            list(LT.PlantDates=LT.PlantDates,LT.Climate=LT.Climate)
+
+
 
           })
 
@@ -855,5 +842,6 @@ CalcClimate<-function(DATA,
   return(Seasonal)
 
 }
+
 
 
