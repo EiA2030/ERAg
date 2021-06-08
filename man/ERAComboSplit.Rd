@@ -15,11 +15,11 @@ combination in duplicate rows of the split dataset.
 }
 \description{
 \code{ERAComboSplit} takes observations of combined ERA practices or products (e.g. Inorganic Fertilizer-Reduced Tillage) and splits them into a longer dataset.
-Each row in the dataset corresponds to a single instance of a practice or product in an observation (where that practice or product was intially combined with
+Each row in the dataset corresponds to a single instance of a practice or product in an observation (where that practice or product was initially combined with
 others or alone).
 }
 \details{
-\code{ERAComboSplit} takes an observations of a combined ERA practices or products (e.g. Inorganic Fertilizer-Reduced Tillage) splits them then duplicates the
+\code{ERAComboSplit} takes observations of a combined ERA practices or products (e.g. Inorganic Fertilizer-Reduced Tillage) splits them then duplicates the
 observation for the number of practice x product combinations. Values in the related practice and product  name and code columns are renamed
 to one of the single practice x single product combinations.
 }
