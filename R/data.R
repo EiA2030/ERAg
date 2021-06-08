@@ -58,10 +58,22 @@
 #'
 #' \describe{
 #'  The CCI-LC project delivers a new time series of 24 consistent global LC maps at 300 m spatial resolution on an annual basis from 1992 to 2015.
-#'  The number of raster cells of each landcover class for the year 2015 is summed for each unique ERA locations buffer of spatial uncertainty.
+#'  The number of raster cells of each landcover class for the year 2015 is summed for each unique ERA location and its buffer of spatial uncertainty.
 #'  A description of the landcover classes (fields) in this dataset can be found in the *`ERA_CCI_LC_15_Fields`* object.
 #'   ...
 #' }
 #' @source CCI-LC Land Cover Maps - v2.0.7 http://maps.elie.ucl.ac.be/CCI/viewer/download.php
 "ERA_CCI_LC_15"
+#' ISDA Soil Parameters
+#'
+#' \describe{
+#' Using the  \href{African Soil and Agronomy Data Cube}{https://gitlab.com/openlandmap/africa-soil-and-agronomy-data-cube}
+#' \href{ISDA}{https://www.isda-africa.com/isdasoil/} soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
+#' uncertainty.
+#'
+#' Variable information & descriptions can be found on the African Soiland Agronomy Data Cube.
+#'   ...
+#' }
+#' @source https://www.isda-africa.com/isdasoil/
+"ERA_ISDA"
 
