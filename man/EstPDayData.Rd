@@ -10,18 +10,28 @@ EstPDayData(DATA)
 \item{DATA}{An ERA dataset (e.g. \code{ERA.Compiled})}
 }
 \value{
-The following fields are appended to the input dataset:
+A list of two elements is returned:
+\enumerate{
+\item \verb{[[DATA]]} a data.table where the following fields are appended to the input dataset:
 \code{Data.PS.Date} = planting start date estimated from the dataset provided (Date)
 \code{Data.PE.Date} = planting end date estimated from the dataset provided (Date)
 \code{Data.Date.Acc} = a concantenation of the number of decimals places used in latitude/longitude matching and whether matching was conducted using
 \code{Product} (\code{P.Sub}) or \code{Product.Subtype} (\code{P}), for example \code{3-P.Sub}.
+\item \verb{[[Season.Issues]]} a data.table containing Latitude + Longitude combinations where a mixture of season = 1 or 2 and season = NA are reported suggesting
+potential issues with consistency of temporal recording at these spatial coordinates.
+}
 }
 \description{
 For NA values of planting date in the dataset supplied the function attempts to substitute values for the same \code{Product}/\code{Product.Subtype} and growing season
 which are spatially nearby.
 }
 \details{
-#' The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
-places. If there is more than one planting date value for a \code{Product} x season (\code{M.Year}) combination then values are averaged. If no corresponding
-planting dates are found matching on product then matching is attempted on \code{Product.Subtype} (e.g. cereals or legumes).
+The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
+places. If there is more than one planting date value for a \code{Product} x \code{M.Year.Start} x \code{M.Year.End} x \code{Season.Start} x \code{Season.End}
+combination then values are averaged. If no corresponding planting dates are found matching on product then matching is attempted
+on \code{Product.Subtype} (e.g. cereals or legumes).
+
+If Latitude + Longitude combinations have a mixture of season = 1 or 2 and season = NA values this suggests a potential issue
+with the consistency of temporal recording at the spatial coordinates. Observations with such issues are excluded from the analysis and flagged in
+the output \verb{[[Season.Issues]]} list object.
 }
