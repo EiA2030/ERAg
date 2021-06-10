@@ -115,7 +115,7 @@
 #' \item`ETo.sum` = summed Penman-Monteith reference evapotranspiration (mm)
 #' \item`ETo.NA` = number of NA values in Penman-Monteith reference evapotranspiration
 #' \item`WBalance` = `Rain.sum-ETo.sum` difference between rainfall and reference evapotranspiration (mm)
-#' \item`Tmax.mean` *= mean of daily maximum temperatures (C)
+#' \item`Tmax.mean` = mean of daily maximum temperatures (C)
 #' \item`Tmax.sd` = standard deviation of daily maximum temperatures (C)
 #' \item`Tmean.mean` = mean of daily mean temperatures (C)
 #' \item`Tmean.sd` = standard deviation of daily mean temperatures (C)

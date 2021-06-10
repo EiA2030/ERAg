@@ -98,7 +98,7 @@ A list is output containing following data.tables:
 \item\code{ETo.sum} = summed Penman-Monteith reference evapotranspiration (mm)
 \item\code{ETo.NA} = number of NA values in Penman-Monteith reference evapotranspiration
 \item\code{WBalance} = \code{Rain.sum-ETo.sum} difference between rainfall and reference evapotranspiration (mm)
-\item\code{Tmax.mean} \emph{= mean of daily maximum temperatures (C)
+\item\code{Tmax.mean} = mean of daily maximum temperatures (C)
 \item\code{Tmax.sd} = standard deviation of daily maximum temperatures (C)
 \item\code{Tmean.mean} = mean of daily mean temperatures (C)
 \item\code{Tmean.sd} = standard deviation of daily mean temperatures (C)
@@ -111,7 +111,7 @@ A list is output containing following data.tables:
 \item\code{M.Year} = measurement year, this should correspond the to year at the end of the climate calculation window (y)
 \item\code{Season} = measurement season (1, 2 or NA)
 }
-\item}*\verb{[[LongTerm]]}**
+\item**\verb{[[LongTerm]]}**
 \item*\verb{[[LongTerm]][[LT.PD.Years]]}* =
 \item*\verb{[[LongTerm]][[LT.PD.Avg]]}* =
 \item*\verb{[[LongTerm]][[LT.Clim.Years]]}* =
