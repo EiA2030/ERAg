@@ -13,6 +13,7 @@ CalcClimate(
   Rain.Windows = c(6 * 7, 4 * 7, 2 * 7, 2 * 7),
   Widths = c(3, 3, 2, 2),
   Rain.Threshold = c(30, 30, 20, 15),
+  Win.Start = 1,
   Do.LT.Avg = T,
   Max.LT.Avg = 2010,
   Do.BioClim = T,
@@ -45,6 +46,8 @@ value in the series specifies a period before the planting date, then subsequent
 the corresponding \code{Rain.Windows} entry.}
 
 \item{Rain.Threshold}{An integer vector of length equivalent to length(\code{Rain.Windows}); the amount of rainfall that has to fall in the temporal windows considered.}
+
+\item{Win.Start}{Integer value of length one; when should the window for climate calculations begin relative to the planting date (estimated or reported) in days? for example: 0 = day of planting, -1 = one day before planting, +1 = one day after planting.}
 
 \item{Do.LT.Avg}{Logical \code{T/F;} if \code{T} long term averages and deviances are calculated.}
 

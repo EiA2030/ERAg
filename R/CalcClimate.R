@@ -75,6 +75,7 @@
 #' @param Widths An integer vector of length equivalent to length(`Window`); the width of the scanning window in days within which rainfall is summed for
 #' the corresponding `Rain.Windows` entry.
 #' @param Rain.Threshold An integer vector of length equivalent to length(`Rain.Windows`); the amount of rainfall that has to fall in the temporal windows considered.
+#' @param Win.Start Integer value of length one; when should the window for climate calculations begin relative to the planting date (estimated or reported) in days? for example: 0 = day of planting, -1 = one day before planting, +1 = one day after planting.
 #' @param Do.LT.Avg Logical `T/F;` if `T` long term averages and deviances are calculated.
 #' @param Max.LT.Avg Integer of length one only relevant if `Do.LT.Avg==T`; maximum year considered when calculating long-term averages.
 #' @param Do.BioClim Logical `T/F`; if `T` calculate annual and long-term average bioclimatic variables from the agroclimatic data provided in `CLIMATE` using the \link[dismo]{biovars} function
@@ -107,6 +108,7 @@ CalcClimate<-function(DATA,
                       Rain.Windows = c(6*7,4*7,2*7,2*7),
                       Widths = c(3,3,2,2),
                       Rain.Threshold = c(30,30,20,15),
+                      Win.Start = 1,
                       Do.LT.Avg=T,
                       Max.LT.Avg=2010,
                       Do.BioClim=T,
@@ -303,6 +305,7 @@ CalcClimate<-function(DATA,
                  paste0(Rain.Threshold,collapse=""),
                  Max.LT.Avg,
                  paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = ""),
+                 Win.Start,
                  substr(Temp.Data.Name,1,3),
                  substr(Rain.Data.Name,1,3),
                  Exclude.EC.Diff,
@@ -323,6 +326,7 @@ CalcClimate<-function(DATA,
                     Rain.Threshold=c("Rain.Threshold:",Rain.Threshold),
                     Max.LT.Avg=c("Max.LT.Avg:",Max.LT.Avg),
                     Windows=c("Windows:",unlist(Windows)),
+                    Win.Start=Win.Start,
                     Rain.Data.Name=c("Rain.Data.Name:",Rain.Data.Name),
                     Temp.Data.Name=c("Temp.Data.Name:",Temp.Data.Name),
                     Exclude.EC.Diff=Exclude.EC.Diff,
@@ -406,7 +410,7 @@ CalcClimate<-function(DATA,
 
           WINS<-rbind(data.table(
             Name=c("Data","EcoCrop"),
-            Start=c(1,1),
+            Start=rep(Win.Start,2),
             End=c(SS.N[i,SLen.Merge], SS.N[i,SLen.EcoCrop])),
             Windows
           )
@@ -544,7 +548,7 @@ CalcClimate<-function(DATA,
             # Now Estimate Temperature and Rainfall LTAvgs using the average season lengths and pre-set windows
             WINS<-rbind(data.table(
               Name=c("Data","EcoCrop"),
-              Start=c(1,1),
+              Start=rep(Win.Start,2),
               End=c(SS.N[i,SLen.Merge][1], SS.N[i,SLen.EcoCrop][1])),
               Windows
             )[,End:=round(End,0)][,Start:=round(Start,0)]
@@ -840,6 +844,7 @@ CalcClimate<-function(DATA,
                   Rain.Threshold=Rain.Threshold,
                   Max.LT.Avg=Max.LT.Avg,
                   Windows=Windows,
+                  Win.Start=Win.Start,
                   Rain.Data.Name=Rain.Data.Name,
                   Temp.Data.Name=Temp.Data.Name,
                   Exclude.EC.Diff=Exclude.EC.Diff,
