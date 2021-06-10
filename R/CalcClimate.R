@@ -88,53 +88,57 @@
 #' If `Exclude.EC.Diff==T` and `abs(Reported.Season.Length-EcoCrop.Season.Length)/EcoCrop.Season.Length>EC.Diff` then observations are excluded from analysis.
 #' @param ROUND An integer vector of length one indicating the number of decimal places to round output values to.
 #' @return A list is output containing following data.tables:
-#' **`[[Observed]]`** = A `data.table` of seasonal climate statistics with fields:
-#' *`GDDlow` = growing degree hours below optimal EcoCrop temperature threshold (h)
-#' *`GDDopt` = growing degree hours within optimal EcoCrop temperature thresholds (h)
-#' *`GDDhigh` = growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)
-#' *`GDDmax`= growing degree hours above EcoCrop maximum temperature threshold (h)
-#' *`Rain.Days.L.0` = total number of days with 0 mm rainfall (days)
-#' *`Rain.Days.L.1` = total number of days with less than 1 mm rainfall (days)
-#' *`Rain.Days.L.5`= total number of days with less than 5 mm rainfall (days)
-#' *`Rain.Max.RSeq.0`= longest continuous period of days with 0 mm rainfall (days)
-#' *`Rain.Max.RSeq.0.1`= longest continuous period of days with less than 0.1 mm rainfall (days)
-#' *`Rain.Max.RSeq.1`= longest continuous period of days with less than 1 mm rainfall (days)
-#' *`Rain.Max.RSeq.5`= longest continuous period of days with less than 5 mm rainfall (days)
-#' *`Rain.N.RSeq.T0.D7` = number of continuous periods of 7 days or more of 0 mm rainfall
-#' *`Rain.N.RSeq.T1.D7` = number of continuous periods of 7 days or more of less than 1 mm rainfall
-#' *`Rain.N.RSeq.T5.D7` = number of continuous periods of 7 days or more of less than 5 mm rainfall
-#' *`Rain.N.RSeq.T0.D14` = number of continuous periods of 14 days or more of 0 mm rainfall
-#' *`Rain.N.RSeq.T1.D14` = number of continuous periods of 14 days or more of less than 1 mm rainfall
-#' *`Rain.N.RSeq.T5.D14` = number of continuous periods of 14 days or more of less than 5 mm rainfall
-#' *`Rain.N.RSeq.T0.D21` = number of continuous periods of 21 days or more of 0 mm rainfall
-#' *`Rain.N.RSeq.T1.D21` = number of continuous periods of 21 days or more of less than 1 mm rainfall
-#' *`Rain.N.RSeq.T5.D21` = number of continuous periods of 21 days or more of less than 5 mm rainfall
-#' *`Rain.sum` = total rainfall (mm)
-#' *`ETo.sum` = summed Penman-Monteith reference evapotranspiration (mm)
-#' *`ETo.NA` = number of NA values in Penman-Monteith reference evapotranspiration
-#' *`WBalance` = `Rain.sum-ETo.sum` difference between rainfall and reference evapotranspiration (mm)
-#' *`Tmax.mean` *= mean of daily maximum temperatures (C)
-#' *`Tmax.sd` = standard deviation of daily maximum temperatures (C)
-#' *`Tmean.mean` = mean of daily mean temperatures (C)
-#' *`Tmean.sd` = standard deviation of daily mean temperatures (C)
-#' *`EU` = ERA experimental unit (or product) code see `ERAg::EUCodes` for translations
-#' *`PD.Used` = planting date used in calculations
-#' *`W.Start` = adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)
-#' *`W.End`= end point of the climate calculation window as the number of days after `PD.Used + W.Start` (days)
-#' *`W.Name` = name of the climate window being considered. `Data` = planting and harvest dates reported in publications used to define the climate calculation window. `EcoCrop` = EcoCrop database used to define season lengths (i.e. `W.End`) for the climate calculation window, unless sufficient data existed within ERA to estimate season length for the specific crop.
-#' *`ID` = unique ID for site provided to the `CalcClimate` function (for `ERA.Compiled` this is usually `Site.Key`)
-#' *`M.Year` = measurement year, this should correspond the to year at the end of the climate calculation window (y)
-#' *`Season` = measurement season (1, 2 or NA)
-#' **`[[LongTerm]]`**
-#' *`[[LongTerm]][[LT.PD.Years]]`* =
-#' *`[[LongTerm]][[LT.PD.Avg]]`* =
-#' *`[[LongTerm]][[LT.Clim.Years]]`* =
-#'**`[[LongTerm]][[LT.Clim.Avg]]`* =
-#' **`[[Annual.BioClim]]`** =
-#' *`[[Annual.BioClim]][[Annual.Estimates]]`* =
-#' *`[[Annual.BioClim]][[LT.Averages]]`* =
-#' *`[[Annual.BioClim]][[Key]]`* =
-#' *`[[Parameters]]`* = List of argument values supplied to the function
+#' \enumerate{
+#' \item **`[[Observed]]`** = A `data.table` of seasonal climate statistics with fields:
+#' \itemize{
+#' \item`GDDlow` = growing degree hours below optimal EcoCrop temperature threshold (h)
+#' \item`GDDopt` = growing degree hours within optimal EcoCrop temperature thresholds (h)
+#' \item*`GDDhigh` = growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)
+#' \item`GDDmax`= growing degree hours above EcoCrop maximum temperature threshold (h)
+#' \item`Rain.Days.L.0` = total number of days with 0 mm rainfall (days)
+#' \item`Rain.Days.L.1` = total number of days with less than 1 mm rainfall (days)
+#' \item`Rain.Days.L.5`= total number of days with less than 5 mm rainfall (days)
+#' \item`Rain.Max.RSeq.0`= longest continuous period of days with 0 mm rainfall (days)
+#' \item`Rain.Max.RSeq.0.1`= longest continuous period of days with less than 0.1 mm rainfall (days)
+#' \item`Rain.Max.RSeq.1`= longest continuous period of days with less than 1 mm rainfall (days)
+#' \item`Rain.Max.RSeq.5`= longest continuous period of days with less than 5 mm rainfall (days)
+#' \item`Rain.N.RSeq.T0.D7` = number of continuous periods of 7 days or more of 0 mm rainfall
+#' \item`Rain.N.RSeq.T1.D7` = number of continuous periods of 7 days or more of less than 1 mm rainfall
+#' \item`Rain.N.RSeq.T5.D7` = number of continuous periods of 7 days or more of less than 5 mm rainfall
+#' \item`Rain.N.RSeq.T0.D14` = number of continuous periods of 14 days or more of 0 mm rainfall
+#' \item`Rain.N.RSeq.T1.D14` = number of continuous periods of 14 days or more of less than 1 mm rainfall
+#' \item`Rain.N.RSeq.T5.D14` = number of continuous periods of 14 days or more of less than 5 mm rainfall
+#' \item`Rain.N.RSeq.T0.D21` = number of continuous periods of 21 days or more of 0 mm rainfall
+#' \item`Rain.N.RSeq.T1.D21` = number of continuous periods of 21 days or more of less than 1 mm rainfall
+#' \item`Rain.N.RSeq.T5.D21` = number of continuous periods of 21 days or more of less than 5 mm rainfall
+#' \item`Rain.sum` = total rainfall (mm)
+#' \item`ETo.sum` = summed Penman-Monteith reference evapotranspiration (mm)
+#' \item`ETo.NA` = number of NA values in Penman-Monteith reference evapotranspiration
+#' \item`WBalance` = `Rain.sum-ETo.sum` difference between rainfall and reference evapotranspiration (mm)
+#' \item`Tmax.mean` *= mean of daily maximum temperatures (C)
+#' \item`Tmax.sd` = standard deviation of daily maximum temperatures (C)
+#' \item`Tmean.mean` = mean of daily mean temperatures (C)
+#' \item`Tmean.sd` = standard deviation of daily mean temperatures (C)
+#' \item`EU` = ERA experimental unit (or product) code see `ERAg::EUCodes` for translations
+#' \item`PD.Used` = planting date used in calculations
+#' \item`W.Start` = adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)
+#' \item`W.End`= end point of the climate calculation window as the number of days after `PD.Used + W.Start` (days)
+#' \item`W.Name` = name of the climate window being considered. `Data` = planting and harvest dates reported in publications used to define the climate calculation window. `EcoCrop` = EcoCrop database used to define season lengths (i.e. `W.End`) for the climate calculation window, unless sufficient data existed within ERA to estimate season length for the specific crop.
+#' \item`ID` = unique ID for site provided to the `CalcClimate` function (for `ERA.Compiled` this is usually `Site.Key`)
+#' \item`M.Year` = measurement year, this should correspond the to year at the end of the climate calculation window (y)
+#' \item`Season` = measurement season (1, 2 or NA)
+#' }
+#' \item**`[[LongTerm]]`**
+#' \item*`[[LongTerm]][[LT.PD.Years]]`* =
+#' \item*`[[LongTerm]][[LT.PD.Avg]]`* =
+#' \item*`[[LongTerm]][[LT.Clim.Years]]`* =
+#' \item**`[[LongTerm]][[LT.Clim.Avg]]`* =
+#' \item**`[[Annual.BioClim]]`** =
+#' \item*`[[Annual.BioClim]][[Annual.Estimates]]`* =
+#' \item*`[[Annual.BioClim]][[LT.Averages]]`* =
+#' \item*`[[Annual.BioClim]][[Key]]`* =
+#' \item *`[[Parameters]]`* = List of argument values supplied to the function
+#' }
 #' @export
 CalcClimate<-function(DATA,
                       CLIMATE,
