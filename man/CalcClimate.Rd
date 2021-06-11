@@ -72,59 +72,100 @@ If \code{Exclude.EC.Diff==T} and \code{abs(Reported.Season.Length-EcoCrop.Season
 \value{
 A list is output containing following data.tables:
 \enumerate{
-\item \strong{\verb{[[Observed]]}} = A \code{data.table} of seasonal climate statistics with fields:
+\item \strong{\verb{[[Observed]]}} = a \code{data.table} of seasonal climate statistics with the fields:
 \itemize{
-\item\code{GDDlow} = growing degree hours below optimal EcoCrop temperature threshold (h)
-\item\code{GDDopt} = growing degree hours within optimal EcoCrop temperature thresholds (h)
-\item*\code{GDDhigh} = growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)
-\item\code{GDDmax}= growing degree hours above EcoCrop maximum temperature threshold (h)
-\item\code{Rain.Days.L.0} = total number of days with 0 mm rainfall (days)
-\item\code{Rain.Days.L.1} = total number of days with less than 1 mm rainfall (days)
-\item\code{Rain.Days.L.5}= total number of days with less than 5 mm rainfall (days)
-\item\code{Rain.Max.RSeq.0}= longest continuous period of days with 0 mm rainfall (days)
-\item\code{Rain.Max.RSeq.0.1}= longest continuous period of days with less than 0.1 mm rainfall (days)
-\item\code{Rain.Max.RSeq.1}= longest continuous period of days with less than 1 mm rainfall (days)
-\item\code{Rain.Max.RSeq.5}= longest continuous period of days with less than 5 mm rainfall (days)
-\item\code{Rain.N.RSeq.T0.D7} = number of continuous periods of 7 days or more of 0 mm rainfall
-\item\code{Rain.N.RSeq.T1.D7} = number of continuous periods of 7 days or more of less than 1 mm rainfall
-\item\code{Rain.N.RSeq.T5.D7} = number of continuous periods of 7 days or more of less than 5 mm rainfall
-\item\code{Rain.N.RSeq.T0.D14} = number of continuous periods of 14 days or more of 0 mm rainfall
-\item\code{Rain.N.RSeq.T1.D14} = number of continuous periods of 14 days or more of less than 1 mm rainfall
-\item\code{Rain.N.RSeq.T5.D14} = number of continuous periods of 14 days or more of less than 5 mm rainfall
-\item\code{Rain.N.RSeq.T0.D21} = number of continuous periods of 21 days or more of 0 mm rainfall
-\item\code{Rain.N.RSeq.T1.D21} = number of continuous periods of 21 days or more of less than 1 mm rainfall
-\item\code{Rain.N.RSeq.T5.D21} = number of continuous periods of 21 days or more of less than 5 mm rainfall
-\item\code{Rain.sum} = total rainfall (mm)
-\item\code{ETo.sum} = summed Penman-Monteith reference evapotranspiration (mm)
-\item\code{ETo.NA} = number of NA values in Penman-Monteith reference evapotranspiration
-\item\code{WBalance} = \code{Rain.sum-ETo.sum} difference between rainfall and reference evapotranspiration (mm)
-\item\code{Tmax.mean} = mean of daily maximum temperatures (C)
-\item\code{Tmax.sd} = standard deviation of daily maximum temperatures (C)
-\item\code{Tmean.mean} = mean of daily mean temperatures (C)
-\item\code{Tmean.sd} = standard deviation of daily mean temperatures (C)
-\item\code{EU} = ERA experimental unit (or product) code see \code{ERAg::EUCodes} for translations
-\item\code{PD.Used} = planting date used in calculations
-\item\code{W.Start} = adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)
-\item\code{W.End}= end point of the climate calculation window as the number of days after \code{PD.Used + W.Start} (days)
-\item\code{W.Name} = name of the climate window being considered. \code{Data} = planting and harvest dates reported in publications used to define the climate calculation window. \code{EcoCrop} = EcoCrop database used to define season lengths (i.e. \code{W.End}) for the climate calculation window, unless sufficient data existed within ERA to estimate season length for the specific crop.
-\item\code{ID} = unique ID for site provided to the \code{CalcClimate} function (for \code{ERA.Compiled} this is usually \code{Site.Key})
-\item\code{M.Year} = measurement year, this should correspond the to year at the end of the climate calculation window (y)
-\item\code{Season} = measurement season (1, 2 or NA)
+\item\code{GDDlow} growing degree hours below optimal EcoCrop temperature threshold (h)
+\item\code{GDDopt} growing degree hours within optimal EcoCrop temperature thresholds (h)
+\item*\code{GDDhigh} growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)
+\item\code{GDDmax} growing degree hours above EcoCrop maximum temperature threshold (h)
+\item\code{Rain.Days.L.0} total number of days with 0 mm rainfall (days)
+\item\code{Rain.Days.L.1} total number of days with less than 1 mm rainfall (days)
+\item\code{Rain.Days.L.5} total number of days with less than 5 mm rainfall (days)
+\item\code{Rain.Max.RSeq.0} longest continuous period of days with 0 mm rainfall (days)
+\item\code{Rain.Max.RSeq.0.1} longest continuous period of days with less than 0.1 mm rainfall (days)
+\item\code{Rain.Max.RSeq.1} longest continuous period of days with less than 1 mm rainfall (days)
+\item\code{Rain.Max.RSeq.5} longest continuous period of days with less than 5 mm rainfall (days)
+\item\code{Rain.N.RSeq.T0.D7} number of continuous periods of 7 days or more of 0 mm rainfall
+\item\code{Rain.N.RSeq.T1.D7} number of continuous periods of 7 days or more of less than 1 mm rainfall
+\item\code{Rain.N.RSeq.T5.D7} number of continuous periods of 7 days or more of less than 5 mm rainfall
+\item\code{Rain.N.RSeq.T0.D14} number of continuous periods of 14 days or more of 0 mm rainfall
+\item\code{Rain.N.RSeq.T1.D14} number of continuous periods of 14 days or more of less than 1 mm rainfall
+\item\code{Rain.N.RSeq.T5.D14} number of continuous periods of 14 days or more of less than 5 mm rainfall
+\item\code{Rain.N.RSeq.T0.D21} number of continuous periods of 21 days or more of 0 mm rainfall
+\item\code{Rain.N.RSeq.T1.D21} number of continuous periods of 21 days or more of less than 1 mm rainfall
+\item\code{Rain.N.RSeq.T5.D21} number of continuous periods of 21 days or more of less than 5 mm rainfall
+\item\code{Rain.sum} total rainfall (mm)
+\item\code{ETo.sum} summed Penman-Monteith reference evapotranspiration (mm)
+\item\code{ETo.NA} number of NA values in Penman-Monteith reference evapotranspiration
+\item\code{WBalance} \code{Rain.sum-ETo.sum} difference between rainfall and reference evapotranspiration (mm)
+\item\code{Tmax.mean} mean of daily maximum temperatures (C)
+\item\code{Tmax.sd} standard deviation of daily maximum temperatures (C)
+\item\code{Tmean.mean} mean of daily mean temperatures (C)
+\item\code{Tmean.sd} standard deviation of daily mean temperatures (C)
+\item\code{EU} ERA experimental unit (or product) code see \code{ERAg::EUCodes} for translations
+\item\code{PD.Used} planting date used in calculations
+\item\code{W.Start} adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)
+\item\code{W.End} end point of the climate calculation window as the number of days after \code{PD.Used + W.Start} (days)
+\item\code{W.Name} name of the climate window being considered. \code{Data} planting and harvest dates reported in publications used to define the climate calculation window. \code{EcoCrop} EcoCrop database used to define season lengths (i.e. \code{W.End}) for the climate calculation window, unless sufficient data existed within ERA to estimate season length for the specific crop.
+\item\code{ID} unique ID for site provided to the \code{CalcClimate} function (for \code{ERA.Compiled} this is usually \code{Site.Key})
+\item\code{M.Year} measurement year, this should correspond the to year at the end of the climate calculation window (y)
+\item\code{Season} measurement season (1, 2 or NA)
 }
 \item**\verb{[[LongTerm]]}**
-\item*\verb{[[LongTerm]][[LT.PD.Years]]}* =
-\item*\verb{[[LongTerm]][[LT.PD.Avg]]}* =
-\item*\verb{[[LongTerm]][[LT.Clim.Years]]}* =
-\item**\verb{[[LongTerm]][[LT.Clim.Avg]]}* =
-\item**\verb{[[Annual.BioClim]]}** =
-\item*\verb{[[Annual.BioClim]][[Annual.Estimates]]}* =
-\item*\verb{[[Annual.BioClim]][[LT.Averages]]}* =
-\item*\verb{[[Annual.BioClim]][[Key]]}* =
-\item \emph{\verb{[[Parameters]]}} = List of argument values supplied to the function
+\item*\verb{[[LongTerm]][[LT.PD.Years]]}* A \code{data.table} of planting dates estimated from rainfall data as per process 5) with the field:
+\itemize{
+\item \code{P.Year} planting year of crop (y)
+\item \code{P.Date} planting date of crop; class \code{Date} with format \verb{\%Y\%m\%d}
+\item \code{Dev.Mean} deviance in days of planting date from \strong{mean} long-term  planting date calculated for location (d)
+\item \code{Dev.Med} deviance in days of planting date from \strong{median} long-term planting date calculated for location (d)
+\item \code{EU} ERA experimental unit (product) code see \code{ERAg::EUCodes} for translations
+\item \code{Season} growing season of year for bimodal areas
+\item \code{ID} unique ID for site provided to the \code{CalcClimate} function (for \code{ERA.Compiled} this is usually \code{Site.Key})
+\item \code{P.Data.Flag} indicates if no seasons met rainfall thresholds for planting, and instead of rainfall estimated dates the mid-point of published planting period used."
+}
+\item*\verb{[[LongTerm]][[LT.PD.Avg]]}* A \code{data.table} of long-term averages for the planting dates in \verb{[[LongTerm]][[LT.PD.Years]]}
+\itemize{
+\item \code{Mean} mean planting date in julian days (d)
+\item \code{Median} median planting date in julian days (d)
+\item \code{SD} standard deviation of mean planting date (d)
+\item \code{N} number of years used to calculate long-term average
+\item other fields as per the \verb{[[LongTerm]][[LT.PD.Years]]} table
+}
+\item*\verb{[[LongTerm]][[LT.Clim.Years]]}* a \code{data.table} of seasonal climate statistics calculated for each row of \verb{[[LongTerm]][[LT.PD.Years]]}. Fields are as per the \code{Observed} table apart from fields:
+\itemize{
+\item \code{P.Year} year of planting (y)
+\item \code{H.Year} year of harvest (or end of calculation window) (y)
+\item \code{Variable} in rows with \code{Annual.Value} statistics are calculated for the year in question, statistics in \code{Dev.Mean} and \code{Dev.Med} rows show annual deviance from long-term averages (as presented in the\verb{[[LongTerm]][[LT.Clim.Avg]]} table)
+}
+\item**\verb{[[LongTerm]][[LT.Clim.Avg]]}* a \code{data.table} of long-term climate statistics calculated from the \verb{[[LongTerm]][[LT.Clim.Years]]} table. Fields are as per the \code{Observed} table apart from field:
+\itemize{
+\item \code{Variable} one of \code{Mean}, \code{Median}, \code{SD}, \code{Min} and \code{Max} indicating the function applied to each climate statistic across the temporal period for each location x crop x season
+}
+\item**\verb{[[BioClim]]}** = a list of three data.tables containing bioclimatic variables derived using the \link[dismo]{biovars} function
+\item*\verb{[[BioClim]][[Annual.Estimates]]}* = annual estimates of bioclimatic variables for each location with fields:
+\itemize{
+\item \code{ID} unique ID for site provided to the \code{CalcClimate} function (for \code{ERA.Compiled} this is usually \code{Site.Key})
+\item \verb{BIO1 to BIO19}bioclim variables, for an explanation of these codes see \code{ERAg::BioClimCodes}
+\item \code{Variable}in rows with \code{Annual.Value} statistics are calculated for the year in question, statistics in \code{Dev.Mean} and \code{Dev.Med} rows show annual deviance from long-term averages (as presented in the\verb{[[BioClim]][[LT.Averages]]} table)
+}
+\item*\verb{[[Annual.BioClim]][[LT.Averages]]}* = a \code{data.table} of long-term climate statistics calculated from the \verb{[[BioClim]][[Annual.Estimates]]}, fields that differ are:
+\itemize{
+\item \code{Variable}one of \code{Mean}, \code{Median} or \code{SD} indicating the function applied to each BIO statistic across the temporal period for each location x crop x season
+\item \code{N} number of years used to calculate long-term average
+}
+\item \emph{\verb{[[Parameters]]}} = a \code{list} record of argument values supplied to the \code{CalcClimate} function
 }
 }
 \description{
-The \code{CalcClimate} function
+The \code{CalcClimate} function applies a complex sequence of calculationsto ERA and climate data (e.g. \code{POwER.CHIRPS}) processed as per the \code{ERA-Climate-Data} vignette.
+\code{CalcClimate} calculates seasonal and long-term average climate variables the deviance of the seasonal values from  long-term averages. \code{CalcClimate} can also
+provide bioclimatic variables annually with long-term averages and annual deviances (argument \code{Do.BioClim=T}). The \code{Observed} data.table returned in the output list shows calculates
+climate variables (such as growing degree days, total rainfall and dry-spells) using the ERA dataset provided and temporal windows of calculation defined using the
+\code{Win.Start} and \code{Windows} arguments. Two calculations windows are defined by default: \code{Data} which uses the planting and harvest dates reported/estimated and \code{EcoCrop}
+which uses the planting dates reported/estimated and EcoCrop estimates of season length. Additional windows of analysis (e.g. post planting 1-30 days after planting) can
+are defined using the \code{Windows} argument. If argument \code{Do.LT.Avg=T}estimates of long-term climate are estimated using planting dates derived from the rainfall data supplied (and not the ERA data, unless
+insufficient rainfall to estimate a planting date) and the arguments \code{Rain.Windows}, \code{Widths}, \code{Rain.Threshold} and \code{LongTerm}. The end years of the period for which
+long-term averages are calculated is set using the \code{Max.LT.Avg} argument. Please carefully read the \strong{Details} and \strong{Arguments} section of this documentation before use.
 }
 \details{
 Process:

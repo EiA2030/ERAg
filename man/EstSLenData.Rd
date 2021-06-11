@@ -16,8 +16,8 @@ The following fields are appended to the input dataset:
 \code{Product} (\code{P.Sub}) or \code{Product.Subtype} (\code{P}), for example \code{3-P.Sub}.
 }
 \description{
-For NA values of season length in the ERA dataset supplied the function attempts to substitute values for the same \code{Product}/\code{Product.Subtype} and growing season
-which are spatially nearby.
+We may wish to substitute NA values of season length (i.e. harvest date is unknown) in ERA with estimates derived from  same \code{Product/Product.Subtype}, year and
+growing season which are spatially nearby, the \code{EstPDayData} functions generates these estimates.
 }
 \details{
 Season length is calculated as the mean difference between mean harvest date (midpoint of \code{Harvest.Start} and \code{Harvest.End} Date columns) and mean planting date

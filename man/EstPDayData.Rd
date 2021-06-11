@@ -22,8 +22,8 @@ potential issues with consistency of temporal recording at these spatial coordin
 }
 }
 \description{
-For NA values of planting date in the dataset supplied the function attempts to substitute values for the same \code{Product}/\code{Product.Subtype} and growing season
-which are spatially nearby.
+We may wish to substitute NA values of planting date in ERA with estimates derived from  same \code{Product/Product.Subtype}, year and
+growing season which are spatially nearby, the \code{EstPDayData} functions generates these estimates.
 }
 \details{
 The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
