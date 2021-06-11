@@ -58,6 +58,8 @@ The data cover the period 1983-07-01 to 2018-12-31.
 19) **`ETo`** = FAO Penman-Monteith potential evapotranspiration calculated using the methods presented in http://www.fao.org/docrep/X0490E/x0490e06.htm - mm (POWER)  
 20) **`Rain`** = rainfall - mm (CHIRPS)  
 
+Note if you want to access the CHIRPS data only this is available in a smaller file called `CHIRPS.RData`.
+
 
 ### **`TERRA`**
 
@@ -120,7 +122,7 @@ if(!dir.exists(LargeDir)){
 
 ```
 
-Set the github repo name tp `peetmate/ERAg` and the release version tag which holds the large files to `Beta_v0.0.1`:  
+Set the github repo name to `peetmate/ERAg` and the release version tag which holds the large files to `Beta_v0.0.1`:  
 
 ```{r Set parameters, echo =TRUE,eval=F}
 REPO<-"peetmate/ERAg"
