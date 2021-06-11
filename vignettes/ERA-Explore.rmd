@@ -22,9 +22,9 @@ require(treemap)
 ```
 
 ## Exploring the data
-In this vignette we will cover how to visualise data in the ERA dataset.
+In this vignette we will cover how to visualize data in the ERA dataset.
 
-### Unsplitting combined pracitces
+### Splitting combined practices
 Observations in the main `ERA.Compiled` often consist of bundles of practices which may relate to more than one product. 
 
 ```{r Combo numbers, echo =TRUE}
@@ -37,7 +37,7 @@ nrow(ERA.Compiled[!grepl("-",SubPrName)])
 
 
 This makes visualization of
-the dataset difficult as there are over a 1000 subpractice combinations creating too many values to map onto a figure. We can use the `ERAComboSplit` 
+the dataset difficult as there are over a 1000 sub-practice combinations creating too many values to map onto a figure. We can use the `ERAComboSplit` 
 function to "split" these practice and product combinations into duplicate individual rows each contain a unique combination of any practice x product
 combination present in the original observation.  
 
