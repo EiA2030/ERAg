@@ -1,7 +1,7 @@
 #' Estimate missing planting dates from existing values in ERA
 #'
-#' For NA values of planting date in the dataset supplied the function attempts to substitute values for the same `Product`/`Product.Subtype` and growing season
-#' which are spatially nearby.
+#' We may wish to substitute NA values of planting date in ERA with estimates derived from  same `Product/Product.Subtype`, year and
+#' growing season which are spatially nearby, the `EstPDayData` functions generates these estimates.
 #'
 #' The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal
 #' places. If there is more than one planting date value for a `Product` x `M.Year.Start` x `M.Year.End` x `Season.Start` x `Season.End`
