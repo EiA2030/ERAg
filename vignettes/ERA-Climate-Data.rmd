@@ -16,9 +16,20 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette will explore how to download and extract climate information for ERA locations and for point locations with buffers of spatial uncertainty more generally.
+This vignette will explore how to download and extract climate information for point locations with buffers of spatial uncertainty.
 
-## Downloading and extracting climate data
+## Section 1: Downloading and extracting climate data for ERA locations
+
+### Load required packages
+```{r load packages, eval=F,echo=T}
+  if(!require("pacman", character.only = TRUE)){
+    install.packages("pacman",dependencies = T)
+  }
+  
+  required.packages <- c("data.table","doSNOW","ERAg","doSNOW","miceadds","ncdf4","raster","rgeos","sp","terra")
+  p_load(char=required.packages,install = T,character.only = T)
+    
+```
 
 ### Subset the data
 First we will subset the ERA.Compiled dataset to exclude locations with a large radius of spatial uncertainty (in this case >50km). It is difficult to define climate for locations with high levels of spatial uncertainty and their large areas increase the download and processing requirements for download and analysis of climate data.
@@ -229,3 +240,383 @@ Now we use the annual climate statistics to calculate long-term averages from th
 ```
 
 To explore annual deviance from long-term averages subtract the long-term average from the annual values.
+
+## Section 2: Calculating statistics from the extracted climate data
+
+Once we have extracted the climate data we can estimate long-term, annual and seasonal climate variables for each buffered point location. We will be calculating variables such as reference evapotranspiration, rainfall, growing degree days and dry spells.    
+
+The `ERAg` functions used in this section of the vignette are less generalisable to non-ERA datasets and require specific fields in the dataset to define growing seasons including fields describing Planting and Harvest dates.
+
+### Load required packages
+```{r CS load packages, eval=F,echo=T}
+  if(!require("pacman", character.only = TRUE)){
+    install.packages("pacman",dependencies = T)
+  }
+  
+  required.packages <- c("ggplot2","circular","data.table","doSNOW","zoo","pbapply","ERAg","dismo","miceadds")
+  p_load(char=required.packages,install = T,character.only = T)
+```
+
+### Prepare analytical environment
+#### Create save directories
+```{r CS read in ERA, eval=F,echo=T}
+# Create a directory for the climate analysis
+AnalysisDir<-"ERA Climate Analysis/"
+if(!dir.exists(AnalysisDir)){
+  dir.create(AnalysisDir)
+}
+
+# Create a directory for strange or incorrect ERA values to investigate
+ErrorDir<-paste0(AnalysisDir,"Potential Errors/")
+if(!dir.exists(ErrorDir)){
+  dir.create(ErrorDir)
+}
+  
+# Create a directory for crop specific information
+CROP_dir<-paste0(AnalysisDir,"Crops/") 
+if(!dir.exists(CROP_dir)){
+  dir.create(CROP_dir)
+}
+
+```
+
+#### Load datasets
+Access the ERA.Compiled dataset from the `ERAg` package.
+```{r CS read in ERA, eval=F,echo=T}
+ERA<-ERAg:::ERA.Compiled
+```
+
+We will also require extracted climate data for our sites, this can be created using the methods outline in Section 1 of this vignette or, more conveniently, prepared data can be downloaded from the `ERAg` github using the piggyback methods outline in the `ERA-Large-Climate-Files` vignette.
+
+```{r CS download large file, echo=TRUE,eval=F}
+LargeDir<-"Large Files/"
+
+  if(!dir.exists(LargeDir)){
+    dir.create(LargeDir,recursive = T)
+  }
+  
+  for(FILE in c("POWER.RData","AgMERRA.RData")){
+    piggyback::pb_download(file= FILE, 
+                repo = "peetmate/ERAg",
+                tag = "Beta_v0.0.1",
+                .token="ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
+                dest = LargeDir)
+  }
+  
+  POWER<-miceadds::load.RData2("POWER.RData",path=LargeDir)
+  CHIRPS<-miceadds::load.RData2("CHIRPS.RData",path=LargeDir)
+
+```
+
+#### Set analytical parameters
+The `M.ORIGIN` parameter is a date of origin. It is used to assign other dates an integer number which is the number of days from the date of origin.
+
+```{r CS set parameters, eval=F,echo=T}
+# Set date origin for daycount field
+M.ORIGIN<-"1900-01-01"
+
+# Set number of cores for parallel processing
+cores<-max(1, parallel::detectCores() - 1)
+
+# Name of field that assigns sites a unique ID (in ERA this is a concatenation of Latitude, Longitude and Buffer)
+ID<-"Site.Key"
+
+```
+#### Prepare ERA dataset
+Create a season code field and convert M.Year blanks to `NA` values:
+
+```{r CS prepare ERA 1, eval=F,echo=T}
+ERA[Season.Start==1 & Season.End==1,M.Year.Code:="1"
+           ][Season.Start==2 & Season.End==2,M.Year.Code:="2"
+             ][Season.Start==1 & Season.End==2,M.Year.Code:="1&2"
+               ][M.Year=="",M.Year:=NA
+                 ][Season=="",Season:=NA]
+```
+
+Ensure date fields are class `Date`:
+```{r}
+ERA[,Harvest.Start:=as.Date(Harvest.Start,"%d.%m.%Y")
+    ][,Harvest.End:=as.Date(Harvest.End,"%d.%m.%Y")
+      ][,Plant.Start:=as.Date(Plant.Start,"%d.%m.%Y")
+        ][,Plant.End:=as.Date(Plant.End,"%d.%m.%Y")]
+```
+
+Update missing altitude values with those derived from digital elevation models (DEMs): 
+
+```{r CS add altitude, eval=F,echo=T}
+Physical<-data.table(ERA_Physical)
+
+# Add DEM altitude to ERA
+ERA[!is.na(Latitude),Altitude.DEM := 
+      Physical[ match(unlist(ERA[!is.na(Latitude),..ID]),unlist(Physical[,..ID])) , Altitude.mean]
+    ])
+
+# Replace missing altitude values with DEM values
+ERA[,Altitude:=Elevation
+           ][is.na(Altitude)|Altitude=="",Altitude:=Altitude.DEM]
+```
+
+Ensure ERA code fields are data.table format:
+
+```{r CS code tables, echo=T, eval=F}
+# Ensure code tables are data.table format
+PracticeCodes<-data.table(PracticeCodes)
+OutcomeCodes<-data.table(OutcomeCodes)
+EUCodes<-data.table(EUCodes)
+```
+
+Nest we subset ERA data for 1) crop yields; 2) single season annual products; 3) observations with no temporal aggregation; 4) outcomes that correspond to a single product; and 5) locations with radius of spatial uncertainty less than 25km.
+
+```{r CS subset yields, echo=T, eval=F}
+
+Exclude.Product.Subtypes<-c("Fibre & Wood","Tree","Fodders","Nuts")
+
+Exclude.Products<-c("Sugar Cane (Cane)", "Sugar Cane (Sugar)", "Coffee", "Gum arabic", "Cassava or Yuca", "Pepper", "Vanilla", "Tea", "Plantains and Cooking Bananas", "Jatropha (oil)", "Palm Oil", "Olives (fruits)" , "Olives (oil)", "Taro or Cocoyam or Arrowroot", "Palm Fruits (Other)", "Turmeric", "Ginger", "Cardamom", "Apples", "Oranges", "Grapes (Wine)", "Peaches and Nectarines", "Jujube", "Jatropha (seed)", "Vegetables (Other)", "Herbs", "Pulses (Other)", "Beans (Other)", "Leafy Greens (Other)", "Bananas (Ripe Sweet)", "Jatropha") 
+
+ERA.Yields<-ERA[Out.SubInd == "Crop Yield" & # Subset to crop yields
+                  (M.Year.Start == M.Year.End & (Season %in% c(1,2)|is.na(Season))) & # No temporal aggregation
+                  !Product.Subtype %in% Exclude.Product.Subtypes &  # Subset to single season annual products
+                  !Product %in%  Exclude.Products & # Subset to single season annual products
+                  !grepl(" x |-",Product) & # Single products only
+                  Buffer<=25000]
+```
+#### Add Ecocrop data to ERA
+When harvest dates are not reported in the studies that comprise ERA we can substitute season length values from the EcoCrop dataset. First we need to merge EcoCrop data with `ERAg::AddEcoCrop` function.
+
+```{r CS add EcoCrop, echo=T, eval=F}
+ERA.Yields<-cbind(ERA.Yields,ERAg::AddEcoCrop(Products = ERA.Yields[,Product]))
+```
+
+### Prepare Climate dataset
+Here we:  
+1) replace the rainfall data in the POWER agroclimatology data with the superior data provided by CHIRPS  
+2) calculate Penman-Montieth reference evapotranspiration (ETo) in case this has not already been derived  
+3) ensure fields are correct classes.  
+
+Note that you can also download this dataset pre-prepared as `POWER.CHIRPS.RData` using the piggyback method.  
+
+```{r CS prepare climate dataset,echo=T,eval=F}
+
+  # Harmonize field names between datasets
+  colnames(CHIRPS)[which(colnames(CHIRPS)=="RAIN")]<-"Rain"
+  colnames(POWER)[which(colnames(POWER)=="SRad")]<-"Solar.Rad"
+  
+  # Add altitude to POWER  
+  POWER[,Altitude:=Physical[match(as.factor(unlist(POWER[,..ID])),as.factor(unlist(Physical[,..ID]))),Altitude.mean]]
+  
+  # Remove observations without Altitude and remove the Rain column which will be replaced by CHIRPS data
+  POWER<-POWER[!is.na(Altitude)][,Rain:=NULL]
+  
+  # We will use the dplyr::left_join function to merge the dataset so we convert from data.table to data.frame
+  CHIRPS<-as.data.frame(CHIRPS)
+  POWER<-as.data.frame(POWER)
+
+  # Combine datasets and convert back to data.table
+  POWER.CHIRPS<-data.table(plyr::left_join(POWER,CHIRPS[,c("DayCount",ID,"Rain")],by = c(ID,"DayCount")))
+  
+  # Calculate ETo if absent
+  if(POWER.CHIRPS[,is.null(ETo)]){
+  POWER.CHIRPS[,ETo<-PETcalc(Tmin=Temp.Min,
+                            Tmax=Temp.Max,
+                            SRad=Solar.Rad ,
+                            Wind=WindSpeed,
+                            Rain=Rain,
+                            Pressure=Pressure,
+                            Humid=Humid,
+                            YearDay=Day,
+                            Latitude=Latitude,
+                            Altitude=Altitude)[,1]
+  }
+  
+  # Ensure fields are correct classes
+  POWER.CHIRPS[,Site.Key :=as.factor(Site.Key )
+               ][,Year:=as.factor(Year)
+                 ][,Day:=as.factor(Day)
+                   ][,Altitude:=as.integer(Altitude)]
+```
+
+### Estimate unreported plantings dates
+We may wish to substitute NA values of planting date in ERA with estimates derived from the `EstPDayData` function which searches for planting dates for the same `Product/Product.Subtype`, year and growing season which are spatially nearby.  
+
+The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal places. If there is more than one planting date value for a `Product x M.Year.Start x M.Year.End x Season.Start x Season.End` combination then values are averaged. If no corresponding planting dates are found matching on product then matching is attempted on `Product.Subtype` (e.g. cereals or legumes).  
+
+If Latitude + Longitude combinations have a mixture of season = 1 or 2 and season = NA values then this suggests a potential issue with the consistency of temporal recording at the spatial coordinates. Observations with such issues are excluded from the `EstPDayData` analysis and flagged in an output `[[Season.Issues]]` list object.
+
+```{r CS EstPDayData,echo=T,eval=F}
+ERA.Yields<-EstPDayData(DATA=ERA.Yields)$DATA
+
+# Estimate % of missing data that could be substituted using EstPDayData estimates
+round(sum(!is.na(ERA.Yields$Data.PS.Date))/sum(is.na(ERA.Yields$Plant.Start))*100,2)
+
+```
+
+### Estimate season lengths where harvest dates are missing
+Using similar methods to the `EstPDayData` function, the `EstSLenData` estimates season length values from similar crops and locations nearby to missing values.
+
+```{r CS EstSLenData,echo=T,eval=F}
+ERA.Yields<-EstSLenData(DATA=ERA.Yields)
+
+# Estimate % of missing data that could be substituted using EstSLenData estimates
+round(sum(!is.na(ERA.Yields$SLen))/sum(is.na(ERA.Yields$Data.SLen))*100,2)
+
+```
+
+### Refine Ecocrop cycle lengths
+EcoCrop data for crop cycle length estimates (how long a crop takes to grow) can have a large range, especially for crops that can be grown in temperate and tropical regions. Maize, for example, as a season length of 65-365 days with midpoint 215 days, this is a rather unrealistically long season for most of sub-Saharan Africa. We can mine ERA data where we have crop planting and harvest dates of reasonably certainty to esimate season length and replace EcoCrop estimates.
+
+```{r ,echo=T,eval=F}
+  # Estimate season length from date allowing 7 days uncertainty in planting and harvest dates
+  A<-ERA.Yields
+  A<-unique(A[!(is.na(Plant.Start)|is.na(Plant.End)|is.na(Harvest.End)|is.na(Harvest.End))
+              ][,PLANT.AVG:=Plant.Start+(Plant.End-Plant.Start)/2
+                ][,HARVEST.AVG:=Harvest.Start+(Harvest.End-Harvest.Start)/2
+                  ][!(((Plant.End-Plant.Start)>7)|((Harvest.End-Harvest.Start)>7))
+                    ][,SLEN:=round(HARVEST.AVG-PLANT.AVG,0)
+                      ][!SLEN<30,c("Product",..ID,"Code","Variety","M.Year","PLANT.AVG","SLEN","Country")])
+  
+  B<-A[,list(SLEN.mean=mean(SLEN),SLEN.med=median(SLEN),N=.N),by=c("Product")
+       ][,SLEN.mean:=round(as.numeric(SLEN.mean),0)
+         ][,SLEN.med:=round(as.numeric(SLEN.med),0)]
+  
+  B[,SLEN.EcoC:=round(apply(ERA.Yields[match(B$Product,ERA.Yields$Product),c("cycle_min","cycle_max")],1,mean),0)]
+  
+  # Replace EcoCrop values where we have >=5 observation from our data
+  B<-B[N>=5]
+  
+  # Save estimate crop length datasets
+  fwrite(B,paste0(CROP_dir,"Crop Season Lengths Estimated From Data.csv"))
+  
+  # Add estimate season lengths to ERA where season length values are missing
+  N<-match(ERA.Yields$Product,B$Product)
+  N1<-which(!is.na(N))
+  ERA.Yields$cycle_min[N1]<-B$SLEN.med[N[N1]]
+  ERA.Yields$cycle_max[N1]<-B$SLEN.med[N[N1]]
+
+```
+
+### Refine uncertain planting dates using rainfall data
+It is not uncommon for studies in ERA to report vague dates such as "May-June" creating uncertainty around the start of the growing season. Where there is a large difference between `Plant.Start` and `Plant.End` we can use the `EstPDayRain` function to estimate more precise planting dates using rainfall data.  
+
+Planting dates are estimated for rows in `ERA.Yield` where the difference between `Plant.Start` and `Plant.End` is greater than or equal to the `Uncertainty.Min` argument and less than or equal to the `Uncertainty.Max` argument.  
+
+`EstPDayRain` uses the rollapply function to sum rainfall within a scanning window, planting is assumed to occur the day after summed rainfall surpasses a threshold amount.  
+
+For each row of `ERA.Yield` with appropriate planting uncertainty the function initially searches for rainfall events in `CHIRPS` in-between and including the corresponding `Plant.Start` and `Plant.End` dates. This temporal search period can be modified using the `DaysBefore` and `MultiplyWin` arguments. `DaysBefore` extends the `Plant.Start` date backwards by a number of days. `MultiplyWin` is a proportion that multiplies the difference between `Plant.Start` and `Plant.End` dates increasing the size of the period forwards in time. If `Plant.Start = 2018-01-01` and `Plant.End = 2018-01-11` the difference between them is 10 days, if `MultiplyWin = 1.5` then `10*1.5=15` and the end of the initial search window becomes `2018-01-01 + 15 = 2018-01-16`. The width (in days) of the rollapply scanning window is specified by the `Width` argument and the amount of rainfall (mm) required to trigger planting within the scanning window is specified by the `Rain.Thresholds` argument.  
+
+Up to two additional temporal search periods after the above can be specified in days using the `Window` arguments, for each extra window added the `Width` and `Rain.Thresholds` arguments require corresponding values to added in sequence. If no trigger events are found in the initial scanning window then subsequent windows are searched in order.
+
+By setting the `Use.Data.Dates` argument to `TRUE` we are substituting `NA` planting dates in ERA with values calculated by `EstPDayData` and refining these with the `EstPDayRain` function.
+
+```{r CS EstPDayRain 2, echo=T, eval=F}
+ERA.Yields<-EstPDayRain(DATA=ERA.Yields, 
+                    ID=ID, 
+                    Rain.Data = CHIRPS, 
+                    Rain.Data.Name = "CHIRPS", 
+                    Rain.Field ="Rain", 
+                    # DaysBefore: When searching for rainfall events in-between the uncertain planting start/end dates
+                    # supplied in ERA.Yieds extend the planting start date backwards by 2 days
+                    DaysBefore = 2,
+                    #  MultiplyWin: a proportion that changes the size of the difference between plant start and plant 
+                    # end, 1 = no change
+                    MultiplyWin = 1, 
+                    # Window: add two addition temporal periods beyond the initial temporal window of 14 days
+                    Window = c(14,14), 
+                    # Widths: We need to set a threshold for the rainfall amount in mm that triggers planting within each 
+                    # window in this case there are 3 windows 1 + the 2 extra windows specified in the `Window` argument
+                    Widths = c(2,3,3), 
+                    # Rain.Thresholds: We need to set a threshold for the rainfall amount in mm that triggers planting in each 
+                    # window if `Widths[1]=2` and `Rain.Thresholds[1]=30` then 30mm needs to fall over 2 days within the initial
+                    # window of plant start to plant end dates (as modified by DaysBefore and  MultiplyWin arguments) for 
+                    # planting to occur. If the threshold is not met then function iteratively goes to `Window[1]`, `Widths[2]` and 
+                    # `Rain.Thresholds[2]`.
+                    Rain.Thresholds = c(30,20,15), 
+                    # Uncertainty.Min/Uncertainty.Max: refine planting dates with uncertainty of between 7-90 days
+                    Uncertainty.Min = 7, 
+                    Uncertainty.Max = 90, 
+                    Add.Values = T, 
+                    Use.Data.Dates = T  
+                    )
+
+
+```
+
+### Calculate Climate Variables
+We use the `CalcClimate` function to apply a complex sequence of calculations to the `ERA.Yield` and `POwER.CHIRPS` data.tables. `CalcClimate` calculates seasonal and long-term average climate variables the deviance of the seasonal values from  long-term averages. `CalcClimate` can also provide bioclimatic variables annually with long-term averages and annual deviances (argument `Do.BioClim=T`).   
+
+The `Observed` data.table returned in the output list shows calculates climate variables (such as growing degree days, total rainfall and dry-spells) using the ERA dataset provided and temporal windows of calculation defined using the `Win.Start` and `Windows` arguments. Two calculations windows are defined by default: `Data` which uses the planting and harvest dates reported/estimated and `EcoCrop` which uses the planting dates reported/estimated and EcoCrop estimates of season length. Additional windows of analysis (e.g. post planting 1-30 days after planting) can are defined using the `Windows` argument.  
+
+If argument `Do.LT.Avg=T`estimates of long-term climate are estimated using planting dates derived from the rainfall data supplied (and not the ERA data, unlessinsufficient rainfall to estimate a planting date) and the arguments `Rain.Windows`, `Widths`, `Rain.Threshold` and `LongTerm`. The end years of the period for which long-term averages are calculated is set using the `Max.LT.Avg` argument.  
+
+`ClacClimate` Process:  
+1. Season Length `SLen` is calculated as difference between mean planting and harvest dates.  
+2. The `SLen` function is applied to the data which combines accurate temporal planting/harvest data with estimates using the following and sequential logic:
+  + where `(Plant.End-Plant.Start)>20`and a planting date derived from the `EstPDayRain` function is available `SLen` is substituted for `Harvest.End` - rainfall estimate planting date;
+  + where `(Plant.End-Plant.Start<20) & (Harvest.End-Harvest.Start>=20)` `SLen` is substituted for `Harvest.End-(Plant.Start+(Plant.End-Plant.Start)/2)`;
+  + A `P.Date.Merge` field is added to `DATA` as `Plant.Start+(Plant.End-Plant.Start)/2`;
+  + Missing `NA` values of `P.Date.Merge` are substituted with estimates derived from similar nearby observations estimated using the `EstPDayData` function;
+  + A `SLen.Merge`  field is added to `DATA` equivalent to the `SLen` field with missing `NA` values substituted with estimates derived from similar nearby observations estimated using the `EstSLenData` function;
+  + A `SLen.Ecocrop` field is added to `DATA` as `(cycle_min+cycle_max)/2`;
+  + `DATA` is subset to data.table named `SS` which contains unique values of location, product, observation date and planting/harvest/season length fields. Some form of planting date and season length estimate must be present;
+  + Where there is a difference of greater than 60% between ecocrop vs data estimates of season length observations are rejected.
+
+*The use of Harvest.End in Steps 1a & 1b is deliberate; when uncertainty is large using mean planting and harvest dates can result in unrealistically short season lengths that distort measures of seasonal climate, especially precipitation. The use of Harvest.End may overestimate season length overall for highly uncertain scenarios, but we consider the effect this on seasonal climate measures less severe.*
+
+3. For each row of `SS` the `CLIMATE` dataset is filtered on the `Date` field for two temporal periods based on the date fields `P.Date.Merge` and `SLen.Merge` or `SLen.Ecocrop`, note one day is added to `P.Date.Merge` so the temporal window begins the day after planting. An additional temporal windows can be specified using data.table supplied to the `Windows` argument, the data.table requires three fields: 1) `Name`; 2) `Start` and 3) `End`. The `Start` and `End` fields define the additional temporal period as days after`P.Date.Merge`.For example `Window=data.table(Name="Plant.1-30",Start=1,End=30)` is a temporal period from planting to 30 days after planting.
+
+4. For each temporal period specified in 3) climate statistics are calculated:
+  + **growing degrees days (GDD)** are calculated using the `GDDcalc` function which requires daily `Tmax` and `Tmin` fields from `CLIMATE` and the EcoCrop optimal and absolute temperate thresholds (fields `Tlow`, `Topt.low`, `Topt.high`, and `Thigh`) added to `DATA` using the `AddEcoCrop` function. The `GDDcalc` function outputs four fields `GDDlow`, `GDDopt`, `GDDhigh` and `GDDmax` and the values of these are summed for the temporal period;
+  + **precipitation and reference evapotranspiration (ETo)** statistics are estimated using the `RAIN.Calc` function which outputs a number of variables described in the documentation for this function;
+  + **max and mean temperatures** are averaged with standard deviation (`Tmax.Mean`,`Tmax.sd`,`Tmean.mean` and `Tmean.sd` fields).
+
+5. If argument `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product. Note that each season in the data is treated separately. The process logic is as follows:
+  + The median planting julian day of the year is taken for the location x product combination;
+  + For each year of complete climate data, the median planting date from 5a is used as a starting point to estimate planting date from rainfall using the `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `Rain.Threshold` as explained in the arguments for this function. These data are returned as `[[LongTerm]][[LT.PD.Years]]`; 
+  + Estimated planting dates from 5b are averaged (mean, sd, median) across years and returned as `[[LongTerm]][[LT.PD.Avg]]`;
+  + Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to the output of 5b;
+  + Annual climate statistics are calculated for each year x site x product combination using the rainfall estimated planting date and as per steps 3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`. Where insufficient rainfall fell to meet the thresholds specified in 5b then the a median planting date is substituted from those years that did have sufficient rainfall in 5b;
+  + Long-term climate statistics from 5e are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are returned `[[LongTerm]][[LT.Clim.Avg]]`;
+  + Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of 5e.
+
+6. If argument `Do.BioClim==T` then:
+  + Annual bioclimatic values are calculated using the \link[dismo]{biovars} function for each complete year of data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
+  + Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`; 
+  + Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
+
+If you are finding there are observations with suspiciously short reported season lengths in the ERA dataset (i.e. errors in the reporting of planting and/or harvest dates) you can exclude observations (`Exclude.EC.Diff`) where the absolute difference between reported and EcoCrop estimated season lengths is greater than a specified proportion (`EC.Diff`).
+
+```{r CS CalcClimate, echo=T, eval=F}
+Climate<-CalcClimate(DATA=ERA.Yields,
+                ID=ID,
+                CLIMATE=POWER.CHIRPS,
+                Rain.Data.Name="CHIRPS", 
+                Temp.Data.Name="POWER",
+                # Rain.Windows: In estimation of planting dates for long-term climate calculation we will look for
+                # rainfall events in 4 windows: 6 weeks before planting (the first element supplied is always before
+                # planting set to 0 if you do not want to look before planting), then in three consecutive windows
+                # of 4, 2 and 2 weeks
+                Rain.Windows = c(6*7,4*7,2*7,2*7),  
+                # Widths: To estimate planting dates rainfall is summed in a scanning window for each of the windows 
+                # specified in Rain.Windows; we have 4 windows so need to supply 4 values in days to this argument
+                Widths = c(3,3,2,2),  
+                # Rain.Threshold: We need to set a threshold for the rainfall amount in mm that triggers planting in 
+                # each combination of `Rain.Window` x `Width`, again 4 values. If Rain.Window = 4*7 & Width = 3 and 
+                # Rain.Threshold = 30 then the function looks within a 21 window for cumulative rainfall of 30mm over 
+                # 3 days
+                Rain.Threshold = c(30,30,20,15), 
+                # Win.Start: When calculating climate from planting.dates and harvest.dates Win.Start adjust the 
+                # beginning date of the calculation window. -3 means the window begins 3 days before planting
+                Win.Start=-3,
+                # Max.LT.Avg: Calculations of long-term climate only use years up to and including 2010
+                Max.LT.Avg=2010, 
+                Do.LT.Avg=T, 
+                Do.BioClim=T, 
+                # Windows: By default this function looks at two calculation windows `Data` and `EcoCrop`. Additional 
+                # windows can specified the `Windows` argument. In the line below the additional window will called 
+                # `Plant.1-30` in the `W.Name` field of output data.tables and it begins 1 day after planting and ends 
+                # 30 days after planting. This window explores the post-planting climate, a critical period for crop 
+                # establishment and success
+                Windows=data.table(Name="Plant.1-30",Start=1,End=30), 
+                SaveDir=AnalysisDir,
+                ErrorDir=NA,
+                ROUND=3)    
+```
