@@ -1,7 +1,7 @@
 #' Estimate missing season lengths from existing values in ERA
 #'
-#' For NA values of season length in the ERA dataset supplied the function attempts to substitute values for the same `Product`/`Product.Subtype` and growing season
-#' which are spatially nearby.
+#' We may wish to substitute NA values of season length (i.e. harvest date is unknown) in ERA with estimates derived from  same `Product/Product.Subtype`, year and
+#' growing season which are spatially nearby, the `EstPDayData` functions generates these estimates.
 #'
 #' Season length is calculated as the mean difference between mean harvest date (midpoint of `Harvest.Start` and `Harvest.End` Date columns) and mean planting date
 #' (midpoint of `Plant.Start` and `Plant.End` Date columns).
