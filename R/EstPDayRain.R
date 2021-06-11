@@ -72,8 +72,13 @@ Use.Data.Dates = F
   # Convert dates to correct format and work out planting window and average dates
   DATA[,Plant.Start:=if(class(Plant.Start)=="Date"){Plant.Start}else{as.Date(Plant.Start,"%d.%m.%Y")}
   ][,Plant.End:=if(class(Plant.End)=="Date"){Plant.End}else{as.Date(Plant.End,"%d.%m.%Y")}
+  ][,Harvest.Start:=if(class(Harvest.Start)=="Date"){Harvest.Start}else{as.Date(Harvest.Start,"%d.%m.%Y")}
+  ][,Harvest.End:=if(class(Harvest.End)=="Date"){Harvest.End}else{as.Date(Harvest.End,"%d.%m.%Y")}
   ][,Plant.Diff:=as.numeric(Plant.End-Plant.Start)
-  ][,Plant.Avg:=Plant.Start+Plant.Diff/2]
+  ][,Plant.Avg:=Plant.Start+Plant.Diff/2
+  ][,Harvest.Diff:=as.numeric(Harvest.End-Harvest.Start)
+  ][,Harvest.Avg:=Harvest.Start+Harvest.Diff/2]
+
 
   #Make metadata list for analysis parameters
   META<-list(Window=Window,Uncertainty.Min=Uncertainty.Min,Uncertainty.Max=Uncertainty.Max,Widths=Widths,Rain.Thresholds=Rain.Thresholds,DaysBefore=DaysBefore)
