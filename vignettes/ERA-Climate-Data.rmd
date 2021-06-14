@@ -259,7 +259,7 @@ The `ERAg` functions used in this section of the vignette are less generalisable
 
 ### Prepare analytical environment
 #### Create save directories
-```{r CS read in ERA, eval=F,echo=T}
+```{r CS create dirs, eval=F,echo=T}
 # Create a directory for the climate analysis
 AnalysisDir<-"ERA Climate Analysis/"
 if(!dir.exists(AnalysisDir)){
@@ -334,7 +334,7 @@ ERA[Season.Start==1 & Season.End==1,M.Year.Code:="1"
 ```
 
 Ensure date fields are class `Date`:
-```{r}
+```{r, CS ensure date class, eval=F,echo=T}
 ERA[,Harvest.Start:=as.Date(Harvest.Start,"%d.%m.%Y")
     ][,Harvest.End:=as.Date(Harvest.End,"%d.%m.%Y")
       ][,Plant.Start:=as.Date(Plant.Start,"%d.%m.%Y")
@@ -548,39 +548,41 @@ The `Observed` data.table returned in the output list shows calculates climate v
 If argument `Do.LT.Avg=T`estimates of long-term climate are estimated using planting dates derived from the rainfall data supplied (and not the ERA data, unlessinsufficient rainfall to estimate a planting date) and the arguments `Rain.Windows`, `Widths`, `Rain.Threshold` and `LongTerm`. The end years of the period for which long-term averages are calculated is set using the `Max.LT.Avg` argument.  
 
 `ClacClimate` Process:  
-1. Season Length `SLen` is calculated as difference between mean planting and harvest dates.  
-2. The `SLen` function is applied to the data which combines accurate temporal planting/harvest data with estimates using the following and sequential logic:
-  + where `(Plant.End-Plant.Start)>20`and a planting date derived from the `EstPDayRain` function is available `SLen` is substituted for `Harvest.End` - rainfall estimate planting date;
-  + where `(Plant.End-Plant.Start<20) & (Harvest.End-Harvest.Start>=20)` `SLen` is substituted for `Harvest.End-(Plant.Start+(Plant.End-Plant.Start)/2)`;
-  + A `P.Date.Merge` field is added to `DATA` as `Plant.Start+(Plant.End-Plant.Start)/2`;
-  + Missing `NA` values of `P.Date.Merge` are substituted with estimates derived from similar nearby observations estimated using the `EstPDayData` function;
-  + A `SLen.Merge`  field is added to `DATA` equivalent to the `SLen` field with missing `NA` values substituted with estimates derived from similar nearby observations estimated using the `EstSLenData` function;
-  + A `SLen.Ecocrop` field is added to `DATA` as `(cycle_min+cycle_max)/2`;
-  + `DATA` is subset to data.table named `SS` which contains unique values of location, product, observation date and planting/harvest/season length fields. Some form of planting date and season length estimate must be present;
-  + Where there is a difference of greater than 60% between ecocrop vs data estimates of season length observations are rejected.
 
-*The use of Harvest.End in Steps 1a & 1b is deliberate; when uncertainty is large using mean planting and harvest dates can result in unrealistically short season lengths that distort measures of seasonal climate, especially precipitation. The use of Harvest.End may overestimate season length overall for highly uncertain scenarios, but we consider the effect this on seasonal climate measures less severe.*
+1. Season Length `SLen` is calculated as difference between mean planting and harvest dates.  
+
+2. The `SLen` function is applied to the data which combines accurate temporal planting/harvest data with estimates using the following and sequential logic:
+    a. where `(Plant.End-Plant.Start)>20`and a planting date derived from the `EstPDayRain` function is available `SLen` is substituted for `Harvest.End` - rainfall estimate planting date;
+    b. where `(Plant.End-Plant.Start<20) & (Harvest.End-Harvest.Start>=20)` `SLen` is substituted for `Harvest.End-(Plant.Start+(Plant.End-Plant.Start)/2)`;
+    c. A `P.Date.Merge` field is added to `DATA` as `Plant.Start+(Plant.End-Plant.Start)/2`;
+    d. Missing `NA` values of `P.Date.Merge` are substituted with estimates derived from similar nearby observations estimated using the `EstPDayData` function;
+    e. A `SLen.Merge`  field is added to `DATA` equivalent to the `SLen` field with missing `NA` values substituted with estimates derived from similar nearby observations estimated using the `EstSLenData` function;
+    f. A `SLen.Ecocrop` field is added to `DATA` as `(cycle_min+cycle_max)/2`;
+    g. `DATA` is subset to data.table named `SS` which contains unique values of location, product, observation date and planting/harvest/season length fields. Some form of planting date and season length estimate must be present;
+    h. Where there is a difference of greater than 60% between ecocrop vs data estimates of season length observations are rejected.
+
+*The use of Harvest.End in Steps 2a & 2b is deliberate; when uncertainty is large using mean planting and harvest dates can result in unrealistically short season lengths that distort measures of seasonal climate, especially precipitation. The use of Harvest.End may overestimate season length overall for highly uncertain scenarios, but we consider the effect this on seasonal climate measures less severe.*
 
 3. For each row of `SS` the `CLIMATE` dataset is filtered on the `Date` field for two temporal periods based on the date fields `P.Date.Merge` and `SLen.Merge` or `SLen.Ecocrop`, note one day is added to `P.Date.Merge` so the temporal window begins the day after planting. An additional temporal windows can be specified using data.table supplied to the `Windows` argument, the data.table requires three fields: 1) `Name`; 2) `Start` and 3) `End`. The `Start` and `End` fields define the additional temporal period as days after`P.Date.Merge`.For example `Window=data.table(Name="Plant.1-30",Start=1,End=30)` is a temporal period from planting to 30 days after planting.
 
 4. For each temporal period specified in 3) climate statistics are calculated:
-  + **growing degrees days (GDD)** are calculated using the `GDDcalc` function which requires daily `Tmax` and `Tmin` fields from `CLIMATE` and the EcoCrop optimal and absolute temperate thresholds (fields `Tlow`, `Topt.low`, `Topt.high`, and `Thigh`) added to `DATA` using the `AddEcoCrop` function. The `GDDcalc` function outputs four fields `GDDlow`, `GDDopt`, `GDDhigh` and `GDDmax` and the values of these are summed for the temporal period;
-  + **precipitation and reference evapotranspiration (ETo)** statistics are estimated using the `RAIN.Calc` function which outputs a number of variables described in the documentation for this function;
-  + **max and mean temperatures** are averaged with standard deviation (`Tmax.Mean`,`Tmax.sd`,`Tmean.mean` and `Tmean.sd` fields).
+    a.  *growing degrees days (GDD)* are calculated using the `GDDcalc` function which requires daily `Tmax` and `Tmin` fields from `CLIMATE` and the EcoCrop optimal and absolute temperate thresholds (fields `Tlow`, `Topt.low`, `Topt.high`, and `Thigh`) added to `DATA` using the `AddEcoCrop` function. The `GDDcalc` function outputs four fields `GDDlow`, `GDDopt`, `GDDhigh` and `GDDmax` and the values of these are summed for the temporal period;
+    b. *precipitation and reference evapotranspiration (ETo)* statistics are estimated using the `RAIN.Calc` function which outputs a number of variables described in the documentation for this function;
+    c. *max and mean temperatures* are averaged with standard deviation (`Tmax.Mean`,`Tmax.sd`,`Tmean.mean` and `Tmean.sd` fields).
 
 5. If argument `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product. Note that each season in the data is treated separately. The process logic is as follows:
-  + The median planting julian day of the year is taken for the location x product combination;
-  + For each year of complete climate data, the median planting date from 5a is used as a starting point to estimate planting date from rainfall using the `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `Rain.Threshold` as explained in the arguments for this function. These data are returned as `[[LongTerm]][[LT.PD.Years]]`; 
-  + Estimated planting dates from 5b are averaged (mean, sd, median) across years and returned as `[[LongTerm]][[LT.PD.Avg]]`;
-  + Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to the output of 5b;
-  + Annual climate statistics are calculated for each year x site x product combination using the rainfall estimated planting date and as per steps 3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`. Where insufficient rainfall fell to meet the thresholds specified in 5b then the a median planting date is substituted from those years that did have sufficient rainfall in 5b;
-  + Long-term climate statistics from 5e are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are returned `[[LongTerm]][[LT.Clim.Avg]]`;
-  + Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of 5e.
+    a. The median planting julian day of the year is taken for the location x product combination;
+    b. For each year of complete climate data, the median planting date from 5a is used as a starting point to estimate planting date from rainfall using the `Est.Rain` function which takes the arguments `Rain.Windows`, `Widths` and `Rain.Threshold` as explained in the arguments for this function. These data are returned as `[[LongTerm]][[LT.PD.Years]]`; 
+    c. Estimated planting dates from 5b are averaged (mean, sd, median) across years and returned as `[[LongTerm]][[LT.PD.Avg]]`;
+    d. Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to the output of 5b;
+    e. Annual climate statistics are calculated for each year x site x product combination using the rainfall estimated planting date and as per steps 3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`. Where insufficient rainfall fell to meet the thresholds specified in 5b then the a median planting date is substituted from those years that did have sufficient rainfall in 5b;
+    f. Long-term climate statistics from 5e are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are returned `[[LongTerm]][[LT.Clim.Avg]]`;
+    g. Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of 5e.
 
 6. If argument `Do.BioClim==T` then:
-  + Annual bioclimatic values are calculated using the [`dismo::biovars`](https://rdrr.io/cran/dismo/man/biovars.html) function for each complete year of data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
-  + Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`; 
-  + Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
+    a. Annual bioclimatic values are calculated using the [`dismo::biovars`](https://rdrr.io/cran/dismo/man/biovars.html) function for each complete year of data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
+    b. Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`; 
+    c. Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 
 If you are finding there are observations with suspiciously short reported season lengths in the ERA dataset (i.e. errors in the reporting of planting and/or harvest dates) you can exclude observations (`Exclude.EC.Diff`) where the absolute difference between reported and EcoCrop estimated season lengths is greater than a specified proportion (`EC.Diff`).
 
