@@ -189,3 +189,18 @@ ERA.Clim.Soil<-lapply(Clim.Data[,unique(W.Name)],FUN=function(X){
 # Name list levels
 names(ERA.Clim.Soil)<-unique(Clim.Data$W.Name)
 ```
+
+```{r load vignette data, echo=F,eval=T,include=F}
+ERA.Clim.Soil<-ERA.Clim.Soil.Vignette
+```
+
+We now have an ERA data.table for each level of `W.Name` with a large number of climate and soil fields appended. See the `?ClimateCalc` documentation for explantions of the different climate fields.
+
+```{r show results, echo=T,eval=T}
+names(ERA.Clim.Soil)
+
+ERA.Clim.Soil[["EcoCrop"]][!is.na(ETo.sum)][c(1,30)]
+
+```
+
+
