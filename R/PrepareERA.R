@@ -67,8 +67,6 @@ PrepareERA<-function(Data,
   }
 
 
-  Data<-Data
-
   # Remove any h codes from base practice list (**NOTE** should be moved to compilation function)
   HCodes<-PracticeCodes[grep("h",Code),Code]
   Data[,base.list:=unlist(lapply(strsplit(Data$base.list,"-"), FUN=function(H){paste(H[!H %in% HCodes],collapse="-")}))]
@@ -103,7 +101,7 @@ PrepareERA<-function(Data,
 
   # Filter out outcomes with >Perc.Neg% negative values
 
-  Data[,Neg.Vals:=OutcomeCodes[match(Data[,Outcode],Code),`Negative Values`]]
+  Data[,Neg.Vals:=OutcomeCodes[match(Data[,Outcode],Code),Negative.Values]]
 
   A<-Data[Neg.Vals=="Y"
     ][,list(Neg.Vals.MeanC=sum(MeanC<0,na.rm=T),
@@ -119,7 +117,7 @@ PrepareERA<-function(Data,
   Data[Outcode %in% A[Perc.Neg.Any<=Perc.Neg,Outcode],Neg.Vals:="N"]
 
 
-  OutcomeCodes$`Negative Values`[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
+  OutcomeCodes$Negative.Values[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
 
   # Remove outcomes where they are negative > Perc.Neg of the time
     Data<-Data[!Neg.Vals=="Y"]
