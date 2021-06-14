@@ -578,7 +578,7 @@ If argument `Do.LT.Avg=T`estimates of long-term climate are estimated using plan
   + Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of 5e.
 
 6. If argument `Do.BioClim==T` then:
-  + Annual bioclimatic values are calculated using the \link[dismo]{biovars} function for each complete year of data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
+  + Annual bioclimatic values are calculated using the [`dismo::biovars`](https://rdrr.io/cran/dismo/man/biovars.html) function for each complete year of data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
   + Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`; 
   + Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 
