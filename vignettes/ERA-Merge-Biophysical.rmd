@@ -42,7 +42,10 @@ In this vignette we will be exploring how to connect ERA to soil and seasonal cl
 In Section 2 of the `ERA-Climate-Data` vignette we saved the outputs of the `ClimateCalc` function to a folder `ERA Climate Analysis/` from which we will load the seasonal climate data we need to merge with ERA.
 
 The output of `ClimateCalc` is saved in a folder named with a concatenation of the arguments provided to the function, in the 
- `ERA-Climate-Data` vignette they generate the folder name `422814143322303020152010130-3POWCHIFALSE0.6`.
+ `ERA-Climate-Data` vignette they generate the folder name `422814143322303020152010130-3POWCHIFALSE0.6`.  
+ 
+This climate analysis is also available from the `ERAg` git as a piggybacked file called `422814143322303020152010130-3POWCHIFALSE0.6.zip` see the `ERA-Large-Climate-Datasets.Rmd` for download instructions.
+
 
 ```{r  create dirs, eval=F,echo=T}
 # Create a directory for the climate analysis
