@@ -139,14 +139,14 @@
 #' \item**`[[LongTerm]]`**
 #' \item*`[[LongTerm]][[LT.PD.Years]]`* A `data.table` of planting dates estimated from rainfall data as per process 5) with the field:
 #' \itemize{
-#' \item `P.Year` planting year of crop (y)
-#' \item `P.Date` planting date of crop; class `Date` with format `%Y%m%d`
+#' \item `P.Year` rainfall estimated planting year of crop (y)
+#' \item `P.Date` rainfall estimated planting date of crop; class `Date` with format `%Y%m%d`
 #' \item `Dev.Mean` deviance in days of planting date from **mean** long-term  planting date calculated for location (d)
 #' \item `Dev.Med` deviance in days of planting date from **median** long-term planting date calculated for location (d)
 #' \item `EU` ERA experimental unit (product) code see `ERAg::EUCodes` for translations
 #' \item `Season` growing season of year for bimodal areas
 #' \item `ID` unique ID for site provided to the `CalcClimate` function (for `ERA.Compiled` this is usually `Site.Key`)
-#' \item `P.Data.Flag` indicates if no seasons met rainfall thresholds for planting, and instead of rainfall estimated dates the mid-point of published planting period used."
+#' \item `P.Data.Flag` indicates if no seasons in a time-series met the rainfall thresholds required for planting. If this occurs then the  mid-point of the reported planting dates is used for `P.Year` and `P.Date` fields.
 #' }
 #' \item*`[[LongTerm]][[LT.PD.Avg]]`* A `data.table` of long-term averages for the planting dates in `[[LongTerm]][[LT.PD.Years]]`
 #' \itemize{
@@ -170,12 +170,12 @@
 #' \item*`[[BioClim]][[Annual.Estimates]]`* = annual estimates of bioclimatic variables for each location with fields:
 #' \itemize{
 #' \item `ID` unique ID for site provided to the `CalcClimate` function (for `ERA.Compiled` this is usually `Site.Key`)
-#' \item `BIO1 to BIO19`bioclim variables, for an explanation of these codes see `ERAg::BioClimCodes`
-#' \item `Variable`in rows with `Annual.Value` statistics are calculated for the year in question, statistics in `Dev.Mean` and `Dev.Med` rows show annual deviance from long-term averages (as presented in the`[[BioClim]][[LT.Averages]]` table)
+#' \item `BIO1 to BIO19` bioclimatic variables, for an explanation of these codes see `ERAg::BioClimCodes`
+#' \item `Variable` in rows with `Annual.Value` statistics are calculated for the year in question, statistics in `Dev.Mean` and `Dev.Med` rows show annual deviance from long-term averages (as presented in the`[[BioClim]][[LT.Averages]]` table)
 #' }
-#' \item*`[[Annual.BioClim]][[LT.Averages]]`* = a `data.table` of long-term climate statistics calculated from the `[[BioClim]][[Annual.Estimates]]`, fields that differ are:
+#' \item*`[[BioClim]][[LT.Averages]]`* = a `data.table` of long-term climate statistics calculated from the `[[BioClim]][[Annual.Estimates]]`, fields that differ are:
 #' \itemize{
-#' \item `Variable`one of `Mean`, `Median` or `SD` indicating the function applied to each BIO statistic across the temporal period for each location x crop x season
+#' \item `Variable` one of `Mean`, `Median` or `SD` indicating the function applied to each BIO statistic across the temporal period for each location x crop x season
 #' \item `N` number of years used to calculate long-term average
 #' }
 #' \item *`[[Parameters]]`* = a `list` record of argument values supplied to the `CalcClimate` function

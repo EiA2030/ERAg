@@ -114,14 +114,14 @@ A list is output containing following data.tables:
 \item**\verb{[[LongTerm]]}**
 \item*\verb{[[LongTerm]][[LT.PD.Years]]}* A \code{data.table} of planting dates estimated from rainfall data as per process 5) with the field:
 \itemize{
-\item \code{P.Year} planting year of crop (y)
-\item \code{P.Date} planting date of crop; class \code{Date} with format \verb{\%Y\%m\%d}
+\item \code{P.Year} rainfall estimated planting year of crop (y)
+\item \code{P.Date} rainfall estimated planting date of crop; class \code{Date} with format \verb{\%Y\%m\%d}
 \item \code{Dev.Mean} deviance in days of planting date from \strong{mean} long-term  planting date calculated for location (d)
 \item \code{Dev.Med} deviance in days of planting date from \strong{median} long-term planting date calculated for location (d)
 \item \code{EU} ERA experimental unit (product) code see \code{ERAg::EUCodes} for translations
 \item \code{Season} growing season of year for bimodal areas
 \item \code{ID} unique ID for site provided to the \code{CalcClimate} function (for \code{ERA.Compiled} this is usually \code{Site.Key})
-\item \code{P.Data.Flag} indicates if no seasons met rainfall thresholds for planting, and instead of rainfall estimated dates the mid-point of published planting period used."
+\item \code{P.Data.Flag} indicates if no seasons in a time-series met the rainfall thresholds required for planting. If this occurs then the  mid-point of the reported planting dates is used for \code{P.Year} and \code{P.Date} fields.
 }
 \item*\verb{[[LongTerm]][[LT.PD.Avg]]}* A \code{data.table} of long-term averages for the planting dates in \verb{[[LongTerm]][[LT.PD.Years]]}
 \itemize{
@@ -145,12 +145,12 @@ A list is output containing following data.tables:
 \item*\verb{[[BioClim]][[Annual.Estimates]]}* = annual estimates of bioclimatic variables for each location with fields:
 \itemize{
 \item \code{ID} unique ID for site provided to the \code{CalcClimate} function (for \code{ERA.Compiled} this is usually \code{Site.Key})
-\item \verb{BIO1 to BIO19}bioclim variables, for an explanation of these codes see \code{ERAg::BioClimCodes}
-\item \code{Variable}in rows with \code{Annual.Value} statistics are calculated for the year in question, statistics in \code{Dev.Mean} and \code{Dev.Med} rows show annual deviance from long-term averages (as presented in the\verb{[[BioClim]][[LT.Averages]]} table)
+\item \verb{BIO1 to BIO19} bioclimatic variables, for an explanation of these codes see \code{ERAg::BioClimCodes}
+\item \code{Variable} in rows with \code{Annual.Value} statistics are calculated for the year in question, statistics in \code{Dev.Mean} and \code{Dev.Med} rows show annual deviance from long-term averages (as presented in the\verb{[[BioClim]][[LT.Averages]]} table)
 }
-\item*\verb{[[Annual.BioClim]][[LT.Averages]]}* = a \code{data.table} of long-term climate statistics calculated from the \verb{[[BioClim]][[Annual.Estimates]]}, fields that differ are:
+\item*\verb{[[BioClim]][[LT.Averages]]}* = a \code{data.table} of long-term climate statistics calculated from the \verb{[[BioClim]][[Annual.Estimates]]}, fields that differ are:
 \itemize{
-\item \code{Variable}one of \code{Mean}, \code{Median} or \code{SD} indicating the function applied to each BIO statistic across the temporal period for each location x crop x season
+\item \code{Variable} one of \code{Mean}, \code{Median} or \code{SD} indicating the function applied to each BIO statistic across the temporal period for each location x crop x season
 \item \code{N} number of years used to calculate long-term average
 }
 \item \emph{\verb{[[Parameters]]}} = a \code{list} record of argument values supplied to the \code{CalcClimate} function
