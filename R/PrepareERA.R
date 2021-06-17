@@ -50,6 +50,10 @@ PrepareERA<-function(Data,
   PracticeCodes<-data.table(ERAg::PracticeCodes)
   EUCodes<-data.table(ERAg::EUCodes)
 
+  if("Negative Values" %in% colnames(OutcomeCodes)){
+    setnames(OutcomeCodes,"Negative Values","Negative.Values")
+  }
+
 
   Flip.Neg<-function(Data,OutcomeCodes){
     N1<-OutcomeCodes[match(Data[,Outcode],OutcomeCodes[,Code]),Sign]=="n"
@@ -205,15 +209,7 @@ PrepareERA<-function(Data,
                ][,yi:=log(MeanT/MeanC)
                  ][,Neg.Vals:=NULL])
 
-  # This code previously
-  #[!Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),yi:=log(MeanT/MeanC) # Calculate RR
-  #][!((is.infinite(yi)|is.na(yi)) & !Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)")) # Remove RRs with NA or infinite values
-    # Create a difference for use with FCR and PCR
-  #][Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),yi:=MeanT-MeanC
-  #][Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),Out.SubPillar:="Conversion Efficiency"
-
-
-  # Split and duplicate products - disabled
+    # Split and duplicate products - disabled
   if(F){
     Data<-rbindlist(lapply(Data[,unique(Product)],FUN=function(X){
       Y<-Data[Product==X]
