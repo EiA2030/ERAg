@@ -173,7 +173,7 @@ ERAChordPlot<-function(Chord.Data,
                 font=2)
   }, bg.border = NA)
 
-  if(Show.Axis.Labels){
+  if(Show.Axis.Labels==T){
     circlize::circos.trackPlotRegion(ylim= c(0,1),track.index = 1, panel.fun = function(x, y) {
       circos.axis(h = "top",
                   major.tick.length = 0.2,
