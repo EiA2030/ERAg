@@ -15,6 +15,7 @@ ERAChordPlot(
   Facing = "clockwise",
   Lab.Adjust = 0,
   Lab.Cex = 0.2,
+  Lab.Font = 1,
   Axis.Cex = 0.3,
   Reduce = 0.01,
   Cat.Pal = NA,
@@ -50,6 +51,8 @@ Set to \code{NA} to use default palettes}
 \item{Lab.Adjust}{A numeric vector of length one; adjust the spacing between rotated labels and the track}
 
 \item{Lab.Cex}{A numeric vector of length one; adjusts the size of sector labels}
+
+\item{Lab.Font}{A interger for font style, see \link[graphics]{par}}
 
 \item{Axis.Cex}{A numeric vector of length one; adjusts the size of track axis labels}
 

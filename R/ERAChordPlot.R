@@ -19,6 +19,7 @@
 #' @param Lab.Adjust  A numeric vector of length one; adjust the spacing between rotated labels and the track
 #' @param Axis.Cex  A numeric vector of length one; adjusts the size of track axis labels
 #' @param Lab.Cex  A numeric vector of length one; adjusts the size of sector labels
+#' @param Lab.Font A interger for font style, see \link[graphics]{par}
 #' @param Reduce A numeric vector of length one; a proportion between 0-1, chords widths below this proportion are excluded from the plot
 #' @param Cat.Pal A character vector of length = `length(unique(Chord.Data$cat))`; the vector should contain colour values corresponding to the values in
 #' @param niceFacing Logical `T/F`. Should the facing of text be adjusted to fit human eyes?
@@ -41,6 +42,7 @@ ERAChordPlot<-function(Chord.Data,
                        Facing="clockwise",
                        Lab.Adjust=0,
                        Lab.Cex=0.2,
+                       Lab.Font=1,
                        Axis.Cex=0.3,
                        Reduce=0.01,
                        Cat.Pal=NA,
@@ -170,7 +172,7 @@ ERAChordPlot<-function(Chord.Data,
                 niceFacing = niceFacing,
                 adj = c(0, 0.5),
                 cex = Lab.Cex,
-                font=2)
+                font=Lab.Font)
   }, bg.border = NA)
 
   if(Show.Axis.Labels==T){
