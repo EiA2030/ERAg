@@ -95,12 +95,14 @@
 ERAAnalyze2<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   options(scipen=999)
 
-  Data<-Data[!(is.na(yi)|is.infinite(yi))]
+  Data<-Data[!(is.na(log(MeanT/MeanC))|is.infinite(log(MeanT/MeanC)))]
 
   # Create function that balances the geometry of negative and positive changes by deciding numerator/denominator
   # based on whether T>C or T<C
   ERA.Change<-function(Exp,Con){
-    return(data.table(E=Exp,C=Con)[,Value:=100*(E/C-1)][C>E,Value:=-100*(C/E-1)][,Value])
+    Vals<- 100*(Exp/Con-1)
+    Vals[Exp>Con]<- -100*(Con[Exp>Con]/Exp[Exp>Con]-1)
+    return(Vals)
   }
 
   # Remove Outliers
@@ -272,7 +274,7 @@ ERAAnalyze2<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
                 if(length(ID)>5 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
                   lm(ERA.Change(MeanT,MeanC)~1,weights=Weight.Study)
                 }else{NA}
-              }),
+              })
       ),
       by=Aggregate.By],
 
