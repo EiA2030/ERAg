@@ -12,12 +12,19 @@ ERAChordPlot(
   Value.Mid = 0,
   Cont.Pallete = NA,
   Legend.Tit = "",
-  Rotate.Labs = F,
+  Facing = "clockwise",
   Lab.Adjust = 0,
   Lab.Cex = 0.2,
   Axis.Cex = 0.3,
   Reduce = 0.01,
-  Cat.Pal = NA
+  Cat.Pal = NA,
+  niceFacing = T,
+  Show.Axis.Labels = T,
+  Plot.Title = NA,
+  Grid.Pal.From = RColorBrewer::brewer.pal(8, "PiYG"),
+  Grid.Pal.To = RColorBrewer::brewer.pal(8, "BrBG"),
+  Legend.xy.cat = NA,
+  Legend.xy.chord = NA
 )
 }
 \arguments{
@@ -38,7 +45,7 @@ Set to \code{NA} to use default palettes}
 
 \item{Legend.Tit}{A character vector of length one; title of the legend}
 
-\item{Rotate.Labs}{Logical \code{T/F}. If \code{T} labels are rotated perpendicular to the plot track}
+\item{Facing}{a character vector of one; adjust facing of text: c("inside", "outside", "reverse.clockwise", "clockwise","downward", "bending", "bending.inside", "bending.outside")}
 
 \item{Lab.Adjust}{A numeric vector of length one; adjust the spacing between rotated labels and the track}
 
@@ -48,7 +55,21 @@ Set to \code{NA} to use default palettes}
 
 \item{Reduce}{A numeric vector of length one; a proportion between 0-1, chords widths below this proportion are excluded from the plot}
 
-\item{Cat.Pal}{A character vector of length = \code{length(unique(Chord.Data$cat))}; the vector should contain colour values corresponding to the values in
+\item{Cat.Pal}{A character vector of length = \code{length(unique(Chord.Data$cat))}; the vector should contain colour values corresponding to the values in}
+
+\item{niceFacing}{Logical \code{T/F}. Should the facing of text be adjusted to fit human eyes?}
+
+\item{Show.Axis.Labels}{Logical \code{T/F}. Show axis labels?}
+
+\item{Plot.Title}{A character vector of length one; text to display as the plot title.}
+
+\item{Grid.Pal.From}{A character vector of colours recognized by \code{circlize::chordDiagram} that colours the \strong{from} sectors of the chord plot}
+
+\item{Grid.Pal.To}{A character vector of colours recognized by \code{circlize::chordDiagram} that colours the \strong{to} sectors of the chord plot}
+
+\item{Legend.xy.cat}{A numeric vector of length two; override the x and y position of the legend (units are npc)}
+
+\item{Legend.xy.chord}{A numeric vector of length four; override the x and y position of the legend (units are npc), first two values adjust the high values and last two values the low values.
 \code{Chord.Data$cat} which should form the vector names, for example  \code{Cat.Pal=setNames(c("blue", "green","Red"), c("A", "B","C"))}.}
 }
 \value{
