@@ -101,7 +101,7 @@ ERAAnalyze2<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   # based on whether T>C or T<C
   ERA.Change<-function(Exp,Con){
     Vals<- 100*(Exp/Con-1)
-    Vals[Exp>Con]<- -100*(Con[Exp>Con]/Exp[Exp>Con]-1)
+    Vals[Exp<Con]<- -100*(Con[Exp<Con]/Exp[Exp<Con]-1)
     return(Vals)
   }
 
