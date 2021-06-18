@@ -19,7 +19,7 @@
 #' @param Lab.Adjust  A numeric vector of length one; adjust the spacing between rotated labels and the track
 #' @param Axis.Cex  A numeric vector of length one; adjusts the size of track axis labels
 #' @param Lab.Cex  A numeric vector of length one; adjusts the size of sector labels
-#' @param Lab.Font A interger for font style, see \link[graphics]{par}
+#' @param Lab.Font A interger for font style, see \link[graphics]{par}. 1 corresponds to plain text (the default), 2 to bold face, 3 to italic and 4 to bold italic.
 #' @param Reduce A numeric vector of length one; a proportion between 0-1, chords widths below this proportion are excluded from the plot
 #' @param Cat.Pal A character vector of length = `length(unique(Chord.Data$cat))`; the vector should contain colour values corresponding to the values in
 #' @param niceFacing Logical `T/F`. Should the facing of text be adjusted to fit human eyes?
@@ -123,7 +123,7 @@ ERAChordPlot<-function(Chord.Data,
                                      title_position = "topleft",
                                      title = paste0(Legend.Tit," <",Value.Mid))
 
-    if(is.na(Legend.xy.chord)){
+    if(is.na(Legend.xy.chord[1])){
       Legend.xy.chord<-c(0.1,0.3,0.1,0.1)
     }
 
@@ -134,8 +134,8 @@ ERAChordPlot<-function(Chord.Data,
 
   if(Type=="Category"){
 
-    if(is.na(Legend.xy.cat)){
-      Legend.xy.cat<-c(0.03,0.05)
+    if(is.na(Legend.xy.cat[1])){
+      Legend.xy.cat<-c(0.03,0.06)
     }
 
     PAL<-Cat.Pal[match(unlist(Chord.Data[,..Value.Var]),names(Cat.Pal))]
@@ -153,7 +153,7 @@ ERAChordPlot<-function(Chord.Data,
                                  legend_gp = gpar(fill=Cat.Pal),
                                  title = Legend.Tit,
                                  title_position = "leftcenter",
-                                 ncol=2)
+                                 ncol=1)
     ComplexHeatmap::draw(lgd,
                          x = unit(Legend.xy.cat[1], "npc"),
                          y = unit(Legend.xy.cat[2], "npc"),

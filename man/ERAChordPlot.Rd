@@ -52,7 +52,7 @@ Set to \code{NA} to use default palettes}
 
 \item{Lab.Cex}{A numeric vector of length one; adjusts the size of sector labels}
 
-\item{Lab.Font}{A interger for font style, see \link[graphics]{par}}
+\item{Lab.Font}{A interger for font style, see \link[graphics]{par}. 1 corresponds to plain text (the default), 2 to bold face, 3 to italic and 4 to bold italic.}
 
 \item{Axis.Cex}{A numeric vector of length one; adjusts the size of track axis labels}
 
