@@ -85,14 +85,14 @@ analyzed by this function are ratios between am experimental treatment and contr
 zero (e.g. yield collapse) this skews the distribution of the outcome ratio producing extremely high values tending to infinity and requiring outlier removal.
 The use of outcome ratios, whilst necessary to standardize outcomes between studies, means this approach is inappropriate to study nil outcomes (e.g. total crop yield failure),
 a binomial approach would be better for such instances. Outlier removal is optional and enabled if the rmOut parameter is set to TRUE (default).
-\item Weighting: Within-study variance measures for mean outcomes are infrequently reported in agricultural literature, so traditional meta-analytical approaches cannot be applied
+\item Weighting: Within-study variance measures for mean outcomes are infrequently reported in agricultural literature, so traditional meta-analytic approaches cannot be applied
 to most ERA outcomes. Therefore individual observations are up-weighted by replication and down-weighted by the number of observations submitted from the same study (colname =
 Code) for each combination of grouping variables. Studies with more replications are likely to produce less variable information than studies with fewer. Controlling for
-the number of #' observations contributed by a study to the dataset weights each study equally.  As such, outcome ratios in our study were weighted according to:
-\code{Weighting = ((RepsE * RepsC)/(RepsE)+(RepsC))/(Ns)}  Where \code{Rep} is the number of replications for \code{RepC} the control and \code{RepE} the experimental
-treatment, and \code{Ns} is the number of observations the study of the which is the observation is member of contributes to the dataset.
+the number of #' observations contributed by a study to the dataset weights each study equally.  As such, outcome ratios are weighted according to:
+\code{Weighting = ((RepsE * RepsC)/(RepsE)+(RepsC))/(Ns)}  where \code{Rep} is the number of replications for \code{RepC} the control and \code{RepE} the experimental
+treatment, and \code{Ns} is the total number of observations contributed to the overall dataset by the study to which the observation belongs.
 \item Test of Normality: A Shapiro-Wilk test ( \link[stats]{shapiro.test}) is applied to raw and log-transformed outcome ratios for each combination of grouping variables. This can be used
-to judge whether values based on mean proportional change, mean response ratio or median proportional change should be used to evalulate practice performance.
+to judge whether values based on mean proportional change, mean response ratio or median proportional change should be used to evaluate practice performance.
 \item Statistics calculated (in all cases na.rm=T):
 \itemize{
 \item \emph{weighted means} use the \link[stats]{weighted.mean} function
