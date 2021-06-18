@@ -17,7 +17,7 @@
 #' @export
 #' @importFrom sf st_combine st_as_sf
 #' @importFrom rworldmap getMap
-#' @importFrom ggplot2 ggplot geom_hex scale_fill_gradient2 theme_bw theme geom_sf coord_sf aes
+#' @importFrom ggplot2 ggplot geom_hex scale_fill_gradient2 theme_bw theme geom_sf coord_sf aes element_blank element_text
 
 ERAHexPlot<-function(Data,Low = "grey10",Mid = "grey50",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="No",ALevel=NA){
   Data<-data.table(Data)
