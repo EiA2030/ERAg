@@ -347,16 +347,13 @@ ERAAnalyze2<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
     ][,PC.pc:=round(100*PC-100,ROUND)
     ][,PC.pc.se.high:=round(100*(PC+PC.se)-100,ROUND)]
 
-    ANALYSED.Data[!is.na(ERA.Change.Estimate),PC:=ERA.Change.Estimate
+    ANALYSED.Data[!is.na(ERA.Change.Estimate),ERA.Change:=ERA.Change.Estimate
     ][!is.na(`ERA.Change.Std. Error`),ERA.Change.se:=`ERA.Change.Std. Error`
     ][,ERA.Change.Estimate:=NULL
     ][,`ERA.Change.Std. Error`:=NULL
-    ][,ERA.Change.lmer:=unlist(lapply(ERA.Change.lmer,class))
-    ][,ERA.Change.ERA.Change.se.low:=round(100*(PC-ERA.Change.se)-100,ROUND)
-    ][,ERA.Change.pc:=round(100*PC-100,ROUND)
-    ][,ERA.Change.ERA.Change.se.high:=round(100*(PC+ERA.Change.se)-100,ROUND)]
+    ]
 
-    ANALYSED.Data[,RR.lmer:=NULL]
+    ANALYSED.Data[,RR.lmer:=NULL][,ERA.Change.lmer:=NULL]
     setnames(ANALYSED.Data,"PC.lmer","Model")
     ANALYSED.Data[Model=="logical",Model:=NA]
 
@@ -369,7 +366,11 @@ ERAAnalyze2<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   ][,PC.var:=round(PC.var,ROUND)
   ][,PC.se:=round(PC.se,ROUND)
   ][,PC.Shapiro.Sig:=round(PC.Shapiro.Sig,ROUND)
-  ][,RR.Shapiro.Sig:=round(RR.Shapiro.Sig,ROUND)]
+  ][,RR.Shapiro.Sig:=round(RR.Shapiro.Sig,ROUND)
+  ][,ERA.Change:=round(ERA.Change,ROUND)
+  ][,ERA.Change.var:=round(ERA.Change.var,ROUND)
+  ][,ERA.Change.se:=round(ERA.Change.se,ROUND)
+  ][,ERA.Change.Shapiro.Sig:=round(ERA.Change.Shapiro.Sig,ROUND)]
 
   return(ANALYSED.Data)
 }
