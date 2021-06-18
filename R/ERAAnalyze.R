@@ -11,15 +11,15 @@
 #' The use of outcome ratios, whilst necessary to standardize outcomes between studies, means this approach is inappropriate to study nil outcomes (e.g. total crop yield failure),
 #' a binomial approach would be better for such instances. Outlier removal is optional and enabled if the rmOut parameter is set to TRUE (default).
 #'
-#' 2) Weighting: Within-study variance measures for mean outcomes are infrequently reported in agricultural literature, so traditional meta-analytical approaches cannot be applied
+#' 2) Weighting: Within-study variance measures for mean outcomes are infrequently reported in agricultural literature, so traditional meta-analytic approaches cannot be applied
 #' to most ERA outcomes. Therefore individual observations are up-weighted by replication and down-weighted by the number of observations submitted from the same study (colname =
 #' Code) for each combination of grouping variables. Studies with more replications are likely to produce less variable information than studies with fewer. Controlling for
-#' the number of #' observations contributed by a study to the dataset weights each study equally.  As such, outcome ratios in our study were weighted according to:
-#' `Weighting = ((RepsE * RepsC)/(RepsE)+(RepsC))/(Ns)`  Where `Rep` is the number of replications for `RepC` the control and `RepE` the experimental
-#' treatment, and `Ns` is the number of observations the study of the which is the observation is member of contributes to the dataset.
+#' the number of #' observations contributed by a study to the dataset weights each study equally.   As such, outcome ratios are weighted according to:
+#' `Weighting = ((RepsE * RepsC)/(RepsE)+(RepsC))/(Ns)`  where `Rep` is the number of replications for `RepC` the control and `RepE` the experimental
+#' treatment, and `Ns` is the total number of observations contributed to the overall dataset by the study to which the observation belongs.
 #'
 #' 3) Test of Normality: A Shapiro-Wilk test ( \link[stats]{shapiro.test}) is applied to raw and log-transformed outcome ratios for each combination of grouping variables. This can be used
-#' to judge whether values based on mean proportional change, mean response ratio or median proportional change should be used to evalulate practice performance.
+#' to judge whether values based on mean proportional change, mean response ratio or median proportional change should be used to evaluate practice performance.
 #'
 #' 4) Statistics calculated (in all cases na.rm=T):
 #'    * *weighted means* use the \link[stats]{weighted.mean} function
@@ -28,7 +28,7 @@
 #'    * *weighted variance* uses the \link[Hmisc]{wtd.var} function
 #'    * *weighted quantiles* use the \link[spatstat.geom]{weighted.median} (`weighted.quantile`) function with `probs=seq(0,1,0.25)`
 #'
-#' 5) Response ratios are back-transformed and converted to % change using with and without a correction for the Jensen inequality.
+#' 5) Response ratios are back-transformed and converted to % change with and without a correction for the Jensen inequality.
 #' The correction applied is as per \href{https://www.biorxiv.org/content/10.1101/179358v1}{Tandini & Mehrabi 2017}.
 #'
 #' 6) When `Fast = FALSE` where minimum data requirements are met linear-mixed effects or linear model is applied to the data to generate means, standard errors and variance.
@@ -140,13 +140,13 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               RR.median=spatstat.geom::weighted.median(log(MeanT/MeanC),Weight.Study,na.rm = T),
               RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
               RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
-              RR.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              RR.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               PC.Shapiro.Sig=round(FunShap(MeanT/MeanC),ROUND),
               PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
               PC.median=spatstat.geom::weighted.median(MeanT/MeanC,Weight.Study,na.rm = T),
               PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
               PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
-              PC.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              PC.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"}
       ),by=Aggregate.By
       ][,PC.pc:=round(100*PC-100,ROUND)
@@ -226,13 +226,13 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               RR.median=spatstat.geom::weighted.median(x=log(MeanT/MeanC),w=Weight.Study,na.rm = T),
               RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
               RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
-              RR.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(x=log(MeanT/MeanC),w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              RR.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(x=log(MeanT/MeanC),w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               PC.Shapiro.Sig=FunShap(MeanT/MeanC),
               PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
               PC.median=spatstat.geom::weighted.median(x=MeanT/MeanC,w=Weight.Study,na.rm = T),
               PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
               PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
-              PC.Quantiles0.5=paste(round(spatstat.geom::weighted.quantile(x=MeanT/MeanC,w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
+              PC.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(x=MeanT/MeanC,w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"},
               # To run the lmer the requirement of three or more sites of which two must have at least three observations must be met
               # If not sufficient data for random-effects model run a t-test if >5 observations
