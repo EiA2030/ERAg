@@ -19,10 +19,14 @@ knitr::opts_chunk$set(
 ```{r packages,include=F,eval=T,echo=T}
 require(ERAg)
 require(treemap)
+require(tidyr)
+#require(sf)
+require(ggplot2)
+#require(rworldmap)
 ```
 
 ## Exploring the data
-In this vignette we will cover how to visualize data in the ERA dataset.
+In this vignette we will cover how to visualize ERA data and run simple meta-analysis.
 
 ### Splitting combined practices
 Observations in the main `ERA.Compiled` often consist of bundles of practices which may relate to more than one product. 
@@ -34,7 +38,6 @@ nrow(ERA.Compiled[grepl("-",SubPrName)])
 # No. solo practices
 nrow(ERA.Compiled[!grepl("-",SubPrName)])
 ```
-
 
 This makes visualization of
 the dataset difficult as there are over a 1000 sub-practice combinations creating too many values to map onto a figure. We can use the `ERAComboSplit` 
@@ -60,8 +63,6 @@ grep(".Combo",colnames(ERA.Compiled.Split),value=T)
 ERA.Compiled.Split[grepl("-",SubPrName.Combo),length(unique(SubPrName.Combo))]
 # Only single values are presnt
 ERA.Compiled.Split[,unique(SubPrName.Combo)][1:10]
-
-
 ```
 ### Treemaps
 We can use the "split" dataset to explore how many instance of products, practices or outcomes there are. Treemaps are great way of visualizing these data using the `treemap::treemap()` function.
@@ -81,3 +82,265 @@ treemap::treemap(ERA.Compiled.Split.Pracs,
       palette = "Paired",
       title="Number of Studies reporting ERA practices")
 ```
+
+## Analyzing Data
+
+In this example we will analyze outcomes for the effectiveness of water harvesting practices using pits.
+
+First let's explore the ERA `PracticeCodes` to see where we might find the names of the practices we are interested in. Theme is the highest level of organization for practice which of these relate to water harvesting?
+
+```{r WH Explore Theme,echo=T}
+PracticeCodes<-data.table(PracticeCodes)
+
+PracticeCodes[,unique(Theme)]
+
+```
+`Water Management` is a sensible place to look, let's look at the practices nesting within this theme.
+
+```{r WH Explore Practice,echo=T}
+PracticeCodes[Theme=="Water Management",unique(Practice)]
+```
+
+The `Water Harvesting` practice is indeed in the `Water Management` theme, there are also sub-practices nested within practices so let's see what these are for water harvesting.
+
+```{r WH Explore Subpractice,echo=T}
+PracticeCodes[Practice=="Water Harvesting",unique(Subpractice)]
+```
+
+Two of these practices seem to relate to pits `Planting Basins` and `Zai Pits`, let's check their definitions to make sure.
+
+```{r WH Subpractice Definition,echo=T}
+FocalPractices<-c("Planting Basins","Zai Pits")
+PracticeCodes[Subpractice %in% FocalPractices,Definition]
+```
+
+Great both are are types of planting pit. 
+
+### Data Availability
+
+Now let's see what data we have in ERA on these practices 
+
+```{r WH tabulate practices,echo=T}
+  (PitPracs<-ERA.Compiled[grepl(paste(FocalPractices,collapse = "|"),SubPrName),SubPrName] %>%
+  table %>%
+  sort(decreasing = T))
+```
+
+Try using the `treemap` approach as a way of visualizing the data above.
+
+It seems planting basins are often used in combination with minimum tillage and mulch, together this is known as conservation agriculture. Let's subset the data to where we have a reasonable number of observations, at least 50.
+
+```{r WH Subset,echo=T}
+  PitPracs<-PitPracs[PitPracs>=50] %>% names
+  ERA.Pits<-ERA.Compiled[SubPrName %in% PitPracs] 
+```
+
+What outcomes do we have data for?
+
+```{r WH visualize outcomes,fig.width=7,fig.asp=0.66,echo=T}
+ERA.Pits.Out<-ERA.Pits[,list(N.Studies=length(unique(Code))),by=list(SubPrName,Out.SubInd)]
+
+# Visualize with the treemap function
+treemap::treemap(ERA.Pits.Out,
+      index=c("Out.SubInd"),
+      vSize="N.Studies",
+      type="index",
+      palette = "Paired",
+      title="Outcomes present for pit-based water harvesting practices")
+```
+
+What crops do we have data for?
+
+```{r WH visualize products,fig.width=7,fig.asp=0.66,echo=T}
+ERA.Pits.Crops<-ERA.Pits[,list(N.Studies=length(unique(Code))),by=list(Product.Simple)]
+
+# Visualize with the treemap function
+treemap::treemap(ERA.Pits.Crops,
+      index=c("Product.Simple"),
+      vSize="N.Studies",
+      type="index",
+      palette = "Paired",
+      title="Crops present for pit-based water harvesting practices")
+```
+
+Where does this data come from?
+
+```{r WH map data,echo=T,fig.width=7,fig.asp=0.66}
+ERAg::ERAHexPlot(Data=ERA.Pits,Showpoints = "Yes",Point.Col = "black",Mid = "yellow",
+  High = "red",)
+
+100*(ERA.Pits[,table(Country)] / nrow(ERA.Pits)) %>% round(digits=3)
+```
+Where can I find the papers that contain this data?  
+
+`ERA.Compiled` provides you with some basic bibliographic data, the most important of which is the `DOI` file which enables you to locate the article on-line when adding the prefix `https://doi.org/` (e.g., `https://doi.org/10.1007/s10705-005-6209-9`). 
+
+```{r WH find papers}
+ERA.Pits[,list(Code,Journal,Author,DOI)] %>%  unique
+```
+
+There is also a `DataLoc` field in `ERA.Compiled` that shows where data were extracted from within in a publication,
+
+```{r WH find papers 2}
+ERA.Pits[1:5,list(DOI,PrName,Out.SubInd,MeanT,MeanC,Units,DataLoc)] 
+```
+
+### Prepare the Data
+There are some pre-processing steps that we need to apply to the data using the `ERAg::PrepareERA` function before conducting a meta-analysis based on response ratios. These steps include:  
+1) *Negative outcomes*: where outcomes have a notable number (e.g. > 0.5%) of negative values for the control (`MeanC` column) or experimental treatment (`MeanT` column), this is because negative numbers are incompatible with ratios.  
+2) *Inverse outcomes*: when a lower value indicates a better outcome, the outcome values for control (`MeanC`) and experimental treatment (`MeanT`) are swapped (excluding economic outcomes).  
+
+*See ?PrepareERA for more details* 
+
+
+```{r WH Prepare the data,echo=T}
+ERA.Pits.Prep<-ERAg::PrepareERA(Data = ERA.Pits,Perc.Neg = 0.5,RmNeg = T)
+
+# Have we lost any data?
+dim(ERA.Pits)
+dim(ERA.Pits.Prep)
+```
+We haven't lost any data which means that there were insufficient negative outcomes to cause us an issue.
+
+#### Analysis 
+##### Key Information
+To analyze the data we will use the `ERAg::ERAAnalyze` function which performs the following:  
+
+1) `Weighting`: Within-study variance measures for mean outcomes are infrequently reported in agricultural literature, so traditional meta-analysis approaches cannot be applied to most ERA outcomes. Therefore individual observations are up-weighted by replication and down-weighted by the number of observations submitted from the same study (`Code` column) for each combination of grouping variables. Studies with more replications are likely to produce less variable information than studies with fewer. Controlling for the number of observations contributed by a study to the dataset weights each study equally.   As such, outcome ratios are weighted according to: `Weighting = ((RepsE * RepsC)/(RepsE)+(RepsC))/(Ns)`  where `Rep` is the number of replications for `RepC` the control and `RepE` the experimental treatment, and `Ns` is the total number of observations contributed to the overall dataset by the study to which the observation belongs.  
+
+2) ` Outlier Removal`: Outliers are defined using an extreme outliers method where response ratios above or below $3*IQR$ (interquartile range) are removed. The ERA outcome variables analyzed by this function are ratios between am experimental treatment and control outcome and should be approximately normally distributed. When the control approaches zero (e.g. yield collapse) this skews the distribution of the outcome ratio producing extremely high values tending to infinity and requiring outlier removal. The use of outcome ratios, whilst necessary to standardize outcomes between studies, means this approach is inappropriate to study nil outcomes (e.g. total crop yield failure), a binomial approach would be better for such instances. Outlier removal is optional and enabled if the rmOut parameter is set to TRUE (default).  
+
+3) `Test of Normality`: A Shapiro-Wilk test is applied to raw and log-transformed outcome ratios for each combination of grouping variables. This can be used to judge whether values based on mean proportional change, mean response ratio or median proportional change should be used to evaluate practice performance.  
+
+4) `Basic Statistical Tests`: When `Fast = FALSE` where minimum data requirements are met linear-mixed effects or linear model is applied to the data to generate means, standard errors and variance. Linear mixed effects models use `lmer::lme4` where outcomes from a grouping variable combination are from at least three sites of which two must have at least three observations. The model is weighted and includes a random intercept for site (`lmer(Value~1 + (1|Site),weights=Weights)`). If the minimum data requirements for the linear-mixed effects are not met but there are at least 5 outcome observations for the grouping variable combination then a weighted linear model is used (`lm(Value~1,weights=Weights)`) . If the minimum data requirements for the linear model are not met no test is applied to the outcome values.
+
+5)  `Correction of Jensen Inequality`: The log-scale response ratios are back-transformed and converted to % change with and without a correction for the Jensen inequality. The correction applied is as per [Tandini & Mehrabi 2017](https://www.biorxiv.org/content/10.1101/179358v1). We recommend using the corrected values.
+
+In all case we advise caution in the interpretation of analysis outputs. The distribution of the data for each combination of values specified in the `Aggregate.By` field should be checked through plotting. Combinations with limited data are vulnerable to outliers and should be scrutinized carefully.  
+
+##### Run Analysis
+Ok now that we have an idea what the function is doing let's run an analysis of outcomes subindicator (`Out.SubInd`) by subpractice (`SubPrName`) using the `ERAg::ERAAnalyze` function.  
+
+We will not specify a product (i.e. crop) column so results are averaged across all the crops present within a combination of subindicator x subpractice.
+
+```{r WH analyze,echo=T,warning=FALSE}
+Analysis1<-ERAg::ERAAnalyze(Data=ERA.Pits.Prep,
+            # rmOut: Outliers will be removed
+            rmOut = TRUE, 
+            # Aggregate.By: Data are analyzed as subsets of these fields 
+            Aggregate.By = c("Out.SubInd","SubPrName"), 
+            # Fast: Tests will be applied to the data if FALSE
+            Fast=FALSE) 
+```
+
+##### Explore Results
+
+###### Subset By Minimum Data Requirements
+
+`ERAAnalyze` outputs a data.table with many columns, we will run through what many of these are next, but you can also see the function description for more information (?`ERAg::ERAAnalyze`).
+
+```{r WH analyzed fields ,echo=T}
+colnames(Analysis1)
+```
+
+The first 5 columns describe the subset of data analyzed (combinations of the fields provided in the `Aggregate.By` argument) and the amount of data that were available.
+
+```{r WH analyzed fields 1,echo=T}
+Analysis1[,list(Out.SubInd, SubPrName, Observations, Studies, Sites)] %>%  head
+```
+
+We can use the data availability fields to filter the results to combinations that meet a minimum data requirement, let's specify a minimum of 3 studies.
+
+```{r}
+Analysis1<-Analysis1[Studies>=3]
+Analysis1[,list(Out.SubInd, SubPrName, Observations, Studies, Sites)]
+```
+###### Response Ratios
+A response ratio (RR) is simply the natural log of the ratio of the experimental outcome to the control outcome. If maize yields with planting basins are 1.5 Mg/ha and without them are 1.1 Mg/ha the response ratio is log(1.5/1.1) = 0.310. RRs greater than zero indicate the experimental treatment is better than the control and vice-versa for RRs less than zero.
+
+Measures of central tendency and error for RRs are provided in the fields prefixed with `RR.` and include mean (`RR`), median, variance, standard error and quantiles at 25% intervals. If a test was applied to the data then the mean and standard error are derived from that test.
+
+A Shapiro-Wilks test of normality is applied to RRs. If a value in the `RR.Shapiro.Sig` field is <0.05 then the data for that row are statistically non-normal therefore estimates of central tendency and tests results may be unreliable.
+
+```{r WH - RRs, echo=T}
+Analysis1[,list(Out.SubInd,SubPrName,RR.Shapiro.Sig, RR, RR.median, RR.var, RR.se, RR.Quantiles0.25)] %>% head
+```
+
+If tests were performed (argument `Fast=F`) then test results presented in the `t value`, `Pr(>|t|)` and `Sigma2`. The `Pr(>|t|)` field indicates significance.
+
+```{r WH - RRs 2, echo=T}
+Analysis1[,list(Out.SubInd,SubPrName,Model, `RR`,`RR.se`,`RR.t value`, `RR.Pr(>|t|)`, RR.Sigma2)] %>% head
+```
+
+For easier interpretation mean RR and RR +/- standard error are back-transformed and converted into percentage change (e.g., a ratio of 1.1 = a 10% increase). The `RR.pc.` columns back-transform log ratios using the exponent. The `RR.pc.jen.` columns back-transform log ratios using the exponent with a correction for the Jensen inequality.
+
+```{r WH - RRs 3, echo=T}
+Analysis1[,list(Out.SubInd,SubPrName, RR.pc.se.low, RR.pc, RR.pc.se.high, RR.pc.jen.low, RR.pc.jen.high)] %>% head
+```
+
+###### Proportional change
+Analyses are performed on the "raw" ratio of experimental to control outcomes, these columns are prefixed `PC.`. The proportional change columns are as per the response ratio columns, but there are no `.jen.` columns as values are not logged.  
+
+We urge caution in using statistics based on proportional data due to the imbalanced scaling of ratios below or above one. Ratio or proportion data is often right skewed as values cannot be lower than zero but can tend to infinity.
+
+###### Investigate distributions 
+Below we compare percent changes estimates using the ratio vs. response ratio.
+
+The different statistics/methods give different effect size estimates and have different amounts of data availability. Generally the more data that are available the closer the convergence of the methods, although not always. 
+
+```{r WH - Comparison 1, echo=T}
+# Add percentage change results based on median
+Analysis1[,PC.pc.median:=100*(PC.median-1)]
+Analysis1[,RR.pc.median:=100*(RR.median-1)]
+
+Analysis1[,list(Out.SubInd,SubPrName,Observations,RR.pc.jen,RR.pc.median,PC.pc,PC.pc.median)]
+```
+
+A check of the normality of the data reveals potential issues and these are only "solved" (according to the significance of the Shapiro-Wilks test) by logging the data in one instance (Soil Moisture and MinTill-Planting Basins).
+
+```{r WH - Comparison 2, echo=T}
+Analysis1[,list(Out.SubInd,SubPrName, RR.Shapiro.Sig, PC.Shapiro.Sig)]
+```
+
+Let's check the data distribution. If we take the combination of `Soil Moisture` and `MinTill-Planting Basins` plotting the outcome response ratio and ratio vs a normal curve it shows: 
+1) the right skew (due to the nature of ratio data) in the ratio data is corrected by the natural log transformation;
+2) whilst the response ratio distribution is not quite normal, it's not terrible either and probably good enough for our purposes.
+
+```{r WH - Comparison 3, echo =T,,fig.width=7,fig.asp=0.66,echo=T}
+RR<-ERA.Pits.Prep[Out.SubInd=="Soil Moisture"	& SubPrName=="MinTill-Planting Basins",yi]
+hist(RR, prob=T)
+curve(dnorm(x, mean=mean(RR), sd=sqrt(var(RR))), col="darkblue", lwd=2, add=TRUE, yaxt="n")
+
+Proportion<-ERA.Pits.Prep[Out.SubInd=="Soil Moisture"	& SubPrName=="MinTill-Planting Basins",MeanT/MeanC]
+hist(Proportion, prob=T)
+curve(dnorm(x, mean=mean(Proportion), sd=sqrt(var(Proportion))), col="darkblue", lwd=2, add=TRUE, yaxt="n")
+
+```
+
+##### Example of issue with ordering of numerator and denominator
+
+Interestingly results can change if the numerator and denominator are swapped.  For example:
+
+```{r WH - PC, echo=T}
+Con<-c(1000,1500,2000) # Control outcomes
+Exp<-c(1100,500,1200) # Experimental outcomes
+
+# ***Experimental outcome is numerator***
+Exp/Con
+mean(Exp/Con)
+# % change estimated from mean of ratios
+100*(mean(Exp/Con)-1) 
+# % change estimated from mean of response ratios
+100*(exp(mean(log(Exp/Con)))-1) 
+
+# ***Control outcome is numerator***
+Con/Exp
+mean(Con/Exp)
+# % change estimated from mean of ratios
+100*(mean(Con/Exp)-1) 
+# % change estimated from mean of response ratios
+100*(exp(mean(log(Con/Exp)))-1) 
+```
+When averaging ratios if the experimental treatment is the numerator then the experimental treatment yields -32.2% less than the control, and if the control treatment is the numerator then we find the control yields 85.9% more than the experimental treatment. The results using response ratios are less dispersed (-39.6% vs 65.7%).   
+
+Which is true: 1) the control is 65.7% better than the experimental treatment or 2) the experimental treatment is 39.6% worse than the control?
