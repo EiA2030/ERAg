@@ -15,6 +15,9 @@
 #' unique values of `Latitude` and `Longitude` plus these columns. Default = `NA`.
 #' @return ERAHexPlot returns a `ggplot` object showing a map of point density
 #' @export
+#' @importFrom sf st_combine st_as_sf
+#' @importFrom rworldmap getMap
+#' @importFrom ggplot2 ggplot geom_hex scale_fill_gradient2 theme_bw theme geom_sf coord_sf
 
 ERAHexPlot<-function(Data,Low = "grey10",Mid = "grey50",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="No",ALevel=NA){
   Data<-data.table(Data)
