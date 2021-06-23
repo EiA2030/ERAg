@@ -57,11 +57,6 @@ PrepareERA<-function(Data,
 
   Flip.Neg<-function(Data,OutcomeCodes){
     N1<-OutcomeCodes[match(Data[,Outcode],OutcomeCodes[,Code]),Sign]=="n"
-    if(!"Out.Ind" %in% colnames(Data)){
-      N1[Data[,Outcome=="Costs"]]<-F # Do not flip Costs
-    }else{
-      N1[Data[,Out.Ind=="Costs"]]<-F # Do not flip Costs
-    }
     X<-Data[N1,c("MeanC","MeanT")]
 
     Data[N1,MeanC:=X[,MeanT]][N1,MeanT:=X[,MeanC]]
@@ -124,7 +119,9 @@ PrepareERA<-function(Data,
   OutcomeCodes$Negative.Values[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
 
   # Remove outcomes where they are negative > Perc.Neg of the time
+  if(RmNeg){
     Data<-Data[!Neg.Vals=="Y"]
+  }
 
 
   # Recode Neg.Vals in FCR/PCR to be N (these are dealt with using a different system to RRs)
