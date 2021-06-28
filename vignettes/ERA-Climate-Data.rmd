@@ -294,6 +294,8 @@ ERA<-ERAg:::ERA.Compiled
 We will also require extracted climate data for our sites, this can be created using the methods outline in Section 1 of this vignette or, more conveniently, prepared data can be downloaded from the `ERAg` github using the piggyback methods outline in the `ERA-Large-Climate-Files` vignette.
 
 ```{r CS download large file, echo=TRUE,eval=F}
+Sys.setenv(GITHUB_TOKEN = "ghp_XXXXXXXXXXXXXXXXXXXXXXXX")
+
 LargeDir<-"Large Files/"
 
   if(!dir.exists(LargeDir)){
@@ -304,7 +306,6 @@ LargeDir<-"Large Files/"
     piggyback::pb_download(file= FILE, 
                 repo = "peetmate/ERAg",
                 tag = "Beta_v0.0.1",
-                .token="ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
                 dest = LargeDir)
   }
   
