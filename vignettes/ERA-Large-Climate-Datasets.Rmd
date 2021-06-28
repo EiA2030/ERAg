@@ -140,10 +140,11 @@ You should have been provided with a token to download the `ERAg` package, suppl
 
 ```{r download large file, echo =TRUE,eval=F}
 
+Sys.setenv(GITHUB_TOKEN = "ghp_XXXXXXXXXXXXXXXXXXXXXXXX")
+
 piggyback::pb_download(file= "AgMERRA.RData", 
             repo = REPO,
             tag = TAG,
-            .token="ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
             dest = LargeDir)
 ```
 
