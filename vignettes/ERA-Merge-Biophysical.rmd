@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Please familiarize yourself with the `ERA-Climate-Data` vignette before reading this document.  
+Please familiarize yourself with the `ERA-Climate-Data` & `ERA-Large-Climate-Datasets` vignettes before reading this document.  
 
 In this vignette we will be exploring how to connect ERA to soil and seasonal climate datasets.
 

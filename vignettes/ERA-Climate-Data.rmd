@@ -309,8 +309,8 @@ LargeDir<-"Large Files/"
                 dest = LargeDir)
   }
   
-  POWER<-miceadds::load.RData2("POWER.RData",path=LargeDir)
-  CHIRPS<-miceadds::load.RData2("CHIRPS.RData",path=LargeDir)
+  POWER<-miceadds::load.Rdata2("POWER.RData",path=LargeDir)
+  CHIRPS<-miceadds::load.Rdata2("CHIRPS.RData",path=LargeDir)
 
 ```
 
