@@ -9,7 +9,7 @@ ERAAnalyze(Data, rmOut = T, Aggregate.By, ROUND = 5, Fast = F)
 \arguments{
 \item{Data}{A preapred ERA dataset (see PrepareERA function)}
 
-\item{rmOut}{Logical T/F. If TRUE extreme outliers are dectected and removed for each combination of grouping variables.}
+\item{rmOut}{Logical T/F. If TRUE extreme outliers are detected and removed for each combination of grouping variables.}
 
 \item{Aggregate.By}{Column names for grouping variables. Statistics will be compiled for each combination of these variables.}
 

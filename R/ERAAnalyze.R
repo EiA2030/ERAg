@@ -38,7 +38,7 @@
 #'     * If the minimum data requirements for the lm are not met no test is applied to the outcome values.
 #'
 #' @param Data A preapred ERA dataset (see PrepareERA function)
-#' @param rmOut Logical T/F. If TRUE extreme outliers are dectected and removed for each combination of grouping variables.
+#' @param rmOut Logical T/F. If TRUE extreme outliers are detected and removed for each combination of grouping variables.
 #' @param Aggregate.By Column names for grouping variables. Statistics will be compiled for each combination of these variables.
 #' @param ROUND Integer value for the number of decimal places numeric columns in the output dataset should be rounded to.
 #' @param Fast Logical T/F. If `FALSE` then lmer and lm models are used to estimate means, errors and significance if sufficient data exist.
