@@ -418,7 +418,7 @@ Note that you can also download this dataset pre-prepared as `POWER.CHIRPS.RData
   POWER<-as.data.frame(POWER)
 
   # Combine datasets and convert back to data.table
-  POWER.CHIRPS<-data.table(plyr::left_join(POWER,CHIRPS[,c("DayCount",ID,"Rain")],by = c(ID,"DayCount")))
+  POWER.CHIRPS<-data.table(dplyr::left_join(POWER,CHIRPS[,c("DayCount",ID,"Rain")],by = c(ID,"DayCount")))
   
   # Calculate ETo if absent
   if(POWER.CHIRPS[,is.null(ETo)]){
