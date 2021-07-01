@@ -2,19 +2,19 @@
 #'
 #' This function can be used to estimate planting datesfrom daily rainfall where there is uncertainty as calculated by substracting `Plant.Start` from `Plant.End`.
 #'
-#' A daily rainfall dataset extracted for the data supplied in the `DATA` argument needs to be supplied to this function, we recommend using
+#' A daily rainfall dataset extracted for the data supplied in the `Data` argument needs to be supplied to this function, we recommend using
 #' the `ExtractCHIRPS` function to generate rainfall data. In the `Rain.Data.Name` argument please supply the name of the rainfall dataset (e.g. `CHIRPS`).
-#' Use the `Rain.Field` argument to specify the name of the column containing the rainfall amount. Matching between `DATA` and `Rain.Data` uses the
+#' Use the `Rain.Field` argument to specify the name of the column containing the rainfall amount. Matching between `Data` and `Rain.Data` uses the
 #' `Daycount` and a location identity field as named using the `ID` argument, as such the datasets must share the same point of origin for calculation
 #' of `Daycount` and the same name for the `ID` field.
 #'
-#' Planting dates will estimated for rows in `DATA` where the difference between `Plant.Start` and `Plant.End` is greater than or equal to the
+#' Planting dates will estimated for rows in `Data` where the difference between `Plant.Start` and `Plant.End` is greater than or equal to the
 #' `Uncertainty.Min` argument and less than or equal to the `Uncertainty.Max` argument.
 #'
 #' `EstPDayRain` uses the  \link[zoo]{rollapply} function to sum rainfall within a scanning window, planting is assumed to occur the day **after**
 #' summed rainfall surpasses a threshold amount.
 #'
-#' For each row of `DATA` with appropriate planting uncertainty the function initially searches for rainfall events in `Rain.Data` in-between and including the corresponding `Plant.Start` and `Plant.End` dates.
+#' For each row of `Data` with appropriate planting uncertainty the function initially searches for rainfall events in `Rain.Data` in-between and including the corresponding `Plant.Start` and `Plant.End` dates.
 #' This temporal search period can be modified using the `DaysBefore` and `MultiplyWin` arguments.`DaysBefore` extends the `Plant.Start` date backwards by a number of days.
 #' `MultiplyWin` is a proportion that multiplies the difference between `Plant.Start` and `Plant.End` dates increasing the size of the period forwards in time.
 #' If `Plant.Start = 2018-01-01` and `Plant.End = 2018-01-11` the difference between them is 10 days, if `MultiplyWin = 1.5` then `10*1.5=15` and the
@@ -25,10 +25,10 @@
 #' `Rain.Thresholds` arguments require values to added in sequence. If no trigger events are found in the initial scanning window then subsequent windows
 #' are searched accordingly.
 #
-#' @param DATA An ERA dataset (e.g. `ERA.Compiled`)
+#' @param Data An ERA dataset (e.g. `ERA.Compiled`)
 #' @param ID A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.
 #' @param SaveDir A character vector of length one containing the path to the directory where the extracted data are to be saved. Set to NA if you do not want to save the returned dataset.
-#' @param Rain.Data Data.frame or data.table of daily rainfall with a field of class `Date` named `Date`, a numeric field named as per the `Rain.Field` argu containing daily rainfall amount in mm and ID field matching DATA object supplied.
+#' @param Rain.Data Data.frame or data.table of daily rainfall with a field of class `Date` named `Date`, a numeric field named as per the `Rain.Field` argu containing daily rainfall amount in mm and ID field matching Data object supplied.
 #' @param Rain.Data.Name A character vector of length one containing the name of the rainfall dataset (e.g. "CHIRPS")
 #' @param Rain.Field A character vector of length one containing the name of the rainfall field in the `Rain.Data` object supplied (e.g. `Rain`)
 #' @param DaysBefore An integer vector of length one; when searching for rainfall events in-between the planting start/end dates specified, extend the planting start date backwards by a number of days
@@ -38,13 +38,13 @@
 #' @param Rain.Thresholds An integer vector of length equivalent to 1 + length(`Window`), max length = 3; the amount of rainfall that has to fall in the temporal windows considered.
 #' @param Uncertainty.Min An integer vector of length one; the minimum acceptable difference between plant.start and plant.end in days
 #' @param Uncertainty.Max An integer vector of length one; the maximum acceptable difference between plant.start and plant.end in days
-#' @param Add.Values Logical `T/F`; if `T` append results to the DATA object supplied and return, else return a separate table.
-#' @param Use.Data.Dates Logical `T/F`; only relevant if planting date estimates have been added to the DATA object using the `ERAg::Est.PDay.Data` function. If `T` then NA values in for Plant.Start and Plant.End are replaced by values estimated using the Est.PDay.Data function.
+#' @param Add.Values Logical `T/F`; if `T` append results to the Data object supplied and return, else return a separate table.
+#' @param Use.Data.Dates Logical `T/F`; only relevant if planting date estimates have been added to the Data object using the `ERAg::Est.PDay.Data` function. If `T` then NA values in for Plant.Start and Plant.End are replaced by values estimated using the Est.PDay.Data function.
 #' @return The `EstPDayRain` function generates a field of class `Date` named `paste0("UnC.",Rain.Data.Name,".P.Date")` containing planting date estimates
-#' for rows of `DATA` where planting uncertainty is within the range specfied by the `Uncertainty.Min` and `Uncertainty.Max` arguments. If the `Add.Values`
-#' arguments is `TRUE` then this field is appended to `DATA` else it is returned in a separate `data.table.`
+#' for rows of `Data` where planting uncertainty is within the range specfied by the `Uncertainty.Min` and `Uncertainty.Max` arguments. If the `Add.Values`
+#' arguments is `TRUE` then this field is appended to `Data` else it is returned in a separate `data.table.`
 #' @export
-EstPDayRain<-function(DATA,
+EstPDayRain<-function(Data,
 ID,
 Rain.Data,
 Rain.Data.Name,
@@ -60,17 +60,17 @@ Add.Values = T,
 Use.Data.Dates = F
 ){
 
-  DATA<-data.table(DATA)
+  Data<-data.table(Data)
   Rain.Data<-data.table(Rain.Data)
 
   RAIN<-split(Rain.Data,by=ID)
 
   if(Use.Data.Dates==T){
-    DATA[is.na(Plant.Start),Plant.Start:=as.Date(Data.PS.Date)][is.na(Plant.End),Plant.End:=as.Date(Data.PE.Date)]
+    Data[is.na(Plant.Start),Plant.Start:=as.Date(Data.PS.Date)][is.na(Plant.End),Plant.End:=as.Date(Data.PE.Date)]
   }
 
   # Convert dates to correct format and work out planting window and average dates
-  DATA[,Plant.Start:=if(class(Plant.Start)=="Date"){Plant.Start}else{as.Date(Plant.Start,"%d.%m.%Y")}
+  Data[,Plant.Start:=if(class(Plant.Start)=="Date"){Plant.Start}else{as.Date(Plant.Start,"%d.%m.%Y")}
   ][,Plant.End:=if(class(Plant.End)=="Date"){Plant.End}else{as.Date(Plant.End,"%d.%m.%Y")}
   ][,Harvest.Start:=if(class(Harvest.Start)=="Date"){Harvest.Start}else{as.Date(Harvest.Start,"%d.%m.%Y")}
   ][,Harvest.End:=if(class(Harvest.End)=="Date"){Harvest.End}else{as.Date(Harvest.End,"%d.%m.%Y")}
@@ -84,14 +84,14 @@ Use.Data.Dates = F
   META<-list(Window=Window,Uncertainty.Min=Uncertainty.Min,Uncertainty.Max=Uncertainty.Max,Widths=Widths,Rain.Thresholds=Rain.Thresholds,DaysBefore=DaysBefore)
 
 
-  SS<-unique(DATA[Plant.Diff>=Uncertainty.Min & Plant.Diff<=Uncertainty.Max,c(..ID,"Plant.Start","Plant.End","Plant.Diff","Plant.Avg")])
+  SS<-unique(Data[Plant.Diff>=Uncertainty.Min & Plant.Diff<=Uncertainty.Max,c(..ID,"Plant.Start","Plant.End","Plant.Diff","Plant.Avg")])
   colnames(SS)[colnames(SS)==ID]<-"ID"
 
   Sites<-SS[,unique(ID)]
 
   # Check for non-matches between Sites and Rainfall Data
-  Meta.Table.Yields$ID<-Meta.Table.Yields[,..ID]
-  Missing.Sites<-unique(Meta.Table.Yields[ID %in% unique(SS$ID[which(!SS$ID %in% names(RAIN))]),c(..ID,"Plant.Diff")])
+  Data$ID<-Data[,..ID]
+  Missing.Sites<-unique(Data[ID %in% unique(SS$ID[which(!SS$ID %in% names(RAIN))]),c(..ID,"Plant.Diff")])
 
   RAIN<-RAIN[names(RAIN) %in% Sites]
   Sites<-Sites[Sites %in% names(RAIN)]
@@ -156,24 +156,24 @@ Use.Data.Dates = F
   if(Add.Values){
 
     cat('\r                                                                                                                                          ')
-    cat('\r',"Matching Planting Stats to DATA")
+    cat('\r',"Matching Planting Stats to Data")
     flush.console()
 
-    N<-!colnames(DATA) %in% paste0("UnC.",Rain.Data.Name,"P.Date")
-    DATA<-DATA[,..N]
+    N<-!colnames(Data) %in% paste0("UnC.",Rain.Data.Name,"P.Date")
+    Data<-Data[,..N]
 
-    DATA[,R:=1:nrow(DATA)]
-    DATA$SID<-DATA[,..ID]
-    DATA[,MCode:=paste(c(SID, Plant.Start,Plant.End),collapse="-"),by=list(SID, Plant.Start,Plant.End)]
+    Data[,R:=1:nrow(Data)]
+    Data$SID<-Data[,..ID]
+    Data[,MCode:=paste(c(SID, Plant.Start,Plant.End),collapse="-"),by=list(SID, Plant.Start,Plant.End)]
 
     A<-B
     A[,R:=1:nrow(A)]
     A[,MCode:=paste(c(ID,Plant.Start,Plant.End),collapse="-"),by=R]
-    DATA<-cbind(DATA,A[match(DATA[,MCode],A[,MCode]),-c("ID","Plant.Start","Plant.End","Plant.Diff","Plant.Avg","R","MCode")])
+    Data<-cbind(Data,A[match(Data[,MCode],A[,MCode]),-c("ID","Plant.Start","Plant.End","Plant.Diff","Plant.Avg","R","MCode")])
 
-    DATA<-DATA[,!c("R","SID","MCode","Plant.Diff","Harvest.Diff","Plant.Avg","Harvest.Avg")]
+    Data<-Data[,!c("R","SID","MCode","Plant.Diff","Harvest.Diff","Plant.Avg","Harvest.Avg")]
 
-    return(DATA)
+    return(Data)
   }else{
     return(B)
   }

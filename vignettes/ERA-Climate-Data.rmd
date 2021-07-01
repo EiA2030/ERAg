@@ -514,7 +514,7 @@ Up to two additional temporal search periods after the above can be specified in
 By setting the `Use.Data.Dates` argument to `TRUE` we are substituting `NA` planting dates in ERA with values calculated by `EstPDayData` and refining these with the `EstPDayRain` function.
 
 ```{r CS EstPDayRain 2, echo=T, eval=F}
-ERA.Yields<-EstPDayRain(DATA=ERA.Yields, 
+ERA.Yields<-EstPDayRain(Data=ERA.Yields, 
                     ID=ID, 
                     Rain.Data = CHIRPS, 
                     Rain.Data.Name = "CHIRPS", 
