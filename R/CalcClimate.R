@@ -200,6 +200,9 @@ CalcClimate<-function(DATA,
                       EC.Diff=0.6,
                       ROUND=5){
 
+  DATA<-data.table(DATA)
+  CLIMATE<-data.table(CLIMATE)
+
   if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
     ErrorDir<-paste0(ErrorDir,"/")
   }
