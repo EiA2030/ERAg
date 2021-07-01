@@ -30,12 +30,6 @@ This vignette will explore how to download and extract climate information for p
   p_load(char=required.packages,install = T,character.only = T)
     
 ```
-
-```{r load packages real, eval=T,echo=F}
-  require(ERAg)
-  require(data.table)
-```
-
 ### Subset the data
 First we will subset the ERA.Compiled dataset to exclude locations with a large radius of spatial uncertainty (in this case >50km). It is difficult to define climate for locations with high levels of spatial uncertainty and their large areas increase the download and processing requirements for download and analysis of climate data.
 
@@ -288,7 +282,7 @@ if(!dir.exists(CROP_dir)){
 #### Load datasets
 Access the ERA.Compiled dataset from the `ERAg` package.
 ```{r CS read in ERA, eval=F,echo=T}
-ERA<-ERAg:::ERA.Compiled
+ERA<-ERAg::ERA.Compiled
 ```
 
 We will also require extracted climate data for our sites, this can be created using the methods outline in Section 1 of this vignette or, more conveniently, prepared data can be downloaded from the `ERAg` github using the piggyback methods outline in the `ERA-Large-Climate-Files` vignette.
@@ -332,9 +326,9 @@ ID<-"Site.Key"
 Create a season code field and convert M.Year blanks to `NA` values:
 
 ```{r CS prepare ERA 1, eval=F,echo=T}
-ERA[Season.Start==1 & Season.End==1,M.Year.Code:="1"
-           ][Season.Start==2 & Season.End==2,M.Year.Code:="2"
-             ][Season.Start==1 & Season.End==2,M.Year.Code:="1&2"
+ERA[Season.Start==1 & Season.End==1,Season:="1"
+           ][Season.Start==2 & Season.End==2,Season:="2"
+             ][Season.Start==1 & Season.End==2,Season:="1&2"
                ][M.Year=="",M.Year:=NA
                  ][Season=="",Season:=NA]
 ```
@@ -353,9 +347,7 @@ Update missing altitude values with those derived from digital elevation models 
 Physical<-data.table(ERA_Physical)
 
 # Add DEM altitude to ERA
-ERA[!is.na(Latitude),Altitude.DEM := 
-      Physical[ match(unlist(ERA[!is.na(Latitude),..ID]),unlist(Physical[,..ID])) , Altitude.mean]
-    ])
+ERA[!is.na(Latitude),Altitude.DEM:=Physical[match(unlist(ERA[!is.na(Latitude),..ID]),unlist(Physical[,..ID])) , Altitude.mean]]
 
 # Replace missing altitude values with DEM values
 ERA[,Altitude:=Elevation
@@ -516,7 +508,7 @@ By setting the `Use.Data.Dates` argument to `TRUE` we are substituting `NA` plan
 ```{r CS EstPDayRain 2, echo=T, eval=F}
 ERA.Yields<-EstPDayRain(Data=ERA.Yields, 
                     ID=ID, 
-                    Rain.Data = CHIRPS, 
+                    Rain.Data = CHIRPS, # You could also use POWER.CHIRPS here
                     Rain.Data.Name = "CHIRPS", 
                     Rain.Field ="Rain", 
                     # DaysBefore: When searching for rainfall events in-between the uncertain planting start/end dates
