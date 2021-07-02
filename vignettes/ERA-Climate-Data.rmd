@@ -622,7 +622,7 @@ Climate<-CalcClimate(DATA=ERA.Yields,
 ```
 
 ```{r CS add climate data, echo=F, eval=T}
-Climate<-ERAg::Climate.Vignette
+Climate<-data.table(ERAg::Climate.Vignette)
 ```
 
 #### What is output by the `CalcClimate` function?
