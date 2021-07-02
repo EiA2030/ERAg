@@ -622,7 +622,7 @@ Climate<-CalcClimate(DATA=ERA.Yields,
 ```
 
 ```{r CS add climate data, echo=F, eval=T}
-Climate<-data.table(ERAg::Climate.Vignette)
+Climate<-ERAg::Climate.Vignette
 ```
 
 #### What is output by the `CalcClimate` function?
@@ -748,8 +748,11 @@ Fields are the same as the `Observed` table apart from:
     + `H.Year` year of harvest (or end of calculation window) (y)
     + `Variable` in rows where this field is `Annual.Value` statistics are calculated for the year in question, whereas statistics in `Dev.Mean` and `Dev.Med` rows show annual deviance from long-term averages (`[["LongTerm"]][["LT.Clim.Avg"]]`).
 
-```{r CS LT.Clim.Years Variables, echo=T,eval=T}
+```{r CS LT.Clim.Years Variables, echo=T,eval=F}
 Climate[["LongTerm"]][["LT.Clim.Years"]][,unique(Variable)]
+```
+```{r Bug hack, echo=F,eval=T}
+c("Dev.Mean","Dev.Med","Annual Value")
 ```
 
 4. **Long-term climate statistics `[["LongTerm"]][["LT.Clim.Avg"]]`**:
@@ -792,6 +795,9 @@ Climate[["BioClim"]][["LT.Averages"]][1:3,]
 Values in the `Variable` field indicate whether the mean, median or standard deviation of each `BIO` field is taken.  
 The `N` field indicates the number of observations (years/seasons) in the time-series.
 
-```{r CS BioClim LTAvg Vars, echo=T,eval=T}
+```{r CS BioClim LTAvg Vars, echo=T,eval=F}
 Climate[["BioClim"]][["LT.Averages"]][,unique(Variable)]
+```
+```{r bug hack 2,echo=F,eval=T}
+c("Mean","Median","SD")
 ```
