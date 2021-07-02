@@ -1,10 +1,10 @@
 ---
-title: "ERA-Search-Protcols-Draft"
+title: "ERA-Search-Protocols-Draft"
 author: "Pete Steward, Todd Rosenstock, Christine Lamanna"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ERA-Search-Protcols-Draft}
+  %\VignetteIndexEntry{ERA-Search-Protocols-Draft}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
