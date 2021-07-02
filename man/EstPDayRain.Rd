@@ -5,7 +5,7 @@
 \title{Estimate uncertain planting dates from rainfall data}
 \usage{
 EstPDayRain(
-  DATA,
+  Data,
   ID,
   Rain.Data,
   Rain.Data.Name,
@@ -22,11 +22,11 @@ EstPDayRain(
 )
 }
 \arguments{
-\item{DATA}{An ERA dataset (e.g. \code{ERA.Compiled})}
+\item{Data}{An ERA dataset (e.g. \code{ERA.Compiled})}
 
 \item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.}
 
-\item{Rain.Data}{Data.frame or data.table of daily rainfall with a field of class \code{Date} named \code{Date}, a numeric field named as per the \code{Rain.Field} argu containing daily rainfall amount in mm and ID field matching DATA object supplied.}
+\item{Rain.Data}{Data.frame or data.table of daily rainfall with a field of class \code{Date} named \code{Date}, a numeric field named as per the \code{Rain.Field} argu containing daily rainfall amount in mm and ID field matching Data object supplied.}
 
 \item{Rain.Data.Name}{A character vector of length one containing the name of the rainfall dataset (e.g. "CHIRPS")}
 
@@ -46,34 +46,34 @@ EstPDayRain(
 
 \item{Uncertainty.Max}{An integer vector of length one; the maximum acceptable difference between plant.start and plant.end in days}
 
-\item{Add.Values}{Logical \code{T/F}; if \code{T} append results to the DATA object supplied and return, else return a separate table.}
+\item{Add.Values}{Logical \code{T/F}; if \code{T} append results to the Data object supplied and return, else return a separate table.}
 
-\item{Use.Data.Dates}{Logical \code{T/F}; only relevant if planting date estimates have been added to the DATA object using the \code{ERAg::Est.PDay.Data} function. If \code{T} then NA values in for Plant.Start and Plant.End are replaced by values estimated using the Est.PDay.Data function.}
+\item{Use.Data.Dates}{Logical \code{T/F}; only relevant if planting date estimates have been added to the Data object using the \code{ERAg::Est.PDay.Data} function. If \code{T} then NA values in for Plant.Start and Plant.End are replaced by values estimated using the Est.PDay.Data function.}
 
 \item{SaveDir}{A character vector of length one containing the path to the directory where the extracted data are to be saved. Set to NA if you do not want to save the returned dataset.}
 }
 \value{
 The \code{EstPDayRain} function generates a field of class \code{Date} named \code{paste0("UnC.",Rain.Data.Name,".P.Date")} containing planting date estimates
-for rows of \code{DATA} where planting uncertainty is within the range specfied by the \code{Uncertainty.Min} and \code{Uncertainty.Max} arguments. If the \code{Add.Values}
-arguments is \code{TRUE} then this field is appended to \code{DATA} else it is returned in a separate \code{data.table.}
+for rows of \code{Data} where planting uncertainty is within the range specfied by the \code{Uncertainty.Min} and \code{Uncertainty.Max} arguments. If the \code{Add.Values}
+arguments is \code{TRUE} then this field is appended to \code{Data} else it is returned in a separate \code{data.table.}
 }
 \description{
 This function can be used to estimate planting datesfrom daily rainfall where there is uncertainty as calculated by substracting \code{Plant.Start} from \code{Plant.End}.
 }
 \details{
-A daily rainfall dataset extracted for the data supplied in the \code{DATA} argument needs to be supplied to this function, we recommend using
+A daily rainfall dataset extracted for the data supplied in the \code{Data} argument needs to be supplied to this function, we recommend using
 the \code{ExtractCHIRPS} function to generate rainfall data. In the \code{Rain.Data.Name} argument please supply the name of the rainfall dataset (e.g. \code{CHIRPS}).
-Use the \code{Rain.Field} argument to specify the name of the column containing the rainfall amount. Matching between \code{DATA} and \code{Rain.Data} uses the
+Use the \code{Rain.Field} argument to specify the name of the column containing the rainfall amount. Matching between \code{Data} and \code{Rain.Data} uses the
 \code{Daycount} and a location identity field as named using the \code{ID} argument, as such the datasets must share the same point of origin for calculation
 of \code{Daycount} and the same name for the \code{ID} field.
 
-Planting dates will estimated for rows in \code{DATA} where the difference between \code{Plant.Start} and \code{Plant.End} is greater than or equal to the
+Planting dates will estimated for rows in \code{Data} where the difference between \code{Plant.Start} and \code{Plant.End} is greater than or equal to the
 \code{Uncertainty.Min} argument and less than or equal to the \code{Uncertainty.Max} argument.
 
 \code{EstPDayRain} uses the  \link[zoo]{rollapply} function to sum rainfall within a scanning window, planting is assumed to occur the day \strong{after}
 summed rainfall surpasses a threshold amount.
 
-For each row of \code{DATA} with appropriate planting uncertainty the function initially searches for rainfall events in \code{Rain.Data} in-between and including the corresponding \code{Plant.Start} and \code{Plant.End} dates.
+For each row of \code{Data} with appropriate planting uncertainty the function initially searches for rainfall events in \code{Rain.Data} in-between and including the corresponding \code{Plant.Start} and \code{Plant.End} dates.
 This temporal search period can be modified using the \code{DaysBefore} and \code{MultiplyWin} arguments.\code{DaysBefore} extends the \code{Plant.Start} date backwards by a number of days.
 \code{MultiplyWin} is a proportion that multiplies the difference between \code{Plant.Start} and \code{Plant.End} dates increasing the size of the period forwards in time.
 If \code{Plant.Start = 2018-01-01} and \code{Plant.End = 2018-01-11} the difference between them is 10 days, if \code{MultiplyWin = 1.5} then \code{10*1.5=15} and the
