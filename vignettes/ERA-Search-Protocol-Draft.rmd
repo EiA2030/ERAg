@@ -4,7 +4,7 @@ author: "Pete Steward, Todd Rosenstock, Christine Lamanna"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{ERA-Search-Protcols-Draft}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
