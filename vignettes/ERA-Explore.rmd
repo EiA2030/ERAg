@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 require(ERAg)
 require(treemap)
 require(tidyr)
+require(spatstat)
 ```
 
 ## Exploring the data
