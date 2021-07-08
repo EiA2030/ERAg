@@ -212,8 +212,8 @@ There are additional columns that describe aspects of specific practices:
 4) **`Diversity`** = a description of crop diversification in time and/or space (i.e. intercropping and/or rotation). A `/` indicates different growing seasons a `..` or a `-` indicates intercropping. *We are working to standardize the delimiters used in this field *. Current differences are between two data entry periods. The 2020 data entry this field shows the entire temporal sequence for an experiment, for the 2018 data entry the field captures only the repeating unit of a rotation (if present)  
 5) **`Tree`** = scientific name(s) of trees used in agroforestry practices  
 
-#### Management practices and technologies: Set Difference Variables
-The base ERA analysis applies a set difference approach, where the `T columns` are compared to the `C columns` to extract: 1) experimental ERA practices (i.e. practices that do not contain `h`) that are in the experimental, but not the control treatment (**`plist`** column); and 2) base practices that are shared between experimental and control treatments (**`base.list`**  column).
+#### Management practices and technologies: Set Difference Approach
+The base ERA analysis applies a set difference approach, where the `T columns` are compared to the `C columns` to extract: 1) experimental ERA practices (i.e. practices that do not contain `h`) that are in the experimental, but not the control treatment (**`plist`** column); and 2) base practices that are shared between experimental and control treatments (**`base.list`**  column).  
 
 ```{r Demonstrate Set Differences, echo=T}
 T.Cols<-paste0("T",1:13)
@@ -241,14 +241,14 @@ T.Cols[T.Cols %in% C.Cols]
 
 Multiple practices in base or experimental columns are sorted then concatenated using a `-` delimiter.  
 
-For convenience we have translated the codes in the **`plist`** and **`base.list`**  columns into names and their corresponding codes:  
+For convenience we have translated the codes in the **`plist`** and **`base.list`**  columns into their corresponding names and codes from `ERAg::PracticeCodes`:  
 1) **`PrName`** = (experimental) practice name  
 2) **`PrName.Code`** = (experimental) practice name code  
 3) **`PrName.Base`** = base practice name  
 4) **`PrName.Base.Code`** = base practice name code  
-5) **`SubPrName`** = (experimental) subpractice name  
+5) **`SubPrName`** = (experimental) subpractice name  (*note that this corresponds to the Subpractice.S field in the PracticeCodes*)
 6) **`SubPrName.Code`** = (experimental) subpractice name code  
-7) **`SubPrName.Base`** = base practice name  
+7) **`SubPrName.Base`** = base practice name (*note that this corresponds to the Subpractice.S field in the PracticeCodes*)
 8) **`SubPrName.Base.Code`** = base subpractice name code  
 9) **`Theme`** = (experimental) practice theme name  
 10) **`Theme.Code`** = (experimental) practice theme name code  
