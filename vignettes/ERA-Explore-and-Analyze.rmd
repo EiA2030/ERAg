@@ -217,10 +217,10 @@ To analyze the data we will use the `ERAg::ERAAnalyze` function which performs t
 
 In all case we advise caution in the interpretation of analysis outputs. The distribution of the data for each combination of values specified in the `Aggregate.By` field should be checked through plotting. Combinations with limited data are vulnerable to outliers and should be scrutinized carefully.  
 
-##### Run Analysis
+##### Calculate Effect Sizes
 Ok now that we have an idea what the function is doing let's run an analysis of outcomes subindicator (`Out.SubInd`) by subpractice (`SubPrName`) using the `ERAg::ERAAnalyze` function.  
 
-We will not specify a product (i.e. crop) column so results are averaged across all the crops present within a combination of subindicator x subpractice.
+We will not specify a product (i.e. crop) column in the `Aggregate.By` argument so results are averaged across all the crops present within each combination of subindicator x subpractice as specified by `c("Out.SubInd","SubPrName")` in the `Aggregate.By` argument.
 
 ```{r WH analyze,echo=T,warning=FALSE}
 Analysis1<-ERAg::ERAAnalyze(Data=ERA.Pits.Prep,
