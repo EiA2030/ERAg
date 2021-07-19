@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
 
 ```{r packages,include=F,eval=T,echo=T}
 require(ERAg)
-require(treemap)
 require(tidyr)
+require(treemap)
 require(spatstat)
 ```
 
