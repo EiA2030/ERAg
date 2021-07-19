@@ -95,12 +95,11 @@
 ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   options(scipen=999)
 
-  Data<-Data[!(is.na(yi)|is.infinite(yi))]
+  Data<-Data[,yi:=log(MeanT/MeanC)][!(is.na(yi)|is.infinite(yi))]
 
   # Remove Outliers
   if(rmOut){
 
-    suppressWarnings(Data[,yi:=log(MeanT/MeanC)])
 
 
     Outliers<-unlist(Data[,R:=1:nrow(Data)
