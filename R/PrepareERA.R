@@ -18,7 +18,7 @@
 #'    - Class.A (e.g. colname = *Pr.Class.A*) which indicates the presence of single (value = *Solo*) or multiple (value = *Multi*) experimental ERA practices.
 #'    - ClassB which indicates the presence (value = *Base*) or absence (value = *No Base*) of shared ERA practices between the control and experimental treatments.
 #' 9) *DISABLED: Where multiple products are present in a row the row is duplicated for the length of the products, each row being assigned to one of the products.*
-
+#'
 #' @param Data The compiled ERA dataset
 #' @param DoCombinations Logical `T/F`. When set to TRUE for each individual ERA practice in the practice codes file the function copies rows where a practice is present
 #' and in combination with other practices (no. practices >1) in the in the set difference practice codes (plist column). In the copied rows the PrName is changed by pasting
