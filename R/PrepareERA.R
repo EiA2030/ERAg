@@ -123,7 +123,6 @@ PrepareERA<-function(Data,
     Data<-Data[!Neg.Vals=="Y"]
   }
 
-
   # Recode Neg.Vals in FCR/PCR to be N (these are dealt with using a different system to RRs)
   # Data[Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),Neg.Vals:="N"]
 
