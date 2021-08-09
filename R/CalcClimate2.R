@@ -208,7 +208,7 @@
 #' @importFrom circular circular
 #' @importFrom zoo rollapply as.zoo as.Date
 #' @import data.table
-CalcClimate<-function(DATA,
+CalcClimate2<-function(DATA,
                       CLIMATE,
                       ID,
                       Rain.Data.Name,

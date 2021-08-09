@@ -2,6 +2,7 @@
 
 export(AddEcoCrop)
 export(CalcClimate)
+export(CalcClimate2)
 export(CreateConceptLevels)
 export(DeriveOutcomes)
 export(DownloadCHIRPs)
