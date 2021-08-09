@@ -588,7 +588,7 @@ CalcClimate2<-function(DATA,
 
                 C<-c(sapply(GDD(Tmax=C$Temp.Max,Tmin=C$Temp.Min,Tlow=SS.N[i,Tlow],Thigh=SS.N[i,Thigh],Topt.low = SS.N[i,Topt.low],Topt.high = SS.N[i,Topt.high],ROUND=2),sum),
                      unlist(RAIN.Calc(C$Rain,C$ETo)),
-                     unlist(TEMP.Calc(C$Tmax,C$Tmin)),
+                     unlist(TEMP.Calc(C$Temp.Max,C$Temp.Min)),
                      Tmax.mean=mean(C$Temp.Max),Tmax.sd=sd(C$Temp.Max),Tmean.mean=mean(C$Temp.Mean),Tmean.sd=sd(C$Temp.Mean))
 
                 suppressWarnings(C$EU<-SS.N$EU[i])
@@ -756,7 +756,7 @@ CalcClimate2<-function(DATA,
                   C[,GDD(Tmax=Temp.Max,Tmin=Temp.Min,Tlow=SS.N[i,mean(Tlow)],Thigh=SS.N[i,mean(Thigh)],Topt.low = SS.N[i,mean(Topt.low)],Topt.high = SS.N[i,mean(Topt.high)],ROUND=2),by=c("P.Year","H.Year")
                   ][,lapply(.SD,sum),.SDcol=3:6,by=c("P.Year","H.Year")],
                   C[,RAIN.Calc(Rain,ETo),by=c("P.Year","H.Year")][,-c(1:2)],
-                  C[,TEMP.Calc(Tmax,Tmin),by=c("P.Year","H.Year")][,-c(1:2)],
+                  C[,TEMP.Calc(Temp.Max,Temp.Min),by=c("P.Year","H.Year")][,-c(1:2)],
                   C[,list(Tmax.mean=mean(Temp.Max),Tmax.sd=sd(Temp.Max),Tmean.mean=mean(Temp.Mean),Tmean.sd=sd(Temp.Mean)),by=c("P.Year","H.Year")][,-c(1:2)]
                 )
 
