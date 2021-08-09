@@ -181,6 +181,9 @@
 #' \item *`[[Parameters]]`* = a `list` record of argument values supplied to the `CalcClimate` function
 #' }
 #' @export
+#' @importFrom circular circular
+#' @importFrom zoo rollapply as.zoo as.Date
+#' @import data.table
 CalcClimate<-function(DATA,
                       CLIMATE,
                       ID,
@@ -578,9 +581,9 @@ CalcClimate<-function(DATA,
               Annual.Plant[match(format(PD.Date.Pub,"%Y"),Year.Range)]<-PD.Date.Pub
 
               No.PDate.Flag<-"No seasons met rainfall threshold, mid-point of published planting period used."
-              C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[!is.na(Annual.Plant)]), 5, 10))),"%j"))*360/365*pi/180)
+              C.val<-circular::circular(as.numeric(format(base::as.Date(paste0("2000",substr(as.character(Annual.Plant[!is.na(Annual.Plant)]), 5, 10))),"%j"))*360/365*pi/180)
             }else{
-              C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
+              C.val<-circular::circular(as.numeric(format(base::as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
             }
 
 
@@ -871,7 +874,7 @@ CalcClimate<-function(DATA,
         }
       }
 
-      BIOV.LT<-BIOV[Year<=Max.LT.Avg,pblapply(.SD,FUN=function(X){round(c(mean(X),median(X),sd(X)),2)}),by="ID",.SDcol=3:ncol(BIOV)
+      BIOV.LT<-BIOV[Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){round(c(mean(X),median(X),sd(X)),2)}),by="ID",.SDcol=3:ncol(BIOV)
       ][,Variable:=rep(c("Mean","Median","SD"),.N/3)][,N:=sum(Years<=Max.LT.Avg)]
 
       Annual.Estimates<-rbind(
