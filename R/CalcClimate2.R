@@ -318,10 +318,14 @@ CalcClimate2<-function(DATA,
   RAIN.Calc<-function(Rain,ETo){
 
     ZDays<-function(Rain,Threshold=0,FUN=max){
-      Rain[Rain<Threshold]<-0
+      Rain[Rain<Threshold]<-9999
       X<-rle(as.character(Rain))
-      X<-X$lengths[X$values==0]
+      X<-X$lengths[X$values==9999]
+      if(length(X)>0){
       return(FUN(X))
+      }else{
+        return(0)
+      }
     }
 
     data.table(
@@ -355,13 +359,17 @@ CalcClimate2<-function(DATA,
     ZDays<-function(Data,Threshold=0,FUN=max,Direction="lower"){
       # Direction = lower or higher than the threshold specified
       if(Direction=="lower"){
-        Data[Data<Threshold]<-0
+        Data[Data<Threshold]<-9999
       }else{
-        Data[Data>Threshold]<-0
+        Data[Data>Threshold]<-9999
       }
       X<-rle(as.character(Data))
-      X<-X$lengths[X$values==0]
+      X<-X$lengths[X$values==9999]
+      if(length(X)>0){
       return(FUN(X))
+      }else{
+        return(0)
+      }
     }
 
     X<-data.table(
@@ -397,7 +405,8 @@ CalcClimate2<-function(DATA,
       Tmax.range=diff(range(Tmax))
     )
 
-    return(X)
+
+   return(X[,lapply(.SD,as.numeric)])
 
 
   }
