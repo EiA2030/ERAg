@@ -321,7 +321,7 @@ CalcClimate2<-function(DATA,
       Rain[Rain<Threshold]<-0
       X<-rle(as.character(Rain))
       X<-X$lengths[X$values==0]
-      return(X)
+      return(FUN(X))
     }
 
     data.table(
@@ -361,7 +361,7 @@ CalcClimate2<-function(DATA,
       }
       X<-rle(as.character(Data))
       X<-X$lengths[X$values==0]
-      return(X)
+      return(FUN(X))
     }
 
     X<-data.table(
