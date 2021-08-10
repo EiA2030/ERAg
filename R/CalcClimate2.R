@@ -328,7 +328,7 @@ CalcClimate2<-function(DATA,
       }
     }
 
-    data.table(
+    X<-data.table(
       Rain.Days.TL0=round(sum(Rain==0)/length(Rain),2),
       Rain.Days.TL1=round(sum(Rain<1)/length(Rain),2),
       Rain.Days.TL5=round(sum(Rain<5)/length(Rain),2),
@@ -350,6 +350,8 @@ CalcClimate2<-function(DATA,
       ETo.NA=sum(is.na(ETo)),
       WBalance=sum(Rain)-sum(ETo)
     )[is.na(ETo.sum),WBalance:=as.numeric(NA)]
+
+    return(X[,lapply(.SD,as.numeric)])
 
 
   }
