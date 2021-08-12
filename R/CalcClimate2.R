@@ -356,7 +356,7 @@ CalcClimate2<-function(DATA,
 
   }
 
-  TEMP.Calc<-function(Tmax,Tmin){
+  TEMP.Calc<-function(Tmax,Tmin,Tmean){
 
     ZDays<-function(Data,Threshold=0,FUN=max,Direction="lower"){
       # Direction = lower or higher than the threshold specified
@@ -399,12 +399,20 @@ CalcClimate2<-function(DATA,
       Tmin.min=min(Tmin),
       Tmin.mean=mean(Tmin),
       Tmin.var=var(Tmin),
+      Tmin.var=sd(Tmin),
       Tmin.range=diff(range(Tmin)),
 
       Tmax.max=max(Tmax),
       Tmax.mean=mean(Tmax),
       Tmax.var=var(Tmax),
-      Tmax.range=diff(range(Tmax))
+      Tmax.var=sd(Tmax),
+      Tmax.range=diff(range(Tmax)),
+
+      Tmean.max=max(Tmean),
+      Tmean.mean=mean(Tmean),
+      Tmean.var=var(Tmean),
+      Tmean.var=sd(Tmean),
+      Tmean.range=diff(range(Tmean))
     )
 
 
@@ -599,8 +607,7 @@ CalcClimate2<-function(DATA,
 
                 C<-c(sapply(GDD(Tmax=C$Temp.Max,Tmin=C$Temp.Min,Tlow=SS.N[i,Tlow],Thigh=SS.N[i,Thigh],Topt.low = SS.N[i,Topt.low],Topt.high = SS.N[i,Topt.high],ROUND=2),sum),
                      unlist(RAIN.Calc(C$Rain,C$ETo)),
-                     unlist(TEMP.Calc(C$Temp.Max,C$Temp.Min)),
-                     Tmax.mean=mean(C$Temp.Max),Tmax.sd=sd(C$Temp.Max),Tmean.mean=mean(C$Temp.Mean),Tmean.sd=sd(C$Temp.Mean))
+                     unlist(TEMP.Calc(C$Temp.Max,C$Temp.Min,C$Temp.Mean))))
 
                 suppressWarnings(C$EU<-SS.N$EU[i])
                 C$PD.Used<-SS.N$P.Date.Merge[i]
@@ -767,8 +774,7 @@ CalcClimate2<-function(DATA,
                   C[,GDD(Tmax=Temp.Max,Tmin=Temp.Min,Tlow=SS.N[i,mean(Tlow)],Thigh=SS.N[i,mean(Thigh)],Topt.low = SS.N[i,mean(Topt.low)],Topt.high = SS.N[i,mean(Topt.high)],ROUND=2),by=c("P.Year","H.Year")
                   ][,lapply(.SD,sum),.SDcol=3:6,by=c("P.Year","H.Year")],
                   C[,RAIN.Calc(Rain,ETo),by=c("P.Year","H.Year")][,-c(1:2)],
-                  C[,TEMP.Calc(Temp.Max,Temp.Min),by=c("P.Year","H.Year")][,-c(1:2)],
-                  C[,list(Tmax.mean=mean(Temp.Max),Tmax.sd=sd(Temp.Max),Tmean.mean=mean(Temp.Mean),Tmean.sd=sd(Temp.Mean)),by=c("P.Year","H.Year")][,-c(1:2)]
+                  C[,TEMP.Calc(Temp.Max,Temp.Min,Temp.Mean),by=c("P.Year","H.Year")][,-c(1:2)]
                 )
 
                 LT.Avg<-C[H.Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){c(round(mean(X,na.rm=T),ROUND),
