@@ -46,6 +46,8 @@ PrepareERA<-function(Data,
                                "Product.Subtype.Code", "Product.Type.Code","Out.Pillar.Code","Out.SubPillar.Code","Out.Ind.Code", "Out.SubInd.Code",
                               "Theme.Code","PrName.Base.Code","SubPrName.Base.Code","Theme.Base.Code","Partial.Outcome.Name","Partial.Outcome.Code")
                      ){
+  DataX<-data.table::copy(Data)
+
   OutcomeCodes<-data.table(ERAg::OutcomeCodes)
   PracticeCodes<-data.table(ERAg::PracticeCodes)
   EUCodes<-data.table(ERAg::EUCodes)
@@ -55,34 +57,34 @@ PrepareERA<-function(Data,
   }
 
 
-  Flip.Neg<-function(Data,OutcomeCodes){
-    N1<-OutcomeCodes[match(Data[,Outcode],OutcomeCodes[,Code]),Sign]=="n"
-    X<-Data[N1,c("MeanC","MeanT")]
+  Flip.Neg<-function(DataX,OutcomeCodes){
+    N1<-OutcomeCodes[match(DataX[,Outcode],OutcomeCodes[,Code]),Sign]=="n"
+    X<-DataX[N1,c("MeanC","MeanT")]
 
-    Data[N1,MeanC:=X[,MeanT]][N1,MeanT:=X[,MeanC]]
-    Data[,MeanFlip:="N"][N1,MeanFlip:="Y"]
+    DataX[N1,MeanC:=X[,MeanT]][N1,MeanT:=X[,MeanC]]
+    DataX[,MeanFlip:="N"][N1,MeanFlip:="Y"]
 
-    return(Data)
+    return(DataX)
   }
 
 
   # Remove any h codes from base practice list (**NOTE** should be moved to compilation function)
   HCodes<-PracticeCodes[grep("h",Code),Code]
-  Data[,base.list:=unlist(lapply(strsplit(Data$base.list,"-"), FUN=function(H){paste(H[!H %in% HCodes],collapse="-")}))]
+  DataX[,base.list:=unlist(lapply(strsplit(DataX$base.list,"-"), FUN=function(H){paste(H[!H %in% HCodes],collapse="-")}))]
 
   # Add ID column
-  Data[,ID:=Site.Key]
-  Data[,Site.Key:=NULL]
+  DataX[,ID:=Site.Key]
+  DataX[,Site.Key:=NULL]
 
   # Remove any instances where PrName is blank
-  Data<-Data[!PrName==""]
+  DataX<-DataX[!PrName==""]
 
   # Remove Energy from Practice Theme
-  # Data<-Data[!grepl("Energy",Theme)]
+  # DataX<-DataX[!grepl("Energy",Theme)]
 
   # Convert 267.1 and 265.1 conversion ratio outcomes (In/Out) into 267 and 265 outcomes (Out/In)
-  Data[,MeanC:=as.numeric(as.character(MeanC))][,MeanT:=as.numeric(as.character(MeanT))]
-  Data[Outcode==267.1,MeanC:=1/MeanC
+  DataX[,MeanC:=as.numeric(as.character(MeanC))][,MeanT:=as.numeric(as.character(MeanT))]
+  DataX[Outcode==267.1,MeanC:=1/MeanC
        ][Outcode==267.1,MeanT:=1/MeanT
          ][Outcode==267.1,Out.SubInd:=OutcomeCodes[Code==267,Subindicator]
            ][Outcode==267.1,Out.SubInd.S:=OutcomeCodes[Code==267,Subindicator.Short]
@@ -90,7 +92,7 @@ PrepareERA<-function(Data,
                  ][Outcode==267.1,Outcode:=267]
 
 
-  Data[Outcode==265.1,MeanC:=1/MeanC
+  DataX[Outcode==265.1,MeanC:=1/MeanC
        ][Outcode==265.1,MeanT:=1/MeanT
         ][Outcode==265.1,Out.SubInd:=OutcomeCodes[Code==265,Subindicator]
            ][Outcode==265.1,Out.SubInd.S:=OutcomeCodes[Code==265,Subindicator.Short]
@@ -100,9 +102,9 @@ PrepareERA<-function(Data,
 
   # Filter out outcomes with >Perc.Neg% negative values
 
-  Data[,Neg.Vals:=OutcomeCodes[match(Data[,Outcode],Code),Negative.Values]]
+  DataX[,Neg.Vals:=OutcomeCodes[match(DataX[,Outcode],Code),Negative.Values]]
 
-  A<-Data[Neg.Vals=="Y"
+  A<-DataX[Neg.Vals=="Y"
     ][,list(Neg.Vals.MeanC=sum(MeanC<0,na.rm=T),
             Neg.Vals.MeanT=sum(MeanT<0,na.rm=T),
             Neg.Vals.Both=sum(MeanC<0 & MeanT<0,na.rm=T),
@@ -113,39 +115,39 @@ PrepareERA<-function(Data,
          ][,Outname:=OutcomeCodes$Subindicator[match(Outcode,OutcomeCodes$Code)]
           ][order(N.OBs,decreasing = T)]
 
-  Data[Outcode %in% A[Perc.Neg.Any<=Perc.Neg,Outcode],Neg.Vals:="N"]
+  DataX[Outcode %in% A[Perc.Neg.Any<=Perc.Neg,Outcode],Neg.Vals:="N"]
 
 
   OutcomeCodes$Negative.Values[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
 
   # Remove outcomes where they are negative > Perc.Neg of the time
   if(RmNeg){
-    Data<-Data[!Neg.Vals=="Y"]
+    DataX<-DataX[!Neg.Vals=="Y"]
   }
 
   # Recode Neg.Vals in FCR/PCR to be N (these are dealt with using a different system to RRs)
-  # Data[Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),Neg.Vals:="N"]
+  # DataX[Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"),Neg.Vals:="N"]
 
   # Remove observations where plist is blank
-  Data<-Data[plist!=""]
+  DataX<-DataX[plist!=""]
 
-  # Restructure Data to deal with when negative RR is better
+  # Restructure DataX to deal with when negative RR is better
   # Note that this changes the structure of the compendium dataset. The resulting data.table should not be shared as this could lead to confusion.
 
-  Data<-Flip.Neg(Data=Data,OutcomeCodes)
+  DataX<-Flip.Neg(DataX=DataX,OutcomeCodes)
 
   # Remove unecessary cols
-  Data<-Data[,..Cols]
+  DataX<-DataX[,..Cols]
 
-  Practices<-unique(unlist(strsplit(unique(Data$PrName),"-")))
+  Practices<-unique(unlist(strsplit(unique(DataX$PrName),"-")))
 
   if(DoCombinations){
     if(CombineAll){
 
       Combinations<-rbindlist(lapply(Practices,FUN=function(X){
-        N<-grep(X,Data$PrName)
+        N<-grep(X,DataX$PrName)
         if(length(N)>0){
-          Data[N,][,PrName:=paste0(X," Combinations")]
+          DataX[N,][,PrName:=paste0(X," Combinations")]
         }else{
 
         }
@@ -153,17 +155,17 @@ PrepareERA<-function(Data,
     }else{
 
       Combinations<-rbindlist(lapply(Practices,FUN=function(X){
-        N<-grep(X,Data$PrName)
-        N1<-N[grep("-",Data$PrName[N])]
+        N<-grep(X,DataX$PrName)
+        N1<-N[grep("-",DataX$PrName[N])]
         if(length(N)>0){
-          Data[N1,][,PrName:=paste0(X," Combinations")]
+          DataX[N1,][,PrName:=paste0(X," Combinations")]
         }else{
 
         }
       }))
     }
 
-    Data<-rbind(Data,Combinations)
+    DataX<-rbind(DataX,Combinations)
 
   }
 
@@ -173,42 +175,42 @@ PrepareERA<-function(Data,
   # 3) "Solo TPrac + Base Prac" = (ABC in treatment - BC control) = subtracted treatment of A
   # 4) "Multi TPrac + Base Prac" = (ABC in treatment - C control) = subtracted treatment of AB
 
-  Data[,Pr.Class:=as.character(NA)][,SubPr.Class:=as.character(NA)]
-  Data[,Pr.Class.A:=as.character(NA)][,SubPr.Class.A:=as.character(NA)]
-  Data[,Pr.Class.B:=as.character(NA)][,SubPr.Class.B:=as.character(NA)]
+  DataX[,Pr.Class:=as.character(NA)][,SubPr.Class:=as.character(NA)]
+  DataX[,Pr.Class.A:=as.character(NA)][,SubPr.Class.A:=as.character(NA)]
+  DataX[,Pr.Class.B:=as.character(NA)][,SubPr.Class.B:=as.character(NA)]
 
   # Practices
-  Data[!grepl("-",PrName) & PrName.Base=="" & !grepl("Combination",PrName),Pr.Class:="Solo TPrac No Base Prac"]
-  Data[grepl("-",PrName) & PrName.Base=="" & !grepl("Combination",PrName),Pr.Class:="Multi TPrac No Base Prac"]
-  Data[!grepl("-",PrName) & PrName.Base!="" & !grepl("Combination",PrName),Pr.Class:="Solo TPrac + Base Prac"]
-  Data[grepl("-",PrName) & PrName.Base!="" & !grepl("Combination",PrName),Pr.Class:="Multi TPrac + Base Prac"]
+  DataX[!grepl("-",PrName) & PrName.Base=="" & !grepl("Combination",PrName),Pr.Class:="Solo TPrac No Base Prac"]
+  DataX[grepl("-",PrName) & PrName.Base=="" & !grepl("Combination",PrName),Pr.Class:="Multi TPrac No Base Prac"]
+  DataX[!grepl("-",PrName) & PrName.Base!="" & !grepl("Combination",PrName),Pr.Class:="Solo TPrac + Base Prac"]
+  DataX[grepl("-",PrName) & PrName.Base!="" & !grepl("Combination",PrName),Pr.Class:="Multi TPrac + Base Prac"]
 
-  Data[PrName.Base=="" & !grepl("Combination",PrName),Pr.Class.A:="Solo"]
-  Data[PrName.Base!="" & !grepl("Combination",PrName),Pr.Class.A:="Multi"]
-  Data[!grepl("-",PrName) & !grepl("Combination",PrName),Pr.Class.B:="No Base"]
-  Data[grepl("-",PrName) & !grepl("Combination",PrName),Pr.Class.B:="Base"]
+  DataX[PrName.Base=="" & !grepl("Combination",PrName),Pr.Class.A:="Solo"]
+  DataX[PrName.Base!="" & !grepl("Combination",PrName),Pr.Class.A:="Multi"]
+  DataX[!grepl("-",PrName) & !grepl("Combination",PrName),Pr.Class.B:="No Base"]
+  DataX[grepl("-",PrName) & !grepl("Combination",PrName),Pr.Class.B:="Base"]
 
   # SubPractices
-  Data[!grepl("-",SubPrName) & SubPrName.Base=="" & !grepl("Combination",PrName),SubPr.Class:="Solo TPrac No Base Prac"]
-  Data[grepl("-",SubPrName) & SubPrName.Base=="" & !grepl("Combination",PrName),SubPr.Class:="Multi TPrac No Base Prac"]
-  Data[!grepl("-",SubPrName) & SubPrName.Base!="" & !grepl("Combination",PrName),SubPr.Class:="Solo TPrac + Base Prac"]
-  Data[grepl("-",SubPrName) & SubPrName.Base!="" & !grepl("Combination",PrName),SubPr.Class:="Multi TPrac + Base Prac"]
+  DataX[!grepl("-",SubPrName) & SubPrName.Base=="" & !grepl("Combination",PrName),SubPr.Class:="Solo TPrac No Base Prac"]
+  DataX[grepl("-",SubPrName) & SubPrName.Base=="" & !grepl("Combination",PrName),SubPr.Class:="Multi TPrac No Base Prac"]
+  DataX[!grepl("-",SubPrName) & SubPrName.Base!="" & !grepl("Combination",PrName),SubPr.Class:="Solo TPrac + Base Prac"]
+  DataX[grepl("-",SubPrName) & SubPrName.Base!="" & !grepl("Combination",PrName),SubPr.Class:="Multi TPrac + Base Prac"]
 
-  Data[SubPrName.Base=="" & !grepl("Combination",PrName),SubPr.Class.A:="Solo"]
-  Data[SubPrName.Base!="" & !grepl("Combination",PrName),SubPr.Class.A:="Multi"]
-  Data[!grepl("-",SubPrName) & !grepl("Combination",PrName),SubPr.Class.B:="No Base"]
-  Data[grepl("-",SubPrName) & !grepl("Combination",PrName),SubPr.Class.B:="Base"]
+  DataX[SubPrName.Base=="" & !grepl("Combination",PrName),SubPr.Class.A:="Solo"]
+  DataX[SubPrName.Base!="" & !grepl("Combination",PrName),SubPr.Class.A:="Multi"]
+  DataX[!grepl("-",SubPrName) & !grepl("Combination",PrName),SubPr.Class.B:="No Base"]
+  DataX[grepl("-",SubPrName) & !grepl("Combination",PrName),SubPr.Class.B:="Base"]
 
   # Calculate response ratios &  exclude indicators that can have a negative value
-  Data<-suppressWarnings(Data[Neg.Vals=="N"
+  DataX<-suppressWarnings(DataX[Neg.Vals=="N"
              ][,pc:=100*((MeanT/MeanC)-1)
                ][,yi:=log(MeanT/MeanC)
                  ][,Neg.Vals:=NULL])
 
     # Split and duplicate products - disabled
   if(F){
-    Data<-rbindlist(lapply(Data[,unique(Product)],FUN=function(X){
-      Y<-Data[Product==X]
+    DataX<-rbindlist(lapply(DataX[,unique(Product)],FUN=function(X){
+      Y<-DataX[Product==X]
       Z<-unlist(strsplit(unique(Y$Product)," x "))
       rbindlist(lapply(Z,FUN=function(PROD){
         Y[,Product:=PROD]
@@ -216,14 +218,14 @@ PrepareERA<-function(Data,
     }))
 
     # Update Product Type & Sub Type
-    Data[, Product.Type:=EUCodes$Product.Type[match(Data$Product,EUCodes$Product)]]
-    Data[, Product.Subtype:=EUCodes$Product.Subtype[match(Data$Product,EUCodes$Product)]]
+    DataX[, Product.Type:=EUCodes$Product.Type[match(DataX$Product,EUCodes$Product)]]
+    DataX[, Product.Subtype:=EUCodes$Product.Subtype[match(DataX$Product,EUCodes$Product)]]
   }
 
   # Split out combinations data
   if(DoCombinations){
     # Subset and rbind solo and combination practices (as labelled in PrName) into a new data.table
-    Data.Combos<-rbind(Data[grepl("Combination",PrName)],Data[Pr.Class.A == "Solo"])
+    Data.Combos<-rbind(DataX[grepl("Combination",PrName)],DataX[Pr.Class.A == "Solo"])
     Data.Combos<-Data.Combos[!grepl("-",PrName)]
     # Create a combination column describing if the (subtracted) practice is in combination or alone
     Data.Combos[,Is.Combo:="Combinations"]
@@ -231,16 +233,16 @@ PrepareERA<-function(Data,
     # Remove uncessary columns
     Data.Combos<-Data.Combos[,!c("Pr.Class","SubPr.Class","Pr.Class.A","SubPr.Class.A","SubPr.Class.B","Pr.Class.B")]
     # Remove combinations from original data.table
-    Data<-Data[!grepl("Combinations",PrName)]
+    DataX<-DataX[!grepl("Combinations",PrName)]
     # Remove "Combinations" from PrName in new data.table
     Data.Combos[,PrName:=gsub(" Combinations","",PrName)]
     # Update theme
     Data.Combos[,Theme:=PracticeCodes$Theme[match(Data.Combos$PrName,PracticeCodes$Practice)]]
 
-    return(list(Data=Data,Data.Combos=Data.Combos))
+    return(list(Data=DataX,Data.Combos=Data.Combos))
 
   }else{
-    return(Data)
+    return(DataX)
   }
 
 }
