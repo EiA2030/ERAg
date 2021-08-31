@@ -42,7 +42,7 @@ Returns.Fun<-function(Data,ACode=120,BCode=150,CCode=124){
 
   OutcomeCodes<-data.table(ERAg::OutcomeCodes)
 
-  X<-Data
+  X<-data.table::copy(Data)
   # Add ID field
   X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Duration,EU,Units)]
 
@@ -135,7 +135,7 @@ BCR.Fun<-function(Data,CostCode,ReturnCode,RatioCode){
 
   OutcomeCodes<-data.table(ERAg::OutcomeCodes)
 
-  X<-Data
+  X<-data.table::copy(Data)
   # Add ID field
   X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Duration,EU,Units)]
 
