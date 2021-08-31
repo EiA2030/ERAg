@@ -49,7 +49,7 @@ Returns.Fun<-function(Data,ACode=120,BCode=150,CCode=124){
   X<-X[,Out.Present:=any(Outcode %in% CCode),by=IDx][Out.Present!=T]
 
   X<-X[Outcode %in% c(ACode,BCode)][,BothPresent:=length(unique(Outcode))==2,by=IDx]
-  C<-X[BothPresent==T]
+  X<-X[BothPresent==T]
   if(nrow(X)==0){
     NULL
   }else{
