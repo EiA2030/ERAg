@@ -253,7 +253,9 @@ if(DoWUE){
 
     return(X)
   }
-  WUE<-AddWUE(Data=Data,ACode=-OutcomeCodes[grep("Water Use Eff",Subindicator),Code],BCode=101)
+  WUE<-AddWUE(Data=Data,
+              ACode=OutcomeCodes[grep("Water Use Eff",Subindicator),Code],
+              BCode=101)
 
   Data<-rbindlist(list(Data,WUE), use.names = T)
 }
