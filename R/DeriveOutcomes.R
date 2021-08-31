@@ -18,13 +18,14 @@
 #'
 #' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
 #' @param RmPartial Logical `T/F`. If `T` partial economic outcomes are excluded from the process.
-#' @param DoBCR_VC Logical `T/F`. If `T` benefit cost ratios calculated using variable costs are also included in calculations as per 5) & 6) in
-#' decription.
+#' @param DoBCR_VC Logical `T/F`. If `T` benefit cost ratios calculated using variable costs are also included in calculations as per description points 5) & 6).
+#' @param DoWUE Logical `T/F`. If `T` water use efficiency outcome derived from yield and TSP (total seasonal precipitation) data
 #' @return ERAWeights returns the input `data.table` with additional rows appended for derived outcomes.
 #' @export
-DeriveOutcomes<-function(Data,
-                         RmPartial,
-                         DoBCR_VC){
+DeriveOutcomes<-function(Data = ERA.Compiled,
+                         RmPartial = T,
+                         DoBCR_VC = T,
+                         DoWUE = T){
 
 # Remove partial practices?
 Data<-if(RmPartial==T){
@@ -225,6 +226,36 @@ if(DoBCR_VC==T){
 }else{
   # Combine with master dataset ####
   Data<-rbindlist(list(Data,GRTC$data,NRTC$data),use.names=T)
+}
+
+# Add WUE
+if(DoWUE){
+  AddWUE<-function(Data,ACode,BCode){
+
+    OutcomeCodes<-data.table(ERAg::OutcomeCodes)
+
+    X<-data.table::copy(Data)
+    # Add ID field
+    X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Duration,EU,Units)]
+
+    # Remove groups that already have ACode outcome present
+    X<-X[,Out.Present:=any(Outcode %in% ACode),by=IDx][Out.Present!=T]
+    X[,Out.Present:=NULL]
+
+    X<-X[Outcode == BCode & !is.na(TSP) & !is.na(MeanC)]
+
+    X[,MeanC:=MeanC/TSP
+    ][,MeanT:=MeanT/TSP
+    ][,Units:=paste0(Units,"/mm"),
+    ][,Outcode:=ACode
+    ][,yi:=MeanT/MeanC
+    ][,pc:=100*(MeanT-MeanC/MeanC)-100]
+
+    return(X)
+  }
+  WUE<-AddWUE(Data=Data,ACode=-OutcomeCodes[grep("Water Use Eff",Subindicator),Code],BCode=101)
+
+  Data<-rbindlist(list(Data,WUE), use.names = T)
 }
 
 # Remove any infinite values caused by MeanC being 0

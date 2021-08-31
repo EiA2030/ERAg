@@ -4,15 +4,16 @@
 \alias{DeriveOutcomes}
 \title{Derive ERA outcomes from existing data}
 \usage{
-DeriveOutcomes(Data, RmPartial, DoBCR_VC)
+DeriveOutcomes(Data = ERA.Compiled, RmPartial = T, DoBCR_VC = T, DoWUE = T)
 }
 \arguments{
 \item{Data}{An ERA data.table (e.g. \code{ERAg::ERA.Compiled}).}
 
 \item{RmPartial}{Logical \code{T/F}. If \code{T} partial economic outcomes are excluded from the process.}
 
-\item{DoBCR_VC}{Logical \code{T/F}. If \code{T} benefit cost ratios calculated using variable costs are also included in calculations as per 5) & 6) in
-decription.}
+\item{DoBCR_VC}{Logical \code{T/F}. If \code{T} benefit cost ratios calculated using variable costs are also included in calculations as per description points 5) & 6).}
+
+\item{DoWUE}{Logical \code{T/F}. If \code{T} water use efficiency outcome derived from yield and TSP (total seasonal precipitation) data}
 }
 \value{
 ERAWeights returns the input \code{data.table} with additional rows appended for derived outcomes.
