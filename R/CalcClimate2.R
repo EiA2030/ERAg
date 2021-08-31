@@ -607,7 +607,7 @@ CalcClimate2<-function(DATA,
 
                 C<-c(sapply(GDD(Tmax=C$Temp.Max,Tmin=C$Temp.Min,Tlow=SS.N[i,Tlow],Thigh=SS.N[i,Thigh],Topt.low = SS.N[i,Topt.low],Topt.high = SS.N[i,Topt.high],ROUND=2),sum),
                      unlist(RAIN.Calc(C$Rain,C$ETo)),
-                     unlist(TEMP.Calc(C$Temp.Max,C$Temp.Min,C$Temp.Mean))))
+                     unlist(TEMP.Calc(C$Temp.Max,C$Temp.Min,C$Temp.Mean)))
 
                 suppressWarnings(C$EU<-SS.N$EU[i])
                 C$PD.Used<-SS.N$P.Date.Merge[i]
