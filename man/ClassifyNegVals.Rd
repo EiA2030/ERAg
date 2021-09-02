@@ -8,8 +8,8 @@ ClassifyNegVals(
   Data,
   OCode,
   Thresholds = c(0.7, 0.95, 1.05, 1.3),
-  Vals = c(`0` = 0, `++` = 2, `+` = 1, `-` = -1, `--` = -2, `+/-` = 1, `-/+` = -1, `+0`
-    = 1, `0+` = -1, `-0` = -1, `0-` = 1),
+  Vals = c(`0` = 0, `++` = 2, `+` = 1, `-` = -1, `--` = -2, `+-` = 1, `-+` = -1, `+0` =
+    1, `0+` = -1, `-0` = -1, `0-` = 1),
   Invert2xNeg = T
 )
 }
@@ -34,8 +34,8 @@ ClassifyNegVals(
 \item \code{Vals[3]}: Class \code{+}= \verb{Threshold[2]<=MeanT/MeanC<Threshold[3]}
 \item \code{Vals[4]}: Class \code{-} = \verb{Threshold[3]<=MeanT/MeanC<Threshold[4]}
 \item \code{Vals[5]}: Class \verb{--} = \code{MeanT/MeanC>=Threshold[4]}
-\item \code{Vals[6]}: Class \verb{+/-} = \code{MeanT>0 & MeanC<0}
-\item \code{Vals[7]}: Class \verb{-/+} =\code{ MeanT<0 & MeanC>0}
+\item \code{Vals[6]}: Class \verb{+-} = \code{MeanT>0 & MeanC<0}
+\item \code{Vals[7]}: Class \verb{-+} =\code{ MeanT<0 & MeanC>0}
 \item \code{Vals[8]}: Class \code{+0} = \code{MeanT>0 & MeanC==0}
 \item \code{Vals[9]}: Class \verb{0+} = \code{MeanT==0 & MeanC>0}
 \item \code{Vals[10]}: Class \code{-0} = \code{MeanT<0 & MeanC==0}

@@ -21,8 +21,8 @@
 #' * `Vals[3]`: Class `+`= `Threshold[2]<=MeanT/MeanC<Threshold[3]`
 #' * `Vals[4]`: Class `-` = `Threshold[3]<=MeanT/MeanC<Threshold[4]`
 #' * `Vals[5]`: Class `--` = `MeanT/MeanC>=Threshold[4]`
-#' * `Vals[6]`: Class `+/-` = `MeanT>0 & MeanC<0`
-#' * `Vals[7]`: Class `-/+` =` MeanT<0 & MeanC>0`
+#' * `Vals[6]`: Class `+-` = `MeanT>0 & MeanC<0`
+#' * `Vals[7]`: Class `-+` =` MeanT<0 & MeanC>0`
 #' * `Vals[8]`: Class `+0` = `MeanT>0 & MeanC==0`
 #' * `Vals[9]`: Class `0+` = `MeanT==0 & MeanC>0`
 #' * `Vals[10]`: Class `-0` = `MeanT<0 & MeanC==0`
@@ -35,7 +35,7 @@
 ClassifyNegVals<-function(Data,
                        OCode,
                        Thresholds=c(0.7,0.95,1.05,1.3),
-                       Vals=c("0"=0,"++"=2,"+"=1,"-"=-1,"--"=-2,"+/-"=1,"-/+"=-1,"+0"=1,"0+"=-1,"-0"=-1,"0-"=1),
+                       Vals=c("0"=0,"++"=2,"+"=1,"-"=-1,"--"=-2,"+-"=1,"-+"=-1,"+0"=1,"0+"=-1,"-0"=-1,"0-"=1),
                        Invert2xNeg=T
                        ){
 
@@ -59,8 +59,8 @@ ClassifyNegVals<-function(Data,
   ][yi>=log(Thresholds[4]),Class:="++"
   ][yi<=log(Thresholds[2]),Class:="-"
   ][yi<=log(Thresholds[1]),Class:="--"
-  ][MeanC<0 & MeanT>0,Class:="+/-"
-  ][MeanC>0 & MeanT<0,Class:="-/+"
+  ][MeanC<0 & MeanT>0,Class:="+-"
+  ][MeanC>0 & MeanT<0,Class:="-+"
   ][MeanC==0 & MeanT>0,Class:="+0"
   ][MeanC>0 & MeanT==0,Class:="0+"
   ][MeanC==0 & MeanT<0,Class:="-0"
@@ -96,6 +96,9 @@ ClassifyNegVals<-function(Data,
 
   # Remove duplicate columns
   X[,MeanC:=NULL][,MeanT:=NULL]
+
+  # Set infinite values to NA
+  X[is.infinite(yi),yi:=NA]
 
   # Merge Classes with supplied dataset
   Y<-cbind(Y[,yi:=X[,yi]],X[,!"yi"])
