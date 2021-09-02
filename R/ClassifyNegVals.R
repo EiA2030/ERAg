@@ -36,7 +36,7 @@ ClassifyNegVals<-function(Data,
                        Vals=c("0"=0,"++"=2,"+"=1,"-"=-1,"--"=-2,"+/-"=1,"-/+"=-1,"+0"=1,"0+"=-1,"-0"=-1,"0-"=1),
                        Invert2xNeg=T){
 
-  Y<-data.table::copy(Data)[Outcode==OCode,]
+  Y<-data.table::copy(Data)[Outcode %in% OCode,]
   X<-data.table::copy(Y)
 
   # Calculate response ratio (yi)
