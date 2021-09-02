@@ -5,26 +5,28 @@
 #'
 #' When generating ratios the function will invert outcomes where `MeanT` and `MeanC` are both negative unless the `Invert2xNeg` argument is set to `FALSE`.
 #'
+#' Where MeanC is NA and MeanT is populated this function will base classfications on the MeanT value only.
+#'
 #' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
 #' @param OCode An ERA outcome code (see `ERAg::OutcomeCodes[,Codes]`.
 #' @param Thresholds A numeric vector of length four corresponding to classification thresholds for worst, poor, good & best outcomes. If:
-#' * MeanT/MeanC<Threshold[1] then Class = "--"
-#' * Threshold[1]<=MeanT/MeanC<Threshold[2] then Class = "-"
-#' * Threshold[2]<=MeanT/MeanC<Threshold[3] then Class = "0"
-#' * Threshold[3]<=MeanT/MeanC<Threshold[4] then Class = "+"
-#' * MeanT/MeanC>=Threshold[4] then Class = "++"
+#' * `MeanT/MeanC<Threshold[1]` then Class = `--`
+#' * `Threshold[1]<=MeanT/MeanC<Threshold[2]` then Class = `-`
+#' * `Threshold[2]<=MeanT/MeanC<Threshold[3]` then Class = `0`
+#' * `Threshold[3]<=MeanT/MeanC<Threshold[4]` then Class = `+`
+#' * `MeanT/MeanC>=Threshold[4]`` then Class = `++`
 #' @param Vals A numeric vector of length 11 proving numeric scores for each outcome classification:
-#' * Vals[1]: Class "0" = `MeanT/MeanC<Threshold[1]`
-#' * Vals[2]: Class "++" = `Threshold[1]<=MeanT/MeanC<Threshold[2]`
-#' * Vals[3]: Class "+"= `Threshold[2]<=MeanT/MeanC<Threshold[3]`
-#' * Vals[4]: Class "-" = `Threshold[3]<=MeanT/MeanC<Threshold[4]`
-#' * Vals[5]: Class "--" = `MeanT/MeanC>=Threshold[4]`
-#' * Vals[6]: Class "+/-" = `MeanT>0 & MeanC<0`
-#' * Vals[7]: Class "-/+" =` MeanT<0 & MeanC>0`
-#' * Vals[8]: Class "+0" = `MeanT>0 & MeanC==0`
-#' * Vals[9]: Class "0+" = `MeanT==0 & MeanC>0`
-#' * Vals[10]: Class "-0" = `MeanT<0 & MeanC==0`
-#' * Vals[11]: Class "0-" = `MeanT==0 & MeanC<0`
+#' * `Vals[1]`: Class `0` = `MeanT/MeanC<Threshold[1]`
+#' * `Vals[2]`: Class `++` = `Threshold[1]<=MeanT/MeanC<Threshold[2]`
+#' * `Vals[3]`: Class `+`= `Threshold[2]<=MeanT/MeanC<Threshold[3]`
+#' * `Vals[4]`: Class `-` = `Threshold[3]<=MeanT/MeanC<Threshold[4]`
+#' * `Vals[5]`: Class `--` = `MeanT/MeanC>=Threshold[4]`
+#' * `Vals[6]`: Class `+/-` = `MeanT>0 & MeanC<0`
+#' * `Vals[7]`: Class `-/+` =` MeanT<0 & MeanC>0`
+#' * `Vals[8]`: Class `+0` = `MeanT>0 & MeanC==0`
+#' * `Vals[9]`: Class `0+` = `MeanT==0 & MeanC>0`
+#' * `Vals[10]`: Class `-0` = `MeanT<0 & MeanC==0`
+#' * `Vals[11]`: Class `0-` = `MeanT==0 & MeanC<0`
 #' @param Invert2xNeg Logical `T/F`. Where MeanC<0 & MeanT<0 invert the calculation of yi to `log(MeanC/MeanT)`
 #' @return ClassifyNegVals returns the input Data subset to the outcome provided in the `OCode`argument and with the additional columns:
 #' * `Class` a character vector of class names
@@ -34,7 +36,8 @@ ClassifyNegVals<-function(Data,
                        OCode,
                        Thresholds=c(0.7,0.95,1.05,1.3),
                        Vals=c("0"=0,"++"=2,"+"=1,"-"=-1,"--"=-2,"+/-"=1,"-/+"=-1,"+0"=1,"0+"=-1,"-0"=-1,"0-"=1),
-                       Invert2xNeg=T){
+                       Invert2xNeg=T
+                       ){
 
   Y<-data.table::copy(Data)[Outcode %in% OCode,]
   X<-data.table::copy(Y)
@@ -50,7 +53,7 @@ ClassifyNegVals<-function(Data,
   # Set percentage change to NA
   X[,pc:=NA]
 
-  # Add character classifcation
+  # Add character classification
   X[,Class:="0"
   ][yi>=log(Thresholds[3]),Class:="+"
   ][yi>=log(Thresholds[4]),Class:="++"
@@ -63,7 +66,15 @@ ClassifyNegVals<-function(Data,
   ][MeanC==0 & MeanT<0,Class:="-0"
   ][MeanC<0 & MeanT==0,Class:="0-"]
 
-  # Add ordinal numeric classifcation
+  # If only MeanT value present
+  X[is.na(MeanC) & !is.na(MeanT),Class:="0"
+  ][is.na(MeanC) & MeanT>=log(Thresholds[3]),Class:="+"
+  ][is.na(MeanC) & MeanT>=log(Thresholds[4]),Class:="++"
+  ][is.na(MeanC) & MeanT<=log(Thresholds[2]),Class:="-"
+  ][is.na(MeanC) & MeanT<=log(Thresholds[1]),Class:="--"]
+
+
+  # Add ordinal numeric classification
   X[,Class.Val:=Vals[1]
   ][yi>=log(Thresholds[3]),Class.Val:=Vals[2]
   ][yi>=log(Thresholds[4]),Class.Val:=Vals[3]
@@ -71,10 +82,17 @@ ClassifyNegVals<-function(Data,
   ][yi<=log(Thresholds[1]),Class.Val:=Vals[5]
   ][MeanC<0 & MeanT>0,Class.Val:=Vals[6]
   ][MeanC>0 & MeanT<0,Class.Val:=Vals[7]
-  ][MeanC==0 & MeanT>0,Class:=Vals[8]
-  ][MeanC>0 & MeanT==0,Class:=Vals[9]
-  ][MeanC==0 & MeanT<0,Class:=Vals[10]
-  ][MeanC<0 & MeanT==0,Class:=Vals[11]]
+  ][MeanC==0 & MeanT>0,Class.Val:=Vals[8]
+  ][MeanC>0 & MeanT==0,Class.Val:=Vals[9]
+  ][MeanC==0 & MeanT<0,Class.Val:=Vals[10]
+  ][MeanC<0 & MeanT==0,Class.Val:=Vals[11]]
+
+  # If only MeanT value present
+  X[is.na(MeanC) & !is.na(MeanT),Class.Val:=Vals[1]
+  ][is.na(MeanC) & MeanT>=log(Thresholds[3]),Class.Val:=Vals[2]
+  ][is.na(MeanC) & MeanT>=log(Thresholds[4]),Class.Val:=Vals[3]
+  ][is.na(MeanC) & MeanT<=log(Thresholds[2]),Class.Val:=Vals[4]
+  ][is.na(MeanC) & MeanT<=log(Thresholds[1]),Class.Val:=Vals[5]]
 
   # Remove duplicate columns
   X[,MeanC:=NULL][,MeanT:=NULL]

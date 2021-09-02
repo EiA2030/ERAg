@@ -20,26 +20,26 @@ ClassifyNegVals(
 
 \item{Thresholds}{A numeric vector of length four corresponding to classification thresholds for worst, poor, good & best outcomes. If:
 \itemize{
-\item MeanT/MeanC<Threshold\link{1} then Class = "--"
-\item Threshold\link{1}<=MeanT/MeanC<Threshold\link{2} then Class = "-"
-\item Threshold\link{2}<=MeanT/MeanC<Threshold\link{3} then Class = "0"
-\item Threshold\link{3}<=MeanT/MeanC<Threshold\link{4} then Class = "+"
-\item MeanT/MeanC>=Threshold\link{4} then Class = "++"
+\item \code{MeanT/MeanC<Threshold[1]} then Class = \verb{--}
+\item \verb{Threshold[1]<=MeanT/MeanC<Threshold[2]} then Class = \code{-}
+\item \verb{Threshold[2]<=MeanT/MeanC<Threshold[3]} then Class = \code{0}
+\item \verb{Threshold[3]<=MeanT/MeanC<Threshold[4]} then Class = \code{+}
+\item \verb{MeanT/MeanC>=Threshold[4]`` then Class = }++`
 }}
 
 \item{Vals}{A numeric vector of length 11 proving numeric scores for each outcome classification:
 \itemize{
-\item Vals\link{1}: Class "0" = \code{MeanT/MeanC<Threshold[1]}
-\item Vals\link{2}: Class "++" = \verb{Threshold[1]<=MeanT/MeanC<Threshold[2]}
-\item Vals\link{3}: Class "+"= \verb{Threshold[2]<=MeanT/MeanC<Threshold[3]}
-\item Vals\link{4}: Class "-" = \verb{Threshold[3]<=MeanT/MeanC<Threshold[4]}
-\item Vals\link{5}: Class "--" = \code{MeanT/MeanC>=Threshold[4]}
-\item Vals\link{6}: Class "+/-" = \code{MeanT>0 & MeanC<0}
-\item Vals\link{7}: Class "-/+" =\code{ MeanT<0 & MeanC>0}
-\item Vals\link{8}: Class "+0" = \code{MeanT>0 & MeanC==0}
-\item Vals\link{9}: Class "0+" = \code{MeanT==0 & MeanC>0}
-\item Vals\link{10}: Class "-0" = \code{MeanT<0 & MeanC==0}
-\item Vals\link{11}: Class "0-" = \code{MeanT==0 & MeanC<0}
+\item \code{Vals[1]}: Class \code{0} = \code{MeanT/MeanC<Threshold[1]}
+\item \code{Vals[2]}: Class \verb{++} = \verb{Threshold[1]<=MeanT/MeanC<Threshold[2]}
+\item \code{Vals[3]}: Class \code{+}= \verb{Threshold[2]<=MeanT/MeanC<Threshold[3]}
+\item \code{Vals[4]}: Class \code{-} = \verb{Threshold[3]<=MeanT/MeanC<Threshold[4]}
+\item \code{Vals[5]}: Class \verb{--} = \code{MeanT/MeanC>=Threshold[4]}
+\item \code{Vals[6]}: Class \verb{+/-} = \code{MeanT>0 & MeanC<0}
+\item \code{Vals[7]}: Class \verb{-/+} =\code{ MeanT<0 & MeanC>0}
+\item \code{Vals[8]}: Class \code{+0} = \code{MeanT>0 & MeanC==0}
+\item \code{Vals[9]}: Class \verb{0+} = \code{MeanT==0 & MeanC>0}
+\item \code{Vals[10]}: Class \code{-0} = \code{MeanT<0 & MeanC==0}
+\item \code{Vals[11]}: Class \verb{0-} = \code{MeanT==0 & MeanC<0}
 }}
 
 \item{Invert2xNeg}{Logical \code{T/F}. Where MeanC<0 & MeanT<0 invert the calculation of yi to \code{log(MeanC/MeanT)}}
@@ -57,4 +57,6 @@ For a the supplied outcome argument \code{OCode} this function classifies the di
 }
 \details{
 When generating ratios the function will invert outcomes where \code{MeanT} and \code{MeanC} are both negative unless the \code{Invert2xNeg} argument is set to \code{FALSE}.
+
+Where MeanC is NA and MeanT is populated this function will base classfications on the MeanT value only.
 }
