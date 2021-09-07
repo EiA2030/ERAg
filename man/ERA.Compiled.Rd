@@ -5,7 +5,7 @@
 \alias{ERA.Compiled}
 \title{The compiled ERA dataset}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 107952 rows and 142 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 105899 rows and 144 columns.
 }
 \source{
 \emph{To be added}

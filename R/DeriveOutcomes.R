@@ -10,6 +10,8 @@
 #' 4) Benefit Cost Ratio (NRTC) =  net returns/total costs
 #' 5) Benefit Cost Ratio (GRVC) =  gross returns/variable costs
 #' 6) Benefit Cost Ratio (NRVC) =  net returns/variable costs
+#' 7) Water Use Efficiency (WUE) = yield/total seasonal precipitation
+#' 8) Nitrogen Agronomic Efficiency (NAE) = (yield.exp - yield.cont)/N added
 #'
 #' Derived net returns are appended to `Data` before benefit cost ratio outcomes are derived.
 #'
@@ -19,13 +21,15 @@
 #' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
 #' @param RmPartial Logical `T/F`. If `T` partial economic outcomes are excluded from the process.
 #' @param DoBCR_VC Logical `T/F`. If `T` benefit cost ratios calculated using variable costs are also included in calculations as per description points 5) & 6).
-#' @param DoWUE Logical `T/F`. If `T` water use efficiency outcome derived from yield and TSP (total seasonal precipitation) data
-#' @return ERAWeights returns the input `data.table` with additional rows appended for derived outcomes.
+#' @param DoWUE Logical `T/F`. If `T` water use efficiency outcome is derived from yield and TSP (total seasonal precipitation) data
+#' @param DoNAE Logical `T/F`. If `T` nitrogen agronomic efficiency outcome derived as (yield.exp - yield.cont)/N added.
+#' @return DeriveOutcomes returns the input `data.table` with additional rows appended for derived outcomes.
 #' @export
 DeriveOutcomes<-function(Data = ERA.Compiled,
                          RmPartial = T,
                          DoBCR_VC = T,
-                         DoWUE = T){
+                         DoWUE = T,
+                         DoNAE = T){
 
 # Remove partial practices?
 Data<-if(RmPartial==T){
@@ -93,11 +97,7 @@ Returns.Fun<-function(Data,ACode=120,BCode=150,CCode=124){
 
     X<-X[Outcode!=BCode]
 
-    X[,Outcode:=CCode
-    ][,Out.Pillar:=OutcomeCodes[Code==CCode,Pillar]
-    ][,Out.SubPillar:=OutcomeCodes[Code==CCode,Subpillar]
-    ][,Out.Ind:=OutcomeCodes[Code==CCode,Indicator]
-    ][,Out.SubInd:=OutcomeCodes[Code==CCode,Subindicator]]
+    X[,Outcode:=CCode]
 
     X<-X[,!c("MeanC","MeanT")]
 
@@ -186,11 +186,7 @@ BCR.Fun<-function(Data,CostCode,ReturnCode,RatioCode){
 
     X<-X[Outcode!=ReturnCode]
 
-    X[,Outcode:=RatioCode
-    ][,Out.Pillar:=OutcomeCodes[Code==RatioCode,Pillar]
-    ][,Out.SubPillar:=OutcomeCodes[Code==RatioCode,Subpillar]
-    ][,Out.Ind:=OutcomeCodes[Code==RatioCode,Indicator]
-    ][,Out.SubInd:=OutcomeCodes[Code==RatioCode,Subindicator]]
+    X[,Outcode:=RatioCode]
 
     X<-X[,!c("MeanC","MeanT")]
 
@@ -248,18 +244,134 @@ if(DoWUE){
     ][,MeanT:=MeanT/TSP
     ][,Units:=paste0(Units,"/mm"),
     ][,Outcode:=ACode
-    ][,yi:=MeanT/MeanC
-    ][,pc:=100*(MeanT-MeanC/MeanC)-100
-    ][,IDx:=NULL]
+      ][,IDx:=NULL]
 
     return(X)
   }
-  WUE<-AddWUE(Data=Data,
+  WUE<-AddWUE(Data=data.table::copy(Data),
               ACode=OutcomeCodes[grep("Water Use Eff",Subindicator),Code],
               BCode=101)
 
   Data<-rbindlist(list(Data,WUE), use.names = T)
 }
+
+# Add NAE
+if(DoNAE){
+  AddNAE<-function(Data){
+    ACode<-257.1
+
+    Data[,T.NI:=as.numeric(T.NI)
+    ][,T.NO:=as.numeric(T.NO)
+    ][,C.NI:=as.numeric(C.NI)
+    ][,C.NO:=as.numeric(C.NO)]
+
+    # Remove groups that already have NAE outcome present
+    Data[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Duration,EU,Units)]
+    Data<-Data[,Out.Present:=any(Outcode %in% ACode),by=IDx]
+    Data<-Data[Out.Present!=T]
+    Data[,Out.Present:=NULL][,IDx:=NULL]
+
+    # Function to convert outcomes to kg/ha
+    RecodeUnitsFun<-function(X){
+      X[Units=="Mg/ha",MeanC:=MeanC*1000]
+      X[Units=="Mg/ha",MeanT:=MeanT*1000]
+      X[Units=="Mg/ha",Units:="kg/ha"]
+
+      X[Units=="kg/fed",MeanC:=MeanC*0.42]
+      X[Units=="kg/fed",MeanT:=MeanT*0.42]
+      X[Units=="kg/fed",Units:="kg/ha"]
+
+      X[Units=="Mg/ha/yr",MeanC:=MeanC*1000]
+      X[Units=="Mg/ha/yr",MeanT:=MeanT*1000]
+      X[Units=="Mg/ha/yr",Units:="kg/ha"]
+
+      X[Units=="kg/m2",MeanC:=MeanC*10000]
+      X[Units=="kg/m2",MeanT:=MeanT*10000]
+      X[Units=="kg/m2",Units:="kg/ha"]
+
+      X[Units=="g/m2",MeanC:=MeanC*10000/1000]
+      X[Units=="g/m2",MeanT:=MeanT*10000/1000]
+      X[Units=="g/m2",Units:="kg/ha"]
+
+      X<-X[Units=="kg/ha"]
+      return(X)
+    }
+
+    # 1) Inorganic N is a base practice
+    X<-Data[Out.SubInd=="Crop Yield" &
+              grepl("b17|b23",base.list) &
+              !(is.na(T.NI)|T.NI == 999999) &
+              !(is.na(C.NI)|C.NI == 999999) &
+              is.na(T.NO) &
+              is.na(C.NO) &
+              T.NI == C.NI &
+              !grepl("b29|b30|b75|b73|b67",plist) &
+              !grepl("b29|b30|b75|b73|b67",base.list)]
+
+    X<-RecodeUnitsFun(X)
+
+    X[,MeanT:=(MeanT-MeanC)/T.NI]
+
+    # 2) Organic N is a base practice
+    Y<-Data[Out.SubInd=="Crop Yield" &
+              grepl("b29|b30|b75|b73|b67",base.list) &
+              is.na(T.NI) &
+              is.na(C.NI) &
+              !(is.na(T.NO)|T.NO == 999999) &
+              !(is.na(C.NO)|C.NO == 999999) &
+              T.NO == C.NO &
+              !grepl("b17|b23",plist) &
+              !grepl("b17|b23",base.list)]
+
+    Y<-RecodeUnitsFun(Y)
+
+    Y[,MeanT:=(MeanT-MeanC)/T.NO]
+
+    # 3) Organic N & Inorganic N are a base practice (identical in amount)
+    Z<-Data[Out.SubInd=="Crop Yield" &
+              grepl("b29|b30|b75|b73|b67",base.list) &
+              grepl("b17|b23",base.list) &
+              !(is.na(T.NI)|T.NI == 999999) &
+              !(is.na(C.NI)|C.NI == 999999) &
+              !(is.na(T.NO)|T.NO == 999999) &
+              !(is.na(C.NO)|C.NO == 999999) &
+              T.NO == C.NO &
+              T.NI == C.NI]
+
+    Z<-RecodeUnitsFun(Z)
+
+    Z[,MeanT:=(MeanT-MeanC)/T.NO]
+
+    # 4) Combine datasets
+    X<-rbind(X,Y,Z)
+
+    X[,MeanC:=NA
+    ][,Units:=paste0("kg/kg"),
+    ][,Outcode:=ACode]
+
+    return(X)
+  }
+
+  NAE<-AddNAE(Data=data.table::copy(Data))
+
+  Data<-rbindlist(list(Data,NAE), use.names = T)
+
+}
+
+# Recalculate yi & pc
+Data[,yi:=MeanT/MeanC
+     ][,pc:=100*((MeanT-MeanC)/MeanC)-100]
+
+# Recode outcomes
+Data[,Out.Pillar:=OutcomeCodes[Code==OutCode,Pillar],by=OutCode]
+Data[,Out.SubPillar:=OutcomeCodes[Code==OutCode,Subpillar],by=OutCode]
+Data[,Out.Ind:=OutcomeCodes[Code==OutCode,Indicator],by=OutCode]
+Data[,Out.SubInd:=OutcomeCodes[Code==OutCode,Subindicator],by=OutCode]
+
+Data[,Out.Pillar.Code:=OutcomeCodes[Code==OutCode,Pillar.Code],by=OutCode]
+Data[,Out.SubPillar.Code:=OutcomeCodes[Code==OutCode,Subpillar.Code],by=OutCode]
+Data[,Out.Ind.Code:=OutcomeCodes[Code==OutCode,Indicator.Code],by=OutCode]
+Data[,Out.SubInd.Code:=OutcomeCodes[Code==OutCode,Subindicator.Code],by=OutCode]
 
 # Remove any infinite values caused by MeanC being 0
 Data<-Data[!(is.infinite(MeanC)|is.infinite(MeanT))]

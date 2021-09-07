@@ -4,7 +4,13 @@
 \alias{DeriveOutcomes}
 \title{Derive ERA outcomes from existing data}
 \usage{
-DeriveOutcomes(Data = ERA.Compiled, RmPartial = T, DoBCR_VC = T, DoWUE = T)
+DeriveOutcomes(
+  Data = ERA.Compiled,
+  RmPartial = T,
+  DoBCR_VC = T,
+  DoWUE = T,
+  DoNAE = T
+)
 }
 \arguments{
 \item{Data}{An ERA data.table (e.g. \code{ERAg::ERA.Compiled}).}
@@ -13,10 +19,12 @@ DeriveOutcomes(Data = ERA.Compiled, RmPartial = T, DoBCR_VC = T, DoWUE = T)
 
 \item{DoBCR_VC}{Logical \code{T/F}. If \code{T} benefit cost ratios calculated using variable costs are also included in calculations as per description points 5) & 6).}
 
-\item{DoWUE}{Logical \code{T/F}. If \code{T} water use efficiency outcome derived from yield and TSP (total seasonal precipitation) data}
+\item{DoWUE}{Logical \code{T/F}. If \code{T} water use efficiency outcome is derived from yield and TSP (total seasonal precipitation) data}
+
+\item{DoNAE}{Logical \code{T/F}. If \code{T} nitrogen agronomic efficiency outcome derived as (yield.exp - yield.cont)/N added.}
 }
 \value{
-ERAWeights returns the input \code{data.table} with additional rows appended for derived outcomes.
+DeriveOutcomes returns the input \code{data.table} with additional rows appended for derived outcomes.
 }
 \description{
 This function identifies exactly colocated outcomes (same experiment, treatment, location and time) ERA data that can be combined
@@ -31,6 +39,8 @@ The function currently generates additional outcomes for:
 \item Benefit Cost Ratio (NRTC) =  net returns/total costs
 \item Benefit Cost Ratio (GRVC) =  gross returns/variable costs
 \item Benefit Cost Ratio (NRVC) =  net returns/variable costs
+\item Water Use Efficiency (WUE) = yield/total seasonal precipitation
+\item Nitrogen Agronomic Efficiency (NAE) = (yield.exp - yield.cont)/N added
 }
 
 Derived net returns are appended to \code{Data} before benefit cost ratio outcomes are derived.
