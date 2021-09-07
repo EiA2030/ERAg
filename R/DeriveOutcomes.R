@@ -249,7 +249,8 @@ if(DoWUE){
     ][,Units:=paste0(Units,"/mm"),
     ][,Outcode:=ACode
     ][,yi:=MeanT/MeanC
-    ][,pc:=100*(MeanT-MeanC/MeanC)-100]
+    ][,pc:=100*(MeanT-MeanC/MeanC)-100
+    ][,IDx:=NULL]
 
     return(X)
   }
