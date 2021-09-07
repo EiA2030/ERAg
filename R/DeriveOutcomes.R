@@ -363,15 +363,20 @@ Data[,yi:=MeanT/MeanC
      ][,pc:=100*((MeanT-MeanC)/MeanC)-100]
 
 # Recode outcomes
-Data[,Out.Pillar:=OutcomeCodes[Code==OutCode,Pillar],by=OutCode]
-Data[,Out.SubPillar:=OutcomeCodes[Code==OutCode,Subpillar],by=OutCode]
-Data[,Out.Ind:=OutcomeCodes[Code==OutCode,Indicator],by=OutCode]
-Data[,Out.SubInd:=OutcomeCodes[Code==OutCode,Subindicator],by=OutCode]
+OutReturn<-function(OutCode,Field){
+  return(OutcomeCodes[Code==OutCode,..Field])
+}
 
-Data[,Out.Pillar.Code:=OutcomeCodes[Code==OutCode,Pillar.Code],by=OutCode]
-Data[,Out.SubPillar.Code:=OutcomeCodes[Code==OutCode,Subpillar.Code],by=OutCode]
-Data[,Out.Ind.Code:=OutcomeCodes[Code==OutCode,Indicator.Code],by=OutCode]
-Data[,Out.SubInd.Code:=OutcomeCodes[Code==OutCode,Subindicator.Code],by=OutCode]
+Data[,Out.Pillar:=OutReturn(OutCode=OutCode,Field=="Pillar"),by=OutCode]
+Data[,Out.SubPillar:=OutReturn(OutCode=OutCode,Field=="Subpillar"),by=OutCode]
+Data[,Out.Ind:=OutReturn(OutCode=OutCode,Field=="Indicator"),by=OutCode]
+Data[,Out.SubInd:=OutReturn(OutCode=OutCode,Field=="Subindicator"),by=OutCode]
+
+Data[,Out.Pillar.Code:=OutReturn(OutCode=OutCode,Field=="Pillar.Code"),by=OutCode]
+Data[,Out.SubPillar.Code:=OutReturn(OutCode=OutCode,Field=="Subpillar.Code"),by=OutCode]
+Data[,Out.Ind.Code:=OutReturn(OutCode=OutCode,Field=="Indicator.Code"),by=OutCode]
+Data[,Out.SubInd.Code:=OutReturn(OutCode=OutCode,Field=="Subindicator.Code"),by=OutCode]
+
 
 # Remove any infinite values caused by MeanC being 0
 Data<-Data[!(is.infinite(MeanC)|is.infinite(MeanT))]
