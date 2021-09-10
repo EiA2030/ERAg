@@ -10,6 +10,7 @@ PrepareERA(
   DoCombinations = F,
   Perc.Neg = 0.5,
   RmNeg = T,
+  Invert2xNeg = T,
   Cols = c("Code", "Country", "Latitude", "Longitude", "Site.Type", "ID", "Site.ID",
     "Rep", "Diversity", "Tree", "Variety", "Duration", "M.Year", "EU", "EUlist",
     "Outcode", "MeanC", "MeanT", "Units", "TID", "CID", "MeanFlip", "Neg.Vals", "plist",
@@ -38,6 +39,8 @@ functionality is not implemented for subpractices. Default = \code{F}.}
 
 \item{Perc.Neg}{A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
 it is filtered from the dataset. Default = 0.5.}
+
+\item{Invert2xNeg}{Swaps MeanT and MeanC values where they are both negative. Less negative values become better than more negative values.}
 
 \item{Cols}{A vector of column names to retain from the ERA dataset supplied. Default values are supplied.}
 }

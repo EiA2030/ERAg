@@ -31,6 +31,7 @@
 #' @param Perc.Neg A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
 #' it is filtered from the dataset. Default = 0.5.
 #' @param Cols A vector of column names to retain from the ERA dataset supplied. Default values are supplied.
+#' @param Invert2xNeg Swaps MeanT and MeanC values where they are both negative. Less negative values become better than more negative values.
 #' @return If DoCombinations = F a data.table of the processed ERA dataset. If DoCombinations = T a list of two data.tables, "Data" as per combinations = F and "Data.Combos" where
 #' PrNames have modified to reflect combination practices.
 #' @export
@@ -39,6 +40,7 @@ PrepareERA<-function(Data,
                      DoCombinations=F,
                      Perc.Neg = 0.5,
                      RmNeg = T,
+                     Invert2xNeg=T,
                      Cols = c("Code","Country","Latitude","Longitude","Site.Type","ID","Site.ID","Rep","Diversity","Tree","Variety","Duration","M.Year","EU","EUlist",
                                "Outcode","MeanC","MeanT","Units","TID","CID","MeanFlip","Neg.Vals","plist","base.list","Product","Product.Type","Product.Subtype",
                                "Product.Simple","Out.Pillar","Out.SubPillar","Out.Ind","Out.SubInd","SubPrName","PrName","Theme","SubPrName.Base","PrName.Base",
@@ -66,7 +68,6 @@ PrepareERA<-function(Data,
 
     return(DataX)
   }
-
 
   # Remove any h codes from base practice list (**NOTE** should be moved to compilation function)
   HCodes<-PracticeCodes[grep("h",Code),Code]
@@ -108,17 +109,25 @@ PrepareERA<-function(Data,
     ][,list(Neg.Vals.MeanC=sum(MeanC<0,na.rm=T),
             Neg.Vals.MeanT=sum(MeanT<0,na.rm=T),
             Neg.Vals.Both=sum(MeanC<0 & MeanT<0,na.rm=T),
-            Neg.Vals.Any=sum(MeanC<0 | MeanT<0,na.rm=T),
+            Neg.Vals.Any=sum((MeanC<0 | MeanT<0) & !(MeanC<0 & MeanT<0),na.rm=T),
             N.OBs=.N),by=c("Outcode")
       ][,Perc.Neg.Any:=round(100*Neg.Vals.Any/N.OBs,1)
         ][,Perc.Neg.One:=round(100*(Neg.Vals.Any-Neg.Vals.Both)/N.OBs,1)
          ][,Outname:=OutcomeCodes$Subindicator[match(Outcode,OutcomeCodes$Code)]
           ][order(N.OBs,decreasing = T)]
 
-  DataX[Outcode %in% A[Perc.Neg.Any<=Perc.Neg,Outcode],Neg.Vals:="N"]
+  DataX[Outcode %in% A[Perc.Neg.One<=Perc.Neg,Outcode],Neg.Vals:="N"]
 
 
-  OutcomeCodes$Negative.Values[OutcomeCodes$Code %in% A[Perc.Neg.Any<=Perc.Neg,Outcode]]<-"N"
+  OutcomeCodes$Negative.Values[OutcomeCodes$Code %in% A[Perc.Neg.One<=Perc.Neg,Outcode]]<-"N"
+
+  if(Invert2xNeg){
+    T.Vals<-DataX[MeanC<0 & MeanT<0,MeanC]
+    C.Vals<-DataX[MeanC<0 & MeanT<0,MeanT]
+    DataX[MeanC<0 & MeanT<0,MeanC:=T.Vals]
+    DataX[MeanC<0 & MeanT<0,MeanT:=C.Vals]
+    rm(T.Vals,C.Vals)
+  }
 
   # Remove outcomes where they are negative > Perc.Neg of the time
   if(RmNeg){
