@@ -39,8 +39,8 @@ ClassifyNegVals<-function(Data,
                        Invert2xNeg=T
                        ){
 
-  Y<-data.table::copy(Data)[Outcode %in% OCode,]
-  X<-data.table::copy(Y)
+  Y<-data.table::copy(Data)
+  X<-Y[Outcode %in% OCode]
 
   # Calculate response ratio (yi)
   X[,yi:=log(MeanT/MeanC)][,list(MeanC,MeanT)]
