@@ -27,8 +27,7 @@
 DeriveOutcomes<-function(Data = ERA.Compiled,
                          RmPartial = T,
                          DoBCR_VC = T,
-                         DoWUE = T,
-                         DoNAE = T){
+                         DoWUE = T){
 
 # Remove partial practices?
 Data<-if(RmPartial==T){
