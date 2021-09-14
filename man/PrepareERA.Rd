@@ -11,6 +11,7 @@ PrepareERA(
   Perc.Neg = 0.5,
   RmNeg = T,
   Invert2xNeg = T,
+  PLevel = "Practice",
   Cols = c("Code", "Country", "Latitude", "Longitude", "Site.Type", "ID", "Site.ID",
     "Rep", "Diversity", "Tree", "Variety", "Duration", "M.Year", "EU", "EUlist",
     "Outcode", "MeanC", "MeanT", "Units", "TID", "CID", "MeanFlip", "Neg.Vals", "plist",
@@ -31,22 +32,22 @@ PrepareERA(
 Data.Combos table and renamed. When set FALSE only the rows of a practice where it occurs in combination with other practice are copied to the Data.Combos table and renamed.
 Default = F.}
 
-\item{DoCombinations}{Logical \code{T/F}. When set to TRUE for each individual ERA practice in the practice codes file the function copies rows where a practice is present
-and in combination with other practices (no. practices >1) in the in the set difference practice codes (plist column). In the copied rows the PrName is changed by pasting
-the focal practice (e.g. "A") with  "Combinations" (giving "A Combinations"). The copied rows are joined and the function output changes to a list of two data.tables, "Data"
-and "Data.Combos" the latter containing data encoded as combinations. Note ONLY the PrName field is changed in the Data.Combos table, all other fields remain the same. This
-functionality is not implemented for subpractices. Default = \code{F}.}
+\item{DoCombinations}{Logical \code{T/F}. When set to TRUE rows with >1 experimental practice are duplicated for the number of practices present and PrName/SubPrName fields changed to one of those practices
+(e.g. if PrName is Mulch-BioChar then the row is duplicated (n=2) with PrName in row 1 as Mulch and in row 2 as BioChar). The copied rows are joined and the function output changes to a list of two data.tables, "Data"
+and "Data.Combos" . Note ONLY the PrName/SubPrName field is changed in the Data.Combos table, all other fields remain the same. Default = \code{F}.}
 
 \item{Perc.Neg}{A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
 it is filtered from the dataset. Default = 0.5.}
 
 \item{Invert2xNeg}{Swaps MeanT and MeanC values where they are both negative. Less negative values become better than more negative values.}
 
+\item{PLevel}{choose \code{Practice} or \code{Subpractice} to determine hierarchical level at which practice combinations are detected.}
+
 \item{Cols}{A vector of column names to retain from the ERA dataset supplied. Default values are supplied.}
 }
 \value{
 If DoCombinations = F a data.table of the processed ERA dataset. If DoCombinations = T a list of two data.tables, "Data" as per combinations = F and "Data.Combos" where
-PrNames have modified to reflect combination practices.
+PrNames/SubPrName have been modified to reflect combination practices.
 }
 \description{
 This function prepares the ERA dataset for the analysis of outcome ratios. Several actions are applied:
@@ -58,19 +59,5 @@ A logical column \emph{MeanFlip} is added to the output dataset to indicate if o
 \item The inverse of efficiency outcomes that are In/Out (267.1 and 265.1) is taken (1/value) and the outcome code (267 & 265) and naming columns are renamed accordingly.
 \item Outcomes with a percentage of negative values > \strong{Perc.Neg} are filtered from the supplied dataset.
 \item Practice names (\emph{PrNames}) can optionally be be encoded and output as combinations. For more details see the \strong{DoCombinations} and \strong{CombineAll} parameter descriptions.
-\item Practice (\emph{Pr.Class}) and Subpractice (\emph{SubPr.Class}) class columns are appended to the supplied dataset. Note these are no applied to the Data.Combos output.
-Values in these columns are as follows:
-\itemize{
-\item \emph{Solo TPrac No Base Prac} = (A in experimental - nothing in control)  = set difference of A + no shared ERA base practice.
-\item \emph{Multi TPrac No Base Prac} = (AB in experimental - nothing in control) = set difference of AB + no shared ERA base practice.
-\item \emph{Solo TPrac + Base Prac} = (ABC in experimental - BC control) = set difference of A + shared ERA base practice of BC.
-\item \emph{Multi TPrac + Base Prac} = (ABC in experimental - C control) = set difference of AB  + shared ERA base practice of C.
-}
-\item The columns in 7) are disaggregated into two columns each:
-\itemize{
-\item Class.A (e.g. colname = \emph{Pr.Class.A}) which indicates the presence of single (value = \emph{Solo}) or multiple (value = \emph{Multi}) experimental ERA practices.
-\item ClassB which indicates the presence (value = \emph{Base}) or absence (value = \emph{No Base}) of shared ERA practices between the control and experimental treatments.
-}
-\item \emph{DISABLED: Where multiple products are present in a row the row is duplicated for the length of the products, each row being assigned to one of the products.}
 }
 }
