@@ -39,7 +39,7 @@ PrepareStabData<-function(Data,OutCodes=101){
   suppressWarnings(Data[,UID.T:=apply(Data[,..Cols.T],1,FUN=function(X){paste(X,collapse="")})])
 
   Cols<-c("Code","ID","Site.ID","EU","T.Descrip","C.Descrip","TID","CID","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Practice","Practice.Base",
-          "Practice.Code","plist","Outcome","UID","UID.C","UID.T","yieldcont","minyieldcont","yieldexp","sdcont","sdexp","cvcont","cvexp",
+          "Practice.Code","plist","base.list","Outcome","UID","UID.C","UID.T","yieldcont","minyieldcont","yieldexp","sdcont","sdexp","cvcont","cvexp",
           "yieldratio","sdratio","cvratio","Rep","nryears")
 
   suppressWarnings( Data<-unique(Data[,..Cols]))
