@@ -19,7 +19,7 @@ ERAComboSplit<-function(Data){
   Data<-Data[Len]
   Data[,SubPrName.Combo:=unlist(X)]
 
-  PracticeCodes<-data.table(PracticeCodes)
+  PracticeCodes<-data.table(ERAg::PracticeCodes)
   Data[,SubPrName.Code.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Subpractice.Code]]
 
   Data[,PrName.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Practice]]
