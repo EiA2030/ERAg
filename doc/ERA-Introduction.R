@@ -25,7 +25,7 @@ knitr::kable(head(ERA.Compiled[,1:8], 5))
 knitr::kable(head(ERACompiledFields[c(1,7,10,19,50),c("Field.Name","Description")]))
 
 ## ----Bibliographic, echo=T, fig.align='center', fig.asp=1, fig.width=6, warning=FALSE----
-knitr::kable(head(unique(ERA.Compiled[,list(Code,Author,Date,Journal,DataLoc)]), 5))
+knitr::kable(head(unique(ERA.Compiled[,list(Code,Author,Date,Journal,DOI,DataLoc)]), 5))
 
 # Plot no. studies x theme x year
 
