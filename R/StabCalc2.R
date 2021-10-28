@@ -10,6 +10,7 @@
 #' @param Transform *To be described*
 #' @param Control *To be described*
 #' @param Responses *To be described*
+#' @param Use.acr logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
 #' @return `StabCalc2` returns a `data.table`
 #' Output fields:
 #'
@@ -20,12 +21,14 @@ StabCalc2<-function(Data,
                     Weight.by.Study=T,
                     Rm.Out=T,
                     Transform=T,
+                    DoRandom=T,
                     Control=list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000),
-                    Responses=c("lnRR","lnVR","lnCVR")){
+                    Responses=c("lnRR","lnVR","lnCVR"),
+                    Use.acr=F){
 
   Data<-data.table(Data)
 
-  # MYOs at least 3 years
+  # MYOs at least 3 years long (redundant now this is incorporated into PrepareStabData?)
   Data<-Data[nryears>=3]
   Data<-Data[,N:=.N,by=list(Practice,Outcome)]
 
@@ -36,14 +39,17 @@ StabCalc2<-function(Data,
 
 
   StabStats<-pblapply(1:length(Data),FUN=function(i){
+    print(i)
     DATA<-Data[[i]]
     X<-StabCalc(Data=DATA,
                 Do.Weight=Do.Weight,
                 Weight.by.Study=Weight.by.Study,
                 Rm.Out=Rm.Out,
                 Transform=Transform,
+                DoRandom=DoRandom,
                 Control=Control,
-                Responses=Responses)
+                Responses=Responses,
+                Use.acr=Use.acr)
   })
   StabStats.Tab<-rbindlist(lapply(StabStats,"[[","Coefs"))
   StabStats.Tab[,N.Seq:=round(mean(N.Seq),0)][,N.Obs:=round(mean(N.Obs),0)][,N.Studies:=round(mean(N.Studies),0)]
@@ -57,3 +63,5 @@ StabCalc2<-function(Data,
 
   return(list(StabStats=StabStats,StabStats.Test=StabStats.Test,StabStats.Tab=StabStats.Tab,StabStats.Test2=StabStats.Test2,StabList=Data))
 }
+
+

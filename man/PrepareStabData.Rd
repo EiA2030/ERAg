@@ -18,5 +18,8 @@ a \code{data.table} of the supplied data with appended columns:
 }
 }
 \description{
-This function prepares data for use with the \code{StabCalc} function
+This function prepares data for use with the \code{StabCalc} function.
+}
+\details{
+The Adjusted Coefficient of Variation (acv) is calculated using the metan::acv function.
 }

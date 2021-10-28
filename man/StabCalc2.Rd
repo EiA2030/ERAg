@@ -10,8 +10,10 @@ StabCalc2(
   Weight.by.Study = T,
   Rm.Out = T,
   Transform = T,
+  DoRandom = T,
   Control = list(optimizer = "optim", optmethod = "Nelder-Mead", maxit = 10000),
-  Responses = c("lnRR", "lnVR", "lnCVR")
+  Responses = c("lnRR", "lnVR", "lnCVR"),
+  Use.acr = F
 )
 }
 \arguments{
@@ -28,6 +30,8 @@ StabCalc2(
 \item{Control}{\emph{To be described}}
 
 \item{Responses}{\emph{To be described}}
+
+\item{Use.acr}{logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).}
 }
 \value{
 \code{StabCalc2} returns a \code{data.table}

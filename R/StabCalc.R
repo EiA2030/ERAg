@@ -9,6 +9,7 @@
 #' @param Transform *To be described*
 #' @param Control *To be described*
 #' @param Responses *To be described*
+#' @param Use.acr logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
 #' @return `StabCalc` returns a `data.table` *to be described*
 #' @export
 StabCalc<-function(Data,
@@ -16,8 +17,18 @@ StabCalc<-function(Data,
                    Weight.by.Study=T,
                    Rm.Out=T,
                    Transform=T,
+                   DoRandom=T,
                    Control=list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000),
-                   Responses=c("lnRR","lnVR","lnCVR")){
+                   Responses=c("lnRR","lnVR","lnCVR"),
+                   Use.acr=F){
+
+  if(Use.acr){
+    Data[,cvexp:=acvexp
+    ][,cvcont:=acvcont
+    ][,cvratio:=acvratio]
+  }
+
+
   covariance_commonControl <- function (aDataFrame, control_ID, X_t, SD_t, N_t, X_c, SD_c, N_c, metric = "lnRR") {
 
     ## generate list of control groups in dataframe
@@ -58,7 +69,7 @@ StabCalc<-function(Data,
     ## return V matrix paired with aligned dataset
     return(list(V, dataAlignedWithV))
   }
-  addmeassure <- function(obstable,metric,lajeunesse){
+  addmeasure <- function(obstable,metric,lajeunesse){
     # rename metric for escalc() function
     if (metric=="lnRR"){measure="ROM"}
     if (metric=="lnVR"){measure="VR"}
@@ -127,6 +138,7 @@ StabCalc<-function(Data,
     }
     return(out)
   }
+
   psymbol<-function(X){
     Y<-rep("N.S.",length(X))
     Y[X<0.05]<-"*"
@@ -222,7 +234,7 @@ StabCalc<-function(Data,
     }
 
     # add the respective response and variance-covariance matrix using the addmeasure() function (Knapp et al. 2018)
-    tempmat <- addmeassure(obstable=Data,metric=Response,lajeunesse = T)
+    tempmat <- addmeasure(obstable=Data,metric=Response,lajeunesse = T)
     respmat <- tempmat[[2]] # the actual data, with the the respective response
     varmat <- forceSymmetric(tempmat[[1]]) # the variance-covariance matrix (VCV)
 
@@ -230,12 +242,24 @@ StabCalc<-function(Data,
 
     if(Do.Weight){
       if(Weight.by.Study){
-        model <- rma.mv(yi~1,V=varmat,W=Weight.Study,data=respmat,control=Control)
+        if(DoRandom){
+          model <- rma.mv(yi~1,V=varmat,W=Weight.Study,data=respmat,control=Control,random = ~1|Code )
+        }else{
+          model <- rma.mv(yi~1,V=varmat,W=Weight.Study,data=respmat,control=Control)
+        }
       }else{
-        model <- rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Control)
+        if(DoRandom){
+          model <- rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Control,random = ~1|Code )
+        }else{
+          model <- rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Contro,random = ~1|Codel)
+        }
       }
     }else{
-      model <- rma.mv(yi~1,V=varmat,data=respmat,control=Control)
+      if(DoRandom){
+        model <- rma.mv(yi~1,V=varmat,data=respmat,control=Control)
+      }else{
+        model <- rma.mv(yi~1,V=varmat,data=respmat,control=Control)
+      }
     }
 
     Model<-M.details(model=model,Transform=Transform)[,Robust:=F
