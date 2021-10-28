@@ -23,6 +23,7 @@ require(ERAg)
 require(broom)
 require(ggplot2)
 require(metafor)
+require(metan)
 require(pbapply)
 require(plyr)
 require(sfsmisc)
@@ -110,7 +111,8 @@ StabData<-StabCalc2(Data=StabData,
           Rm.Out=T,
           Transform=T,
           Control=list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000),
-          Responses=c("lnRR","lnVR","lnCVR"))
+          Responses=c("lnRR","lnVR","lnCVR"),
+          Use.acv = F)
 ```
 ## Plot the data
 Now we use the `ERAStabPlot` function to plot the data, this function creates a list of plots, one for each combination of product x outcome.

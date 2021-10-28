@@ -13,7 +13,7 @@ StabCalc(
   DoRandom = T,
   Control = list(optimizer = "optim", optmethod = "Nelder-Mead", maxit = 10000),
   Responses = c("lnRR", "lnVR", "lnCVR"),
-  Use.acr = F
+  Use.acv = F
 )
 }
 \arguments{
@@ -31,7 +31,7 @@ StabCalc(
 
 \item{Responses}{\emph{To be described}}
 
-\item{Use.acr}{logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).}
+\item{Use.acv}{logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).}
 }
 \value{
 \code{StabCalc} returns a \code{data.table} \emph{to be described}
