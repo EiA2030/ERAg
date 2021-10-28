@@ -10,7 +10,7 @@
 #' @param Transform *To be described*
 #' @param Control *To be described*
 #' @param Responses *To be described*
-#' @param Use.acr logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
+#' @param Use.acv logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
 #' @return `StabCalc2` returns a `data.table`
 #' Output fields:
 #'
@@ -24,7 +24,7 @@ StabCalc2<-function(Data,
                     DoRandom=T,
                     Control=list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000),
                     Responses=c("lnRR","lnVR","lnCVR"),
-                    Use.acr=F){
+                    Use.acv=F){
 
   Data<-data.table(Data)
 
@@ -49,7 +49,7 @@ StabCalc2<-function(Data,
                 DoRandom=DoRandom,
                 Control=Control,
                 Responses=Responses,
-                Use.acr=Use.acr)
+                Use.acv=Use.acv)
   })
   StabStats.Tab<-rbindlist(lapply(StabStats,"[[","Coefs"))
   StabStats.Tab[,N.Seq:=round(mean(N.Seq),0)][,N.Obs:=round(mean(N.Obs),0)][,N.Studies:=round(mean(N.Studies),0)]

@@ -9,7 +9,7 @@
 #' @param Transform *To be described*
 #' @param Control *To be described*
 #' @param Responses *To be described*
-#' @param Use.acr logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
+#' @param Use.acv logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
 #' @return `StabCalc` returns a `data.table` *to be described*
 #' @export
 StabCalc<-function(Data,
@@ -20,14 +20,13 @@ StabCalc<-function(Data,
                    DoRandom=T,
                    Control=list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000),
                    Responses=c("lnRR","lnVR","lnCVR"),
-                   Use.acr=F){
+                   Use.acv=F){
 
-  if(Use.acr){
+  if(Use.acv){
     Data[,cvexp:=acvexp
     ][,cvcont:=acvcont
     ][,cvratio:=acvratio]
   }
-
 
   covariance_commonControl <- function (aDataFrame, control_ID, X_t, SD_t, N_t, X_c, SD_c, N_c, metric = "lnRR") {
 
