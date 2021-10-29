@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Peter Steward" />
+
+<meta name="date" content="2021-10-28" />
+
+<title>ERA-Climate-Data</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">ERA-Climate-Data</h1>
+<h4 class="author">Peter Steward</h4>
+<h4 class="date">2021-10-28</h4>
+
+
+
+<p>This vignette will explore how to download and extract climate information for point locations with buffers of spatial uncertainty.</p>
+<div id="section-1-downloading-and-extracting-climate-data-for-era-locations" class="section level2">
+<h2>Section 1: Downloading and extracting climate data for ERA locations</h2>
+<div id="load-required-packages" class="section level3">
+<h3>Load required packages</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;pacman&quot;</span>, <span class="at">character.only =</span> <span class="cn">TRUE</span>)){</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;pacman&quot;</span>,<span class="at">dependencies =</span> T)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  required.packages <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;data.table&quot;</span>,<span class="st">&quot;doSNOW&quot;</span>,<span class="st">&quot;ERAg&quot;</span>,<span class="st">&quot;doSNOW&quot;</span>,<span class="st">&quot;miceadds&quot;</span>,<span class="st">&quot;ncdf4&quot;</span>,<span class="st">&quot;raster&quot;</span>,<span class="st">&quot;rgeos&quot;</span>,<span class="st">&quot;sp&quot;</span>,<span class="st">&quot;terra&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">p_load</span>(<span class="at">char=</span>required.packages,<span class="at">install =</span> T,<span class="at">character.only =</span> T)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    </span></code></pre></div>
+</div>
+<div id="subset-the-data" class="section level3">
+<h3>Subset the data</h3>
+<p>First we will subset the ERA.Compiled dataset to exclude locations with a large radius of spatial uncertainty (in this case &gt;50km). It is difficult to define climate for locations with high levels of spatial uncertainty and their large areas increase the download and processing requirements for download and analysis of climate data.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ERA.Data<span class="ot">&lt;-</span>ERA.Compiled[Buffer<span class="sc">&lt;</span><span class="dv">50000</span>]</span></code></pre></div>
+</div>
+<div id="set-a-date-of-temporal-origin" class="section level3">
+<h3>Set a date of temporal origin</h3>
+<p>When analyzing climate data it is convenient that each date has a unique and sequential number that indicates the number of days from a temporal point of origin. The point of origin is arbitrary, but should be before the date of the first observation in a dataset.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>M.ORIGIN<span class="ot">&lt;-</span><span class="st">&quot;1900-01-01&quot;</span></span></code></pre></div>
+</div>
+<div id="agmerra" class="section level3">
+<h3>AgMERRA</h3>
+<p>The <code>ExtractAgMERRA</code> function extracts daily climate data from AgMERRA .nc4 files. With larger datasets the function can take some hours to run and caution is advised when using parallelization (see <code>cores</code> argument) as memory requirements are high.</p>
+<p>Before running the function you will need to download all AgMERRA files from <a href="https://data.giss.nasa.gov/impacts/agmipcf/agmerra/">this repository</a> to a local directory, then specify this directory as the <code>AgMERRA_dir</code> argument in the function call. In the example below the AgMerra .nc4 files have downloaded to a folder called <code>AgMERRA Downloads</code> in the working directory.</p>
+<p>The extracted dataset is returned and saved as an <code>AgMERRA.RData</code> object in the directory specified by the <code>Save_Dir</code> argument (in the example below this is the <code>AgMERRA</code> folder in the working directory.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>AgMERRA<span class="ot">&lt;-</span><span class="fu">ExtractAgMERRA</span>(<span class="at">DATA=</span>ERA.Data,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">ID=</span><span class="st">&quot;Site.Key&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">AgMERRA_dir =</span> <span class="st">&quot;/AgMERRA Downloads&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">TempDir =</span> <span class="st">&quot;/Temp&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">Save_Dir =</span> <span class="st">&quot;/AgMERRA&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">cores=</span><span class="dv">4</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">Years =</span> <span class="fu">c</span>(<span class="dv">1980</span>,<span class="dv">2010</span>),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">M.ORIGIN =</span> M.ORIGIN)</span></code></pre></div>
+<p><em>AgMERRA is the AgMIP climate forcing dataset based on the NASA Modern-Era Retrospective Analysis for Research and Applications (MERRA). AgMERRA corrects to gridded temperature and precipitation, incorporates satellite precipitation, and derives solar radiation from NASA/GEWEX SRB to cover the 1980-2010 period. AgMERRA is somewhat dated, but our primary use for it is to gap fill missing solar radiation values in POWER values.</em></p>
+</div>
+<div id="chirps" class="section level3">
+<h3>CHIRPS</h3>
+<p>There are three phases to extraction of CHIRPS precipitation data: 1) downloading the data using the <code>DownloadCHIRPS</code> function; 2) reformatting the data using the <code>ReformatCHIRPS</code> function; and 3) extracting the data using the <code>ExtractCHIRPS</code> function.</p>
+<div id="download" class="section level4">
+<h4>1) Download</h4>
+<p>This function download the CHIRPS 2.0 dataset as .tif.gz files with 0.05 degree resolution from an online <a href="https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/1981/">repository</a> to the local directory specified in the <code>SaveDir</code> argument.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DownloadCHIRPs</span>(<span class="at">StartYear=</span><span class="dv">1983</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">EndYear=</span><span class="dv">2019</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">SaveDir=</span><span class="fu">paste0</span>(<span class="fu">getwd</span>(),<span class="st">&quot;/CHIRPS Downloads&quot;</span>))</span></code></pre></div>
+</div>
+<div id="reformat" class="section level4">
+<h4>2) Reformat</h4>
+<p>The <code>ReformatCHIRPS</code> function transforms the CHIRPS data downloaded by the <code>DownloadCHIRPS</code> function to be an array object from which data can be quickly extracted. The directory containing the download CHIRPS data is specified by <code>CHIRPS_dir</code> argument.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ReformatCHIRPS<span class="ot">&lt;-</span><span class="cf">function</span>(<span class="at">CHIRPS_dir=</span><span class="fu">paste0</span>(<span class="fu">getwd</span>(),<span class="st">&quot;/CHIRPS Downloads&quot;</span>),</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Save_dir=</span><span class="fu">paste0</span>(<span class="fu">getwd</span>(),<span class="st">&quot;/CHIRPS Reformatted&quot;</span>)</span></code></pre></div>
+</div>
+<div id="extract" class="section level4">
+<h4>3) Extract</h4>
+<p>The <code>ExtractCHIRPS</code> function extracts daily climate data from a reformatted CHIRPS object created by the <code>ReformatCHIRPS</code> and located in the directory specified by the <code>CHIRPS_dir</code> argument. The period for which data are extracted for, specified by the <code>YStart</code> and <code>YEnd</code> arguments, should not exceed the bounds of the years specified when the CHIRPS data were downloaded.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>CHIRPS<span class="ot">&lt;-</span><span class="fu">ExtractCHIRPS</span>(<span class="at">DATA =</span> ERA.Data,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">ID =</span> <span class="st">&quot;Site.Key&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">CHIRPS_dir=</span><span class="st">&quot;/CHIRPS Reformatted&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">Save_Dir =</span> <span class="st">&quot;/CHIRPS&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">YStart =</span> <span class="dv">1983</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">YEnd =</span> <span class="dv">2019</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">ROUND=</span><span class="dv">5</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">M.ORIGIN=</span>M.ORIGIN)</span></code></pre></div>
+</div>
+</div>
+<div id="power" class="section level3">
+<h3>POWER</h3>
+<p>The <code>ExtractPOWER</code> function downloads agroclimatology data at 0.05&amp;deg resolution from the <a href="https://power.larc.nasa.gov/">NASA POWER</a> dataset using an AP query. As it is an API query the download process is slow and may take many hours.</p>
+<p>The code below will download chunks of data for combination of POWER parameter (specified in the <code>Parameters</code> argument) and <code>Site.Key</code> for the period 1983-07-01 to 2018-12-31. The parameters chosen allow the calculation of Penman-Montieth evapotranspiration.</p>
+<p>Downloaded files are stored in the directory specified by the <code>Save_Dir</code> argument and once all the data have been downloaded they are combined together and saved as a <code>POWER.RData</code> object in the directory specified in the <code>PowerSave</code> argument. The <code>DELETE</code> argument removes downloaded files when set to <code>TRUE</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>POWER<span class="ot">&lt;-</span><span class="fu">ExtractPOWER</span>(<span class="at">DATA=</span>ERA.Data,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">Parameters=</span> <span class="fu">paste0</span>(<span class="st">&quot;ALLSKY_SFC_SW_DWN,&quot;</span>, <span class="st">&quot;PRECTOT,&quot;</span>, <span class="st">&quot;PS,&quot;</span>,<span class="st">&quot;QV2M,&quot;</span>,<span class="st">&quot;RH2M,&quot;</span>,<span class="st">&quot;T2M,&quot;</span>,<span class="st">&quot;T2M_MAX,&quot;</span>,<span class="st">&quot;T2M_MIN,&quot;</span>,<span class="st">&quot;WS2M&quot;</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">StartDate=</span><span class="dv">19830701</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">EndDate=</span><span class="dv">20181231</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ID=</span><span class="st">&quot;Site.Key&quot;</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">Save_Dir=</span><span class="st">&quot;/POWERdownloads&quot;</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">PowerSave=</span><span class="st">&quot;/POWER&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">DELETE=</span><span class="cn">FALSE</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">M.ORIGIN=</span>M.ORIGIN,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">MaxBuffer=</span><span class="dv">50000</span>) </span></code></pre></div>
+<p><em>NASA POWER Solar parameters are derived from NASA’s GEWEX/SRB release 3.0 archive (July 1, 1983 – Dec. 31, 2007) and NASA’s CERES FLASHFlux project (Jan. 1, 2008 – to within about 7-days of real time). Meteorological parameters are derived from the NASA’s GMAO MERRA-2 assimilation model (Jan. 1, 1981 to within a few months of real time) plus GEOS-5.12.4 FP-IT (End of MERRA-2 to within several days of real time). The data in POWER cover the period 1983-07-01 to near present.</em></p>
+</div>
+<div id="pending-bioclim" class="section level3">
+<h3><em>Pending: BioClim</em></h3>
+</div>
+<div id="calculating-reference-pet-potential-evapotranspiration" class="section level3">
+<h3>Calculating reference PET (potential evapotranspiration)</h3>
+<p>Agroclimatology datasets such as POWER contain the variables needed to calculate reference PET, but before we can do this we need to add altitude and gap fill some missing solar radiation values.</p>
+<div id="add-altitude" class="section level4">
+<h4>Add altitude</h4>
+<p>Altitude data can be added from the <code>ERA_Physical</code> object of the <code>ERAg</code> package.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    funX<span class="ot">&lt;-</span><span class="cf">function</span>(ID){</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      ID.NAME<span class="ot">&lt;-</span>ID</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      ERA_Physical[<span class="fu">match</span>(ID.NAME,<span class="fu">unlist</span>(ERA_Physical[,Site.Key])),Altitude.mean]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    POWER[,Altitude<span class="sc">:</span><span class="er">=</span><span class="fu">funX</span>(Site.Key[<span class="dv">1</span>]),by<span class="ot">=</span>Site.Key]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rm</span>(funX)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    </span></code></pre></div>
+</div>
+<div id="subsitute-missing-solar-radiation-values" class="section level4">
+<h4>Subsitute missing solar radiation values</h4>
+<p>First we see if missing POWER solar radiation (<code>SRad</code>) values can be substituted from the AgMERRA dataset that covers 1980-2010.</p>
+<p>We add a field <code>SRad.Sub</code> to indicate rows with substituted values and the source of substituted data.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>      N<span class="ot">&lt;-</span>POWER[,<span class="fu">which</span>(<span class="fu">is.na</span>(SRad))]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>      M<span class="ot">&lt;-</span><span class="fu">match</span>(<span class="fu">paste</span>(<span class="fu">unlist</span>(POWER[N,..ID]),POWER[N,DayCount]),<span class="fu">paste</span>(<span class="fu">unlist</span>(AgMERRA[,..ID]),AgMERRA[,DayCount]))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>      NN<span class="ot">&lt;-</span><span class="fu">which</span>(<span class="sc">!</span><span class="fu">is.na</span>(M))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>      POWER[N[NN],SRad<span class="sc">:</span><span class="er">=</span>AgMERRA[M[NN],Solar.Rad]]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      POWER[N[NN],SRad.Sub<span class="sc">:</span><span class="er">=</span><span class="st">&quot;AgMERRA&quot;</span>]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rm</span>(N,NN)</span></code></pre></div>
+<p>For remaining values we use the <code>ReplaceSRAD</code> function to search withing the POWER dataset for temporally adjacent <code>SRad</code> values. The solar radiation value of the day with the most similar rainfall to the NA value within +/- a number of days specified by the <code>SeqLen</code> argument is substituted. Rainfall data is complete in POWER. So if <code>SeqLen = 3</code> then the function assesses rainfall similarity 3 days either side of a missing SRad value and chooses the most similar value with a corresponding SRad value.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>      N<span class="ot">&lt;-</span>POWER[,<span class="fu">which</span>(SRad<span class="sc">&lt;</span><span class="dv">0</span><span class="sc">|</span><span class="fu">is.na</span>(SRad))]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(<span class="fu">length</span>(N)<span class="sc">&gt;</span><span class="dv">0</span>){</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>      R<span class="ot">&lt;-</span><span class="fu">ReplaceSRAD</span>(<span class="at">SRad =</span> POWER[,SRad],<span class="at">Rain =</span> POWER[,Rain],N,<span class="at">SeqLen=</span><span class="dv">3</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>      POWER[N,SRad<span class="sc">:</span><span class="er">=</span>R]</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>      POWER[N,SRad.Sub<span class="sc">:</span><span class="er">=</span><span class="st">&quot;Nearby&quot;</span>]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rm</span>(N,R)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      </span></code></pre></div>
+</div>
+<div id="calculate-pet" class="section level4">
+<h4>Calculate PET</h4>
+<p>The <code>PETcalc</code> function applies the <a href="http://www.fao.org/docrep/X0490E/x0490e06.htm">FAO Penman-Monteith method</a> to calculate reference evapotranspiration.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>    POWER[,ETo<span class="sc">:</span><span class="er">=</span><span class="fu">PETcalc</span>(<span class="at">Tmin=</span>Temp.Min,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">Tmax=</span>Temp.Max,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">SRad=</span>SRad,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">Wind=</span>WindSpeed,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">Rain=</span>Rain,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">Pressure=</span>Pressure,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">Humid=</span>Humid,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">YearDay=</span>Day,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">Latitude=</span>Latitude,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">Altitude=</span>Altitude)<span class="sc">$</span>ETo]</span></code></pre></div>
+</div>
+<div id="calculate-annual-and-long-term-climate-stats" class="section level4">
+<h4>Calculate annual and long-term climate stats</h4>
+<p>Complete data for a year is require to calculate annual climate statistics, so first we remove any incomplete years (years with missing data)</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>      POWER<span class="ot">&lt;-</span>POWER[<span class="sc">!</span>Year<span class="sc">==</span>POWER[Site.Key<span class="sc">==</span>POWER<span class="sc">$</span>Site.Key[<span class="dv">1</span>],<span class="fu">list</span>(<span class="at">N=</span>.N),by<span class="ot">=</span>Year][N<span class="sc">&lt;</span><span class="dv">365</span>,Year]]</span></code></pre></div>
+<p>Next we calculate annual statistics using the <code>data.table</code> <code>by =</code> syntax to apply functions by groups, in this case the groups are the <code>Site.Key</code> and <code>Year</code>. In this example we use the POWER dataset but the approach can be applied to other daily climate datasets.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>      POWER.Annual<span class="ot">&lt;-</span>POWER[,<span class="fu">list</span>(<span class="at">Total.Rain=</span><span class="fu">sum</span>(Rain),</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Total.ETo=</span><span class="fu">sum</span>(ETo),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">S.Humid.Mean=</span><span class="fu">mean</span>(Specific.Humid),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Humid.Mean=</span><span class="fu">mean</span>(Humid),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Temp.Mean.Mean=</span><span class="fu">mean</span>(Temp.Mean),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Mean.N.30.Days=</span><span class="fu">sum</span>(Temp.Mean<span class="sc">&gt;</span><span class="dv">30</span>),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Temp.Max.Mean=</span><span class="fu">mean</span>(Temp.Max),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Temp.Max=</span><span class="fu">max</span>(Temp.Max),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Max.N.40.Days=</span><span class="fu">sum</span>(Temp.Max<span class="sc">&gt;</span><span class="dv">40</span>),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Temp.Min.Mean=</span><span class="fu">mean</span>(Temp.Min),</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                                <span class="at">Temp.Min=</span><span class="fu">min</span>(Temp.Min)),by<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;Site.Key&quot;</span>,<span class="st">&quot;Year&quot;</span>)]</span></code></pre></div>
+<p>Now we use the annual climate statistics to calculate long-term averages from the calculated above, this time the only grouping variable will use is <code>Year</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>      POWER.LT<span class="ot">&lt;-</span>POWER.Annual[,<span class="fu">list</span>(<span class="at">Total.Rain.Mean=</span><span class="fu">mean</span>(Total.Rain),</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Total.ETo.Mean=</span><span class="fu">mean</span>(Total.ETo),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">S.Humid.Mean=</span><span class="fu">mean</span>(S.Humid.Mean),</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Humid.Mean=</span><span class="fu">mean</span>(Humid.Mean),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Mean.Mean=</span><span class="fu">mean</span>(Temp.Mean.Mean),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Mean.N.30.Days=</span><span class="fu">mean</span>(Mean.N.<span class="fl">30.</span>Days),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Max.Mean=</span><span class="fu">mean</span>(Temp.Max.Mean),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Max=</span><span class="fu">mean</span>(Temp.Max),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Max.N.40.Days=</span><span class="fu">mean</span>(Max.N.<span class="fl">40.</span>Days),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Min.Mean=</span><span class="fu">mean</span>(Temp.Min.Mean),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Min.Mean=</span><span class="fu">mean</span>(Temp.Min),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Total.Rain.sd=</span><span class="fu">sd</span>(Total.Rain),</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Total.ETo.sd=</span><span class="fu">mean</span>(Total.ETo),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">S.Humid.Mean.sd=</span><span class="fu">sd</span>(S.Humid.Mean),</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Humid.Mean.sd=</span><span class="fu">sd</span>(Humid.Mean),</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Mean.Mean.sd=</span><span class="fu">sd</span>(Temp.Mean.Mean),</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Mean.N.30.Days.sd=</span><span class="fu">sd</span>(Mean.N.<span class="fl">30.</span>Days),</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Max.Mean.sd=</span><span class="fu">sd</span>(Temp.Max.Mean),</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Max.sd=</span><span class="fu">sd</span>(Temp.Max),</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Max.N.40.Days.sd=</span><span class="fu">sd</span>(Max.N.<span class="fl">40.</span>Days),</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Min.Mean.sd=</span><span class="fu">sd</span>(Temp.Min.Mean),</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">Temp.Min.sd=</span><span class="fu">sd</span>(Temp.Min)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>      ),by<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;Site.Key&quot;</span>)]</span></code></pre></div>
+<p>To explore annual deviance from long-term averages subtract the long-term average from the annual values.</p>
+</div>
+</div>
+</div>
+<div id="section-2-calculating-statistics-from-the-extracted-climate-data" class="section level2">
+<h2>Section 2: Calculating statistics from the extracted climate data</h2>
+<p>Once we have extracted the climate data we can estimate long-term, annual and seasonal climate variables for each buffered point location. We will be calculating variables such as reference evapotranspiration, rainfall, growing degree days and dry spells.</p>
+<p>The <code>ERAg</code> functions used in this section of the vignette are less generalisable to non-ERA datasets and require specific fields in the dataset to define growing seasons including fields describing Planting and Harvest dates.</p>
+<div id="load-required-packages-1" class="section level3">
+<h3>Load required packages</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;pacman&quot;</span>, <span class="at">character.only =</span> <span class="cn">TRUE</span>)){</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;pacman&quot;</span>,<span class="at">dependencies =</span> T)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  required.packages <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ggplot2&quot;</span>,<span class="st">&quot;circular&quot;</span>,<span class="st">&quot;data.table&quot;</span>,<span class="st">&quot;doSNOW&quot;</span>,<span class="st">&quot;zoo&quot;</span>,<span class="st">&quot;pbapply&quot;</span>,<span class="st">&quot;ERAg&quot;</span>,<span class="st">&quot;dismo&quot;</span>,<span class="st">&quot;miceadds&quot;</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">p_load</span>(<span class="at">char=</span>required.packages,<span class="at">install =</span> T,<span class="at">character.only =</span> T)</span></code></pre></div>
+</div>
+<div id="prepare-analytical-environment" class="section level3">
+<h3>Prepare analytical environment</h3>
+<div id="create-save-directories" class="section level4">
+<h4>Create save directories</h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a directory for the climate analysis</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>AnalysisDir<span class="ot">&lt;-</span><span class="st">&quot;ERA Climate Analysis/&quot;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(AnalysisDir)){</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(AnalysisDir)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a directory for strange or incorrect ERA values to investigate</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>ErrorDir<span class="ot">&lt;-</span><span class="fu">paste0</span>(AnalysisDir,<span class="st">&quot;Potential Errors/&quot;</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(ErrorDir)){</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(ErrorDir)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a directory for crop specific information</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>CROP_dir<span class="ot">&lt;-</span><span class="fu">paste0</span>(AnalysisDir,<span class="st">&quot;Crops/&quot;</span>) </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(CROP_dir)){</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(CROP_dir)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="load-datasets" class="section level4">
+<h4>Load datasets</h4>
+<p>Access the ERA.Compiled dataset from the <code>ERAg</code> package.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ERA<span class="ot">&lt;-</span>ERAg<span class="sc">::</span>ERA.Compiled</span></code></pre></div>
+<p>We will also require extracted climate data for our sites, this can be created using the methods outline in Section 1 of this vignette or, more conveniently, prepared data can be downloaded from the <code>ERAg</code> github using the piggyback methods outline in the <code>ERA-Large-Climate-Files</code> vignette.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">GITHUB_TOKEN =</span> <span class="st">&quot;ghp_XXXXXXXXXXXXXXXXXXXXXXXX&quot;</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>LargeDir<span class="ot">&lt;-</span><span class="st">&quot;Large Files/&quot;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(LargeDir)){</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dir.create</span>(LargeDir,<span class="at">recursive =</span> T)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(FILE <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&quot;POWER.RData&quot;</span>,<span class="st">&quot;AgMERRA.RData&quot;</span>)){</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    piggyback<span class="sc">::</span><span class="fu">pb_download</span>(<span class="at">file=</span> FILE, </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">repo =</span> <span class="st">&quot;peetmate/ERAg&quot;</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">tag =</span> <span class="st">&quot;Beta_v0.0.1&quot;</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">dest =</span> LargeDir)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  POWER<span class="ot">&lt;-</span><span class="fu">data.table</span>(miceadds<span class="sc">::</span><span class="fu">load.Rdata2</span>(<span class="st">&quot;POWER.RData&quot;</span>,<span class="at">path=</span>LargeDir))</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  CHIRPS<span class="ot">&lt;-</span><span class="fu">data.table</span>(miceadds<span class="sc">::</span><span class="fu">load.Rdata2</span>(<span class="st">&quot;CHIRPS.RData&quot;</span>,<span class="at">path=</span>LargeDir))</span></code></pre></div>
+</div>
+<div id="set-analytical-parameters" class="section level4">
+<h4>Set analytical parameters</h4>
+<p>The <code>M.ORIGIN</code> parameter is a date of origin. It is used to assign other dates an integer number which is the number of days from the date of origin.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set date origin for daycount field</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>M.ORIGIN<span class="ot">&lt;-</span><span class="st">&quot;1900-01-01&quot;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set number of cores for parallel processing</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>cores<span class="ot">&lt;-</span><span class="fu">max</span>(<span class="dv">1</span>, parallel<span class="sc">::</span><span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Name of field that assigns sites a unique ID (in ERA this is a concatenation of Latitude, Longitude and Buffer)</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>ID<span class="ot">&lt;-</span><span class="st">&quot;Site.Key&quot;</span></span></code></pre></div>
+</div>
+<div id="prepare-era-dataset" class="section level4">
+<h4>Prepare ERA dataset</h4>
+<p>Create a season code field and convert M.Year blanks to <code>NA</code> values:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ERA[Season.Start<span class="sc">==</span><span class="dv">1</span> <span class="sc">&amp;</span> Season.End<span class="sc">==</span><span class="dv">1</span>,Season<span class="sc">:</span><span class="er">=</span><span class="st">&quot;1&quot;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>           ][Season.Start<span class="sc">==</span><span class="dv">2</span> <span class="sc">&amp;</span> Season.End<span class="sc">==</span><span class="dv">2</span>,Season<span class="sc">:</span><span class="er">=</span><span class="st">&quot;2&quot;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>             ][Season.Start<span class="sc">==</span><span class="dv">1</span> <span class="sc">&amp;</span> Season.End<span class="sc">==</span><span class="dv">2</span>,Season<span class="sc">:</span><span class="er">=</span><span class="st">&quot;1&amp;2&quot;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>               ][M.Year<span class="sc">==</span><span class="st">&quot;&quot;</span>,M.Year<span class="sc">:</span><span class="er">=</span><span class="cn">NA</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                 ][Season<span class="sc">==</span><span class="st">&quot;&quot;</span>,Season<span class="sc">:</span><span class="er">=</span><span class="cn">NA</span>]</span></code></pre></div>
+<p>Ensure date fields are class <code>Date</code>:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ERA[,Harvest.Start<span class="sc">:</span><span class="er">=</span><span class="fu">as.Date</span>(Harvest.Start,<span class="st">&quot;%d.%m.%Y&quot;</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    ][,Harvest.End<span class="sc">:</span><span class="er">=</span><span class="fu">as.Date</span>(Harvest.End,<span class="st">&quot;%d.%m.%Y&quot;</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>      ][,Plant.Start<span class="sc">:</span><span class="er">=</span><span class="fu">as.Date</span>(Plant.Start,<span class="st">&quot;%d.%m.%Y&quot;</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        ][,Plant.End<span class="sc">:</span><span class="er">=</span><span class="fu">as.Date</span>(Plant.End,<span class="st">&quot;%d.%m.%Y&quot;</span>)]</span></code></pre></div>
+<p>Update missing altitude values with those derived from digital elevation models (DEMs):</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Physical<span class="ot">&lt;-</span><span class="fu">data.table</span>(ERA_Physical)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add DEM altitude to ERA</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>ERA[<span class="sc">!</span><span class="fu">is.na</span>(Latitude),Altitude.DEM<span class="sc">:</span><span class="er">=</span>Physical[<span class="fu">match</span>(<span class="fu">unlist</span>(ERA[<span class="sc">!</span><span class="fu">is.na</span>(Latitude),..ID]),<span class="fu">unlist</span>(Physical[,..ID])) , Altitude.mean]]</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace missing altitude values with DEM values</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>ERA[,Altitude<span class="sc">:</span><span class="er">=</span>Elevation</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>           ][<span class="fu">is.na</span>(Altitude)<span class="sc">|</span>Altitude<span class="sc">==</span><span class="st">&quot;&quot;</span>,Altitude<span class="sc">:</span><span class="er">=</span>Altitude.DEM]</span></code></pre></div>
+<p>Ensure ERA code fields are data.table format:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure code tables are data.table format</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>PracticeCodes<span class="ot">&lt;-</span><span class="fu">data.table</span>(PracticeCodes)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>OutcomeCodes<span class="ot">&lt;-</span><span class="fu">data.table</span>(OutcomeCodes)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>EUCodes<span class="ot">&lt;-</span><span class="fu">data.table</span>(EUCodes)</span></code></pre></div>
+<p>Nest we subset ERA data for 1) crop yields; 2) single season annual products; 3) observations with no temporal aggregation; 4) outcomes that correspond to a single product; and 5) locations with radius of spatial uncertainty less than 25km.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>Exclude.Product.Subtypes<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;Fibre &amp; Wood&quot;</span>,<span class="st">&quot;Tree&quot;</span>,<span class="st">&quot;Fodders&quot;</span>,<span class="st">&quot;Nuts&quot;</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>Exclude.Products<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;Sugar Cane (Cane)&quot;</span>, <span class="st">&quot;Sugar Cane (Sugar)&quot;</span>, <span class="st">&quot;Coffee&quot;</span>, <span class="st">&quot;Gum arabic&quot;</span>, <span class="st">&quot;Cassava or Yuca&quot;</span>, <span class="st">&quot;Pepper&quot;</span>, <span class="st">&quot;Vanilla&quot;</span>, <span class="st">&quot;Tea&quot;</span>, <span class="st">&quot;Plantains and Cooking Bananas&quot;</span>, <span class="st">&quot;Jatropha (oil)&quot;</span>, <span class="st">&quot;Palm Oil&quot;</span>, <span class="st">&quot;Olives (fruits)&quot;</span> , <span class="st">&quot;Olives (oil)&quot;</span>, <span class="st">&quot;Taro or Cocoyam or Arrowroot&quot;</span>, <span class="st">&quot;Palm Fruits (Other)&quot;</span>, <span class="st">&quot;Turmeric&quot;</span>, <span class="st">&quot;Ginger&quot;</span>, <span class="st">&quot;Cardamom&quot;</span>, <span class="st">&quot;Apples&quot;</span>, <span class="st">&quot;Oranges&quot;</span>, <span class="st">&quot;Grapes (Wine)&quot;</span>, <span class="st">&quot;Peaches and Nectarines&quot;</span>, <span class="st">&quot;Jujube&quot;</span>, <span class="st">&quot;Jatropha (seed)&quot;</span>, <span class="st">&quot;Vegetables (Other)&quot;</span>, <span class="st">&quot;Herbs&quot;</span>, <span class="st">&quot;Pulses (Other)&quot;</span>, <span class="st">&quot;Beans (Other)&quot;</span>, <span class="st">&quot;Leafy Greens (Other)&quot;</span>, <span class="st">&quot;Bananas (Ripe Sweet)&quot;</span>, <span class="st">&quot;Jatropha&quot;</span>) </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>ERA.Yields<span class="ot">&lt;-</span>ERA[Out.SubInd <span class="sc">==</span> <span class="st">&quot;Crop Yield&quot;</span> <span class="sc">&amp;</span> <span class="co"># Subset to crop yields</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                  (M.Year.Start <span class="sc">==</span> M.Year.End <span class="sc">&amp;</span> (Season <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)<span class="sc">|</span><span class="fu">is.na</span>(Season))) <span class="sc">&amp;</span> <span class="co"># No temporal aggregation</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>                  <span class="sc">!</span>Product.Subtype <span class="sc">%in%</span> Exclude.Product.Subtypes <span class="sc">&amp;</span>  <span class="co"># Subset to single season annual products</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                  <span class="sc">!</span>Product <span class="sc">%in%</span>  Exclude.Products <span class="sc">&amp;</span> <span class="co"># Subset to single season annual products</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                  <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot; x |-&quot;</span>,Product) <span class="sc">&amp;</span> <span class="co"># Single products only</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                  Buffer<span class="sc">&lt;=</span><span class="dv">25000</span>]</span></code></pre></div>
+</div>
+<div id="add-ecocrop-data-to-era" class="section level4">
+<h4>Add Ecocrop data to ERA</h4>
+<p>When harvest dates are not reported in the studies that comprise ERA we can substitute season length values from the EcoCrop dataset. First we need to merge EcoCrop data with <code>ERAg::AddEcoCrop</code> function.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>ERA.Yields<span class="ot">&lt;-</span><span class="fu">cbind</span>(ERA.Yields,ERAg<span class="sc">::</span><span class="fu">AddEcoCrop</span>(<span class="at">Products =</span> ERA.Yields[,Product]))</span></code></pre></div>
+</div>
+</div>
+<div id="prepare-climate-dataset" class="section level3">
+<h3>Prepare Climate dataset</h3>
+<p>Here we:<br />
+1) replace the rainfall data in the POWER agroclimatology data with the superior data provided by CHIRPS<br />
+2) calculate Penman-Montieth reference evapotranspiration (ETo) in case this has not already been derived<br />
+3) ensure fields are correct classes.</p>
+<p>Note that you can also download this dataset pre-prepared as <code>POWER.CHIRPS.RData</code> using the piggyback method.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Harmonize field names between datasets</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(CHIRPS)[<span class="fu">which</span>(<span class="fu">colnames</span>(CHIRPS)<span class="sc">==</span><span class="st">&quot;RAIN&quot;</span>)]<span class="ot">&lt;-</span><span class="st">&quot;Rain&quot;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(POWER)[<span class="fu">which</span>(<span class="fu">colnames</span>(POWER)<span class="sc">==</span><span class="st">&quot;SRad&quot;</span>)]<span class="ot">&lt;-</span><span class="st">&quot;Solar.Rad&quot;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add altitude to POWER  </span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  POWER[,Altitude<span class="sc">:</span><span class="er">=</span>Physical[<span class="fu">match</span>(<span class="fu">as.factor</span>(<span class="fu">unlist</span>(POWER[,..ID])),<span class="fu">as.factor</span>(<span class="fu">unlist</span>(Physical[,..ID]))),Altitude.mean]]</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove observations without Altitude and remove the Rain column which will be replaced by CHIRPS data</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  POWER<span class="ot">&lt;-</span>POWER[<span class="sc">!</span><span class="fu">is.na</span>(Altitude)][,Rain<span class="sc">:</span><span class="er">=</span><span class="cn">NULL</span>]</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We will use the dplyr::left_join function to merge the dataset so we convert from data.table to data.frame</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  CHIRPS<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(CHIRPS)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  POWER<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(POWER)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine datasets and convert back to data.table</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  POWER.CHIRPS<span class="ot">&lt;-</span><span class="fu">data.table</span>(dplyr<span class="sc">::</span><span class="fu">left_join</span>(POWER,CHIRPS[,<span class="fu">c</span>(<span class="st">&quot;DayCount&quot;</span>,ID,<span class="st">&quot;Rain&quot;</span>)],<span class="at">by =</span> <span class="fu">c</span>(ID,<span class="st">&quot;DayCount&quot;</span>)))</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calculate ETo if absent</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(POWER.CHIRPS[,<span class="fu">is.null</span>(ETo)]){</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>  POWER.CHIRPS[,ETo<span class="ot">&lt;-</span><span class="fu">PETcalc</span>(<span class="at">Tmin=</span>Temp.Min,</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Tmax=</span>Temp.Max,</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>                            <span class="at">SRad=</span>Solar.Rad ,</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Wind=</span>WindSpeed,</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Rain=</span>Rain,</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Pressure=</span>Pressure,</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Humid=</span>Humid,</span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>                            <span class="at">YearDay=</span>Day,</span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Latitude=</span>Latitude,</span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>                            <span class="at">Altitude=</span>Altitude)[,<span class="dv">1</span>]</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure fields are correct classes</span></span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>  POWER.CHIRPS[,Site.Key <span class="sc">:</span><span class="er">=</span><span class="fu">as.factor</span>(Site.Key )</span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>               ][,Year<span class="sc">:</span><span class="er">=</span><span class="fu">as.factor</span>(Year)</span>
+<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a>                 ][,Day<span class="sc">:</span><span class="er">=</span><span class="fu">as.factor</span>(Day)</span>
+<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>                   ][,Altitude<span class="sc">:</span><span class="er">=</span><span class="fu">as.integer</span>(Altitude)]</span></code></pre></div>
+</div>
+<div id="estimate-unreported-plantings-dates" class="section level3">
+<h3>Estimate unreported plantings dates</h3>
+<p>We may wish to substitute NA values of planting date in ERA with estimates derived from the <code>EstPDayData</code> function which searches for planting dates for the same <code>Product/Product.Subtype</code>, year and growing season which are spatially nearby.</p>
+<p>The function searches iteratively within five levels of increasing distance corresponding to latitude and longitude recorded from 5 to 1 decimal places. If there is more than one planting date value for a <code>Product x M.Year.Start x M.Year.End x Season.Start x Season.End</code> combination then values are averaged. If no corresponding planting dates are found matching on product then matching is attempted on <code>Product.Subtype</code> (e.g. cereals or legumes).</p>
+<p>If Latitude + Longitude combinations have a mixture of season = 1 or 2 and season = NA values then this suggests a potential issue with the consistency of temporal recording at the spatial coordinates. Observations with such issues are excluded from the <code>EstPDayData</code> analysis and flagged in an output <code>[[Season.Issues]]</code> list object.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>ERA.Yields<span class="ot">&lt;-</span><span class="fu">EstPDayData</span>(<span class="at">DATA=</span>ERA.Yields)<span class="sc">$</span>DATA</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate % of missing data that could be substituted using EstPDayData estimates</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(ERA.Yields<span class="sc">$</span>Data.PS.Date))<span class="sc">/</span><span class="fu">sum</span>(<span class="fu">is.na</span>(ERA.Yields<span class="sc">$</span>Plant.Start))<span class="sc">*</span><span class="dv">100</span>,<span class="dv">2</span>)</span></code></pre></div>
+</div>
+<div id="estimate-season-lengths-where-harvest-dates-are-missing" class="section level3">
+<h3>Estimate season lengths where harvest dates are missing</h3>
+<p>Using similar methods to the <code>EstPDayData</code> function, the <code>EstSLenData</code> estimates season length values from similar crops and locations nearby to missing values.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ERA.Yields<span class="ot">&lt;-</span><span class="fu">EstSLenData</span>(<span class="at">DATA=</span>ERA.Yields)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate % of missing data that could be substituted using EstSLenData estimates</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(ERA.Yields<span class="sc">$</span>SLen))<span class="sc">/</span><span class="fu">sum</span>(<span class="fu">is.na</span>(ERA.Yields<span class="sc">$</span>Data.SLen))<span class="sc">*</span><span class="dv">100</span>,<span class="dv">2</span>)</span></code></pre></div>
+</div>
+<div id="refine-ecocrop-cycle-lengths" class="section level3">
+<h3>Refine Ecocrop cycle lengths</h3>
+<p>EcoCrop data for crop cycle length estimates (how long a crop takes to grow) can have a large range, especially for crops that can be grown in temperate and tropical regions. Maize, for example, as a season length of 65-365 days with midpoint 215 days, this is a rather unrealistically long season for most of sub-Saharan Africa. We can mine ERA data where we have crop planting and harvest dates of reasonably certainty to esimate season length and replace EcoCrop estimates.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estimate season length from date allowing 7 days uncertainty in planting and harvest dates</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  A<span class="ot">&lt;-</span>ERA.Yields</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  A<span class="ot">&lt;-</span><span class="fu">unique</span>(A[<span class="sc">!</span>(<span class="fu">is.na</span>(Plant.Start)<span class="sc">|</span><span class="fu">is.na</span>(Plant.End)<span class="sc">|</span><span class="fu">is.na</span>(Harvest.End)<span class="sc">|</span><span class="fu">is.na</span>(Harvest.End))</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>              ][,<span class="at">PLANT.AVG:=</span>Plant.Start<span class="sc">+</span>(Plant.End<span class="sc">-</span>Plant.Start)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>                ][,<span class="at">HARVEST.AVG:=</span>Harvest.Start<span class="sc">+</span>(Harvest.End<span class="sc">-</span>Harvest.Start)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>                  ][<span class="sc">!</span>(((Plant.End<span class="sc">-</span>Plant.Start)<span class="sc">&gt;</span><span class="dv">7</span>)<span class="sc">|</span>((Harvest.End<span class="sc">-</span>Harvest.Start)<span class="sc">&gt;</span><span class="dv">7</span>))</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>                    ][,<span class="at">SLEN:=</span><span class="fu">round</span>(HARVEST.AVG<span class="sc">-</span>PLANT.AVG,<span class="dv">0</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>                      ][<span class="sc">!</span>SLEN<span class="sc">&lt;</span><span class="dv">30</span>,<span class="fu">c</span>(<span class="st">&quot;Product&quot;</span>,..ID,<span class="st">&quot;Code&quot;</span>,<span class="st">&quot;Variety&quot;</span>,<span class="st">&quot;M.Year&quot;</span>,<span class="st">&quot;PLANT.AVG&quot;</span>,<span class="st">&quot;SLEN&quot;</span>,<span class="st">&quot;Country&quot;</span>)])</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  B<span class="ot">&lt;-</span>A[,<span class="fu">list</span>(<span class="at">SLEN.mean=</span><span class="fu">mean</span>(SLEN),<span class="at">SLEN.med=</span><span class="fu">median</span>(SLEN),<span class="at">N=</span>.N),by<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;Product&quot;</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>       ][,SLEN.mean<span class="sc">:</span><span class="er">=</span><span class="fu">round</span>(<span class="fu">as.numeric</span>(SLEN.mean),<span class="dv">0</span>)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>         ][,SLEN.med<span class="sc">:</span><span class="er">=</span><span class="fu">round</span>(<span class="fu">as.numeric</span>(SLEN.med),<span class="dv">0</span>)]</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  B[,SLEN.EcoC<span class="sc">:</span><span class="er">=</span><span class="fu">round</span>(<span class="fu">apply</span>(ERA.Yields[<span class="fu">match</span>(B<span class="sc">$</span>Product,ERA.Yields<span class="sc">$</span>Product),<span class="fu">c</span>(<span class="st">&quot;cycle_min&quot;</span>,<span class="st">&quot;cycle_max&quot;</span>)],<span class="dv">1</span>,mean),<span class="dv">0</span>)]</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace EcoCrop values where we have &gt;=5 observation from our data</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  B<span class="ot">&lt;-</span>B[N<span class="sc">&gt;=</span><span class="dv">5</span>]</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Save estimate crop length datasets</span></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fwrite</span>(B,<span class="fu">paste0</span>(CROP_dir,<span class="st">&quot;Crop Season Lengths Estimated From Data.csv&quot;</span>))</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add estimate season lengths to ERA where season length values are missing</span></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>  N<span class="ot">&lt;-</span><span class="fu">match</span>(ERA.Yields<span class="sc">$</span>Product,B<span class="sc">$</span>Product)</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>  N1<span class="ot">&lt;-</span><span class="fu">which</span>(<span class="sc">!</span><span class="fu">is.na</span>(N))</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>  ERA.Yields<span class="sc">$</span>cycle_min[N1]<span class="ot">&lt;-</span>B<span class="sc">$</span>SLEN.med[N[N1]]</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>  ERA.Yields<span class="sc">$</span>cycle_max[N1]<span class="ot">&lt;-</span>B<span class="sc">$</span>SLEN.med[N[N1]]</span></code></pre></div>
+</div>
+<div id="refine-uncertain-planting-dates-using-rainfall-data" class="section level3">
+<h3>Refine uncertain planting dates using rainfall data</h3>
+<p>It is not uncommon for studies in ERA to report vague dates such as “May-June” creating uncertainty around the start of the growing season. Where there is a large difference between <code>Plant.Start</code> and <code>Plant.End</code> we can use the <code>EstPDayRain</code> function to estimate more precise planting dates using rainfall data.</p>
+<p>Planting dates are estimated for rows in <code>ERA.Yield</code> where the difference between <code>Plant.Start</code> and <code>Plant.End</code> is greater than or equal to the <code>Uncertainty.Min</code> argument and less than or equal to the <code>Uncertainty.Max</code> argument.</p>
+<p><code>EstPDayRain</code> uses the rollapply function to sum rainfall within a scanning window, planting is assumed to occur the day after summed rainfall surpasses a threshold amount.</p>
+<p>For each row of <code>ERA.Yield</code> with appropriate planting uncertainty the function initially searches for rainfall events in <code>CHIRPS</code> in-between and including the corresponding <code>Plant.Start</code> and <code>Plant.End</code> dates. This temporal search period can be modified using the <code>DaysBefore</code> and <code>MultiplyWin</code> arguments. <code>DaysBefore</code> extends the <code>Plant.Start</code> date backwards by a number of days. <code>MultiplyWin</code> is a proportion that multiplies the difference between <code>Plant.Start</code> and <code>Plant.End</code> dates increasing the size of the period forwards in time. If <code>Plant.Start = 2018-01-01</code> and <code>Plant.End = 2018-01-11</code> the difference between them is 10 days, if <code>MultiplyWin = 1.5</code> then <code>10*1.5=15</code> and the end of the initial search window becomes <code>2018-01-01 + 15 = 2018-01-16</code>. The width (in days) of the rollapply scanning window is specified by the <code>Width</code> argument and the amount of rainfall (mm) required to trigger planting within the scanning window is specified by the <code>Rain.Thresholds</code> argument.</p>
+<p>Up to two additional temporal search periods after the above can be specified in days using the <code>Window</code> arguments, for each extra window added the <code>Width</code> and <code>Rain.Thresholds</code> arguments require corresponding values to added in sequence. If no trigger events are found in the initial scanning window then subsequent windows are searched in order.</p>
+<p>By setting the <code>Use.Data.Dates</code> argument to <code>TRUE</code> we are substituting <code>NA</code> planting dates in ERA with values calculated by <code>EstPDayData</code> and refining these with the <code>EstPDayRain</code> function.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>ERA.Yields<span class="ot">&lt;-</span><span class="fu">EstPDayRain</span>(<span class="at">Data=</span>ERA.Yields, </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ID=</span>ID, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Rain.Data =</span> CHIRPS, <span class="co"># You could also use POWER.CHIRPS here</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Rain.Data.Name =</span> <span class="st">&quot;CHIRPS&quot;</span>, </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Rain.Field =</span><span class="st">&quot;Rain&quot;</span>, </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># DaysBefore: When searching for rainfall events in-between the uncertain planting start/end dates</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># supplied in ERA.Yieds extend the planting start date backwards by 2 days</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">DaysBefore =</span> <span class="dv">2</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>                    <span class="co">#  MultiplyWin: a proportion that changes the size of the difference between plant start and plant </span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># end, 1 = no change</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">MultiplyWin =</span> <span class="dv">1</span>, </span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># Window: add two addition temporal periods beyond the initial temporal window of 14 days</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Window =</span> <span class="fu">c</span>(<span class="dv">14</span>,<span class="dv">14</span>), </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># Widths: We need to set a threshold for the rainfall amount in mm that triggers planting within each </span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># window in this case there are 3 windows 1 + the 2 extra windows specified in the `Window` argument</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Widths =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>), </span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># Rain.Thresholds: We need to set a threshold for the rainfall amount in mm that triggers planting in each </span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># window if `Widths[1]=2` and `Rain.Thresholds[1]=30` then 30mm needs to fall over 2 days within the initial</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># window of plant start to plant end dates (as modified by DaysBefore and  MultiplyWin arguments) for </span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># planting to occur. If the threshold is not met then function iteratively goes to `Window[1]`, `Widths[2]` and </span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># `Rain.Thresholds[2]`.</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Rain.Thresholds =</span> <span class="fu">c</span>(<span class="dv">30</span>,<span class="dv">20</span>,<span class="dv">15</span>), </span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># Uncertainty.Min/Uncertainty.Max: refine planting dates with uncertainty of between 7-90 days</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Uncertainty.Min =</span> <span class="dv">7</span>, </span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Uncertainty.Max =</span> <span class="dv">90</span>, </span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Add.Values =</span> T, </span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Use.Data.Dates =</span> T  </span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>                    )</span></code></pre></div>
+</div>
+<div id="calculate-climate-variables" class="section level3">
+<h3>Calculate Climate Variables</h3>
+<p>We use the <code>CalcClimate</code> function to apply a complex sequence of calculations to the <code>ERA.Yield</code> and <code>POwER.CHIRPS</code> data.tables. <code>CalcClimate</code> calculates seasonal and long-term average climate variables the deviance of the seasonal values from long-term averages. <code>CalcClimate</code> can also provide bioclimatic variables annually with long-term averages and annual deviances (argument <code>Do.BioClim=T</code>).</p>
+<p>The <code>Observed</code> data.table returned in the output list shows calculates climate variables (such as growing degree days, total rainfall and dry-spells) using the ERA dataset provided and temporal windows of calculation defined using the <code>Win.Start</code> and <code>Windows</code> arguments. Two calculations windows are defined by default: <code>Data</code> which uses the planting and harvest dates reported/estimated and <code>EcoCrop</code> which uses the planting dates reported/estimated and EcoCrop estimates of season length. Additional windows of analysis (e.g. post planting 1-30 days after planting) can are defined using the <code>Windows</code> argument.</p>
+<p>If argument <code>Do.LT.Avg=T</code>estimates of long-term climate are estimated using planting dates derived from the rainfall data supplied (and not the ERA data, unlessinsufficient rainfall to estimate a planting date) and the arguments <code>Rain.Windows</code>, <code>Widths</code>, <code>Rain.Threshold</code> and <code>LongTerm</code>. The end years of the period for which long-term averages are calculated is set using the <code>Max.LT.Avg</code> argument.</p>
+<p><code>ClacClimate</code> Process:</p>
+<ol style="list-style-type: decimal">
+<li><p>Season Length <code>SLen</code> is calculated as difference between mean planting and harvest dates.</p></li>
+<li><p>The <code>SLen</code> function is applied to the data which combines accurate temporal planting/harvest data with estimates using the following and sequential logic:</p>
+<ol style="list-style-type: lower-alpha">
+<li>where <code>(Plant.End-Plant.Start)&gt;20</code>and a planting date derived from the <code>EstPDayRain</code> function is available <code>SLen</code> is substituted for <code>Harvest.End</code> - rainfall estimate planting date;</li>
+<li>where <code>(Plant.End-Plant.Start&lt;20) &amp; (Harvest.End-Harvest.Start&gt;=20)</code> <code>SLen</code> is substituted for <code>Harvest.End-(Plant.Start+(Plant.End-Plant.Start)/2)</code>;</li>
+<li>A <code>P.Date.Merge</code> field is added to <code>DATA</code> as <code>Plant.Start+(Plant.End-Plant.Start)/2</code>;</li>
+<li>Missing <code>NA</code> values of <code>P.Date.Merge</code> are substituted with estimates derived from similar nearby observations estimated using the <code>EstPDayData</code> function;</li>
+<li>A <code>SLen.Merge</code> field is added to <code>DATA</code> equivalent to the <code>SLen</code> field with missing <code>NA</code> values substituted with estimates derived from similar nearby observations estimated using the <code>EstSLenData</code> function;</li>
+<li>A <code>SLen.Ecocrop</code> field is added to <code>DATA</code> as <code>(cycle_min+cycle_max)/2</code>;</li>
+<li><code>DATA</code> is subset to data.table named <code>SS</code> which contains unique values of location, product, observation date and planting/harvest/season length fields. Some form of planting date and season length estimate must be present;</li>
+<li>Where there is a difference of greater than 60% between ecocrop vs data estimates of season length observations are rejected.</li>
+</ol></li>
+</ol>
+<p><em>The use of Harvest.End in Steps 2a &amp; 2b is deliberate; when uncertainty is large using mean planting and harvest dates can result in unrealistically short season lengths that distort measures of seasonal climate, especially precipitation. The use of Harvest.End may overestimate season length overall for highly uncertain scenarios, but we consider the effect this on seasonal climate measures less severe.</em></p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>For each row of <code>SS</code> the <code>CLIMATE</code> dataset is filtered on the <code>Date</code> field for two temporal periods based on the date fields <code>P.Date.Merge</code> and <code>SLen.Merge</code> or <code>SLen.Ecocrop</code>, note one day is added to <code>P.Date.Merge</code> so the temporal window begins the day after planting. An additional temporal windows can be specified using data.table supplied to the <code>Windows</code> argument, the data.table requires three fields: 1) <code>Name</code>; 2) <code>Start</code> and 3) <code>End</code>. The <code>Start</code> and <code>End</code> fields define the additional temporal period as days after<code>P.Date.Merge</code>.For example <code>Window=data.table(Name=&quot;Plant.1-30&quot;,Start=1,End=30)</code> is a temporal period from planting to 30 days after planting.</p></li>
+<li><p>For each temporal period specified in 3) climate statistics are calculated:</p>
+<ol style="list-style-type: lower-alpha">
+<li><em>growing degrees days (GDD)</em> are calculated using the <code>GDDcalc</code> function which requires daily <code>Tmax</code> and <code>Tmin</code> fields from <code>CLIMATE</code> and the EcoCrop optimal and absolute temperate thresholds (fields <code>Tlow</code>, <code>Topt.low</code>, <code>Topt.high</code>, and <code>Thigh</code>) added to <code>DATA</code> using the <code>AddEcoCrop</code> function. The <code>GDDcalc</code> function outputs four fields <code>GDDlow</code>, <code>GDDopt</code>, <code>GDDhigh</code> and <code>GDDmax</code> and the values of these are summed for the temporal period;</li>
+<li><em>precipitation and reference evapotranspiration (ETo)</em> statistics are estimated using the <code>RAIN.Calc</code> function which outputs a number of variables described in the documentation for this function;</li>
+<li><em>max and mean temperatures</em> are averaged with standard deviation (<code>Tmax.Mean</code>,<code>Tmax.sd</code>,<code>Tmean.mean</code> and <code>Tmean.sd</code> fields).</li>
+</ol></li>
+<li><p>If argument <code>Do.LT.Avg==T</code> annual and long-term climate statistics an planting dates are calculated for each combination of location and product. Note that each season in the data is treated separately. The process logic is as follows:</p>
+<ol style="list-style-type: lower-alpha">
+<li>The median planting julian day of the year is taken for the location x product combination;</li>
+<li>For each year of complete climate data, the median planting date from 5a is used as a starting point to estimate planting date from rainfall using the <code>Est.Rain</code> function which takes the arguments <code>Rain.Windows</code>, <code>Widths</code> and <code>Rain.Threshold</code> as explained in the arguments for this function. These data are returned as <code>[[LongTerm]][[LT.PD.Years]]</code>;</li>
+<li>Estimated planting dates from 5b are averaged (mean, sd, median) across years and returned as <code>[[LongTerm]][[LT.PD.Avg]]</code>;</li>
+<li>Annual planting date deviance is calculated as the absolute difference between the annual and mean/median planting dates and appended to the output of 5b;</li>
+<li>Annual climate statistics are calculated for each year x site x product combination using the rainfall estimated planting date and as per steps 3 &amp; 4. Data are return as <code>[[LongTerm]][[LT.Clim.Years]]</code>. Where insufficient rainfall fell to meet the thresholds specified in 5b then the a median planting date is substituted from those years that did have sufficient rainfall in 5b;</li>
+<li>Long-term climate statistics from 5e are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are returned <code>[[LongTerm]][[LT.Clim.Avg]]</code>;</li>
+<li>Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of 5e.</li>
+</ol></li>
+<li><p>If argument <code>Do.BioClim==T</code> then:</p>
+<ol style="list-style-type: lower-alpha">
+<li>Annual bioclimatic values are calculated using the <a href="https://rdrr.io/cran/dismo/man/biovars.html"><code>dismo::biovars</code></a> function for each complete year of data in <code>CLIMATE</code> per unique locationas (<code>ID</code> field) in <code>DATA</code>. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;</li>
+<li>Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`;</li>
+<li>Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).</li>
+</ol></li>
+</ol>
+<p>If you are finding there are observations with suspiciously short reported season lengths in the ERA dataset (i.e. errors in the reporting of planting and/or harvest dates) you can exclude observations (<code>Exclude.EC.Diff</code>) where the absolute difference between reported and EcoCrop estimated season lengths is greater than a specified proportion (<code>EC.Diff</code>).</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>Climate<span class="ot">&lt;-</span><span class="fu">CalcClimate</span>(<span class="at">DATA=</span>ERA.Yields,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">ID=</span>ID,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">CLIMATE=</span>POWER.CHIRPS,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">Rain.Data.Name=</span><span class="st">&quot;CHIRPS&quot;</span>, </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">Temp.Data.Name=</span><span class="st">&quot;POWER&quot;</span>,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Rain.Windows: In estimation of planting dates for long-term climate calculation we will look for</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                <span class="co"># rainfall events in 4 windows: 6 weeks before planting (the first element supplied is always before</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>                <span class="co"># planting set to 0 if you do not want to look before planting), then in three consecutive windows</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>                <span class="co"># of 4, 2 and 2 weeks</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">Rain.Windows =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">*</span><span class="dv">7</span>,<span class="dv">4</span><span class="sc">*</span><span class="dv">7</span>,<span class="dv">2</span><span class="sc">*</span><span class="dv">7</span>,<span class="dv">2</span><span class="sc">*</span><span class="dv">7</span>),  </span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Widths: To estimate planting dates rainfall is summed in a scanning window for each of the windows </span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>                <span class="co"># specified in Rain.Windows; we have 4 windows so need to supply 4 values in days to this argument</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">Widths =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>),  </span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Rain.Threshold: We need to set a threshold for the rainfall amount in mm that triggers planting in </span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>                <span class="co"># each combination of `Rain.Window` x `Width`, again 4 values. If Rain.Window = 4*7 &amp; Width = 3 and </span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Rain.Threshold = 30 then the function looks within a 21 window for cumulative rainfall of 30mm over </span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 3 days</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">Rain.Threshold =</span> <span class="fu">c</span>(<span class="dv">30</span>,<span class="dv">30</span>,<span class="dv">20</span>,<span class="dv">15</span>), </span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Win.Start: When calculating climate from planting.dates and harvest.dates Win.Start adjust the </span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>                <span class="co"># beginning date of the calculation window. -3 means the window begins 3 days before planting</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">Win.Start=</span><span class="sc">-</span><span class="dv">3</span>,</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Max.LT.Avg: Calculations of long-term climate only use years up to and including 2010</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">Max.LT.Avg=</span><span class="dv">2010</span>, </span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>                <span class="at">Do.LT.Avg=</span>T, </span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>                <span class="at">Do.BioClim=</span>T, </span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Windows: By default this function looks at two calculation windows `Data` and `EcoCrop`. Additional </span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>                <span class="co"># windows can specified the `Windows` argument. In the line below the additional window will called </span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>                <span class="co"># `Plant.1-30` in the `W.Name` field of output data.tables and it begins 1 day after planting and ends </span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 30 days after planting. This window explores the post-planting climate, a critical period for crop </span></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>                <span class="co"># establishment and success</span></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>                <span class="at">Windows=</span><span class="fu">data.table</span>(<span class="at">Name=</span><span class="st">&quot;Plant.1-30&quot;</span>,<span class="at">Start=</span><span class="dv">1</span>,<span class="at">End=</span><span class="dv">30</span>), </span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>                <span class="at">SaveDir=</span>AnalysisDir,</span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>                <span class="at">ErrorDir=</span><span class="cn">NA</span>,</span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>                <span class="at">ROUND=</span><span class="dv">3</span>)    </span></code></pre></div>
+<pre><code>#&gt; Registered S3 method overwritten by &#39;GGally&#39;:
+#&gt;   method from   
+#&gt;   +.gg   ggplot2
+#&gt; Registered S3 method overwritten by &#39;spatstat.geom&#39;:
+#&gt;   method     from
+#&gt;   print.boxx cli</code></pre>
+<div id="what-is-output-by-the-calcclimate-function" class="section level4">
+<h4>What is output by the <code>CalcClimate</code> function?</h4>
+<div id="output-paramters" class="section level5">
+<h5>Output [[“Paramters”]]</h5>
+<p>First you can recall the parameters used in the analysis by accessing the <code>Parameters</code> list</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;Parameters&quot;</span>]]</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Rain.Windows</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 42 28 14 14</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Widths</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 3 3 2 2</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Rain.Threshold</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 30 30 20 15</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Max.LT.Avg</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2010</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Windows</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Name Start End</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: Plant.0-30     1  30</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Win.Start</span></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -3</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Rain.Data.Name</span></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;CHIRPS&quot;</span></span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Temp.Data.Name</span></span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;POWER&quot;</span></span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Exclude.EC.Diff</span></span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $EC.Diff</span></span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.6</span></span></code></pre></div>
+</div>
+<div id="output-observed" class="section level5">
+<h5>Output [[“Observed”]]</h5>
+<p>The primary data output is the <code>Observed</code> data.table (created in process step 4).</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;Observed&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,]</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     GDDlow GDDopt GDDhigh GDDmax Rain.Days.L.0 Rain.Days.L.1 Rain.Days.L.5</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 1249.23 214.62       0      0          0.31          0.31          0.38</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:  878.03 126.15       0      0          0.30          0.30          0.33</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:  382.61  58.87       0      0          0.27          0.27          0.27</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.Max.RSeq.0 Rain.Max.RSeq.0.1 Rain.Max.RSeq.1 Rain.Max.RSeq.5</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:               4                 4               4               4</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:               3                 3               3               3</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:               3                 3               3               3</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T0.D7 Rain.N.RSeq.T1.D7 Rain.N.RSeq.T5.D7 Rain.N.RSeq.T0.D14</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                 0                 0                 0                  0</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                 0                 0                 0                  0</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                 0                 0                 0                  0</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T1.D14 Rain.N.RSeq.T5.D14 Rain.N.RSeq.T0.D21 Rain.N.RSeq.T1.D21</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                  0                  0                  0                  0</span></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                  0                  0                  0                  0</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                  0                  0                  0                  0</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T5.D21 Rain.sum ETo.sum ETo.NA WBalance Tmax.mean  Tmax.sd</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                  0   901.73  317.65      0   584.08  26.54878 1.569168</span></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                  0   733.37  213.82      0   519.55  26.15130 1.512316</span></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                  0   354.76   94.02      0   260.74  26.33100 1.179916</span></span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Tmean.mean  Tmean.sd EU    PD.Used W.Start W.End     W.Name</span></span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:   22.90000 0.8467366 c6 2007-07-13      -3    94       Data</span></span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:   22.68565 0.8125423 c6 2007-07-13      -3    65    EcoCrop</span></span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:   22.81967 0.5868236 c6 2007-07-13       1    30 Plant.0-30</span></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       ID M.Year Season</span></span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 11.1555 -12.5285 B400   2007       </span></span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 11.1555 -12.5285 B400   2007       </span></span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 11.1555 -12.5285 B400   2007</span></span></code></pre></div>
+<p>This data table provides a number of fields summarizing growing season climate:</p>
+<ol style="list-style-type: decimal">
+<li>Growing degree days:</li>
+</ol>
+<ul>
+<li><p><code>GDDlow</code> growing degree hours below optimal EcoCrop temperature threshold (h)</p></li>
+<li><p><code>GDDopt</code> growing degree hours within optimal EcoCrop temperature thresholds (h)</p></li>
+<li><p>*<code>GDDhigh</code> growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)</p></li>
+<li><p><code>GDDmax</code> growing degree hours above EcoCrop maximum temperature threshold (h)</p>
+<p><em><code>GDDhigh</code> and <code>GDDmax</code> tell us something about crop exposure to thermal stresses.</em></p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Dry spells:</li>
+</ol>
+<ul>
+<li><code>Rain.Days.L.0</code> total number of days with 0 mm rainfall (days)</li>
+<li><code>Rain.Days.L.1</code> total number of days with less than 1 mm rainfall (days)</li>
+<li><code>Rain.Days.L.5</code> total number of days with less than 5 mm rainfall (days)</li>
+<li><code>Rain.Max.RSeq.0</code> longest continuous period of days with 0 mm rainfall (days)</li>
+<li><code>Rain.Max.RSeq.0.1</code> longest continuous period of days with less than 0.1 mm rainfall (days)</li>
+<li><code>Rain.Max.RSeq.1</code> longest continuous period of days with less than 1 mm rainfall (days)</li>
+<li><code>Rain.Max.RSeq.5</code> longest continuous period of days with less than 5 mm rainfall (days)</li>
+<li><code>Rain.N.RSeq.T0.D7</code> number of continuous periods of 7 days or more of 0 mm rainfall</li>
+<li><code>Rain.N.RSeq.T1.D7</code> number of continuous periods of 7 days or more of less than 1 mm rainfall</li>
+<li><code>Rain.N.RSeq.T5.D7</code> number of continuous periods of 7 days or more of less than 5 mm rainfall</li>
+<li><code>Rain.N.RSeq.T0.D14</code> number of continuous periods of 14 days or more of 0 mm rainfall</li>
+<li><code>Rain.N.RSeq.T1.D14</code> number of continuous periods of 14 days or more of less than 1 mm rainfall</li>
+<li><code>Rain.N.RSeq.T5.D14</code> number of continuous periods of 14 days or more of less than 5 mm rainfall</li>
+<li><code>Rain.N.RSeq.T0.D21</code> number of continuous periods of 21 days or more of 0 mm rainfall</li>
+<li><code>Rain.N.RSeq.T1.D21</code> number of continuous periods of 21 days or more of less than 1 mm rainfall</li>
+<li><code>Rain.N.RSeq.T5.D21</code> number of continuous periods of 21 days or more of less than 5 mm rainfall</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Rainfall, reference evapotranspiration and their difference:</li>
+</ol>
+<ul>
+<li><code>Rain.sum</code> total rainfall (mm)</li>
+<li><code>ETo.sum</code> summed Penman-Monteith reference evapotranspiration (mm)</li>
+<li><code>ETo.NA</code> number of NA values in Penman-Monteith reference evapotranspiration</li>
+<li><code>WBalance</code> as <code>Rain.sum-ETo.sum</code> the difference between rainfall and reference evapotranspiration (mm)</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>Average daily mean &amp; max temperatures:</li>
+</ol>
+<ul>
+<li><code>Tmax.mean</code> mean of daily maximum temperatures (C)</li>
+<li><code>Tmax.sd</code> standard deviation of daily maximum temperatures (C)</li>
+<li><code>Tmean.mean</code> mean of daily mean temperatures (C)</li>
+<li><code>Tmean.sd</code> standard deviation of daily mean temperatures (C)</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li>Metadata fields:</li>
+</ol>
+<ul>
+<li><code>EU</code> ERA experimental unit (or product) code see <code>ERAg::EUCodes</code> for translations</li>
+<li><code>PD.Used</code> planting date used in calculations</li>
+<li><code>W.Start</code> adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)</li>
+<li><code>W.End</code> end point of the climate calculation window as the number of days after <code>PD.Used + W.Start</code> (days)</li>
+<li><code>W.Name</code> name of the climate window being considered. <code>Data</code> planting and harvest dates reported in publications used to define the climate calculation window. <code>EcoCrop</code> EcoCrop database used to define season lengths (i.e. <code>W.End</code>) for the climate calculation window, unless sufficient data existed within ERA to estimate season length for the specific crop.</li>
+<li><code>ID</code> unique ID for site provided to the <code>CalcClimate</code> function (for <code>ERA.Compiled</code> this is usually <code>Site.Key</code>)</li>
+<li><code>M.Year</code> measurement year, this should correspond the to year at the end of the climate calculation window (y)</li>
+<li><code>Season</code> measurement season (1, 2 or NA)</li>
+</ul>
+</div>
+<div id="output-longterm" class="section level5">
+<h5>Output [[“LongTerm”]]</h5>
+<p>If argument <code>Do.LT.Avg=T</code> then a list level named <code>LongTerm</code> is output containing four data.tables.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Annual Planting dates <code>[[&quot;LongTerm&quot;]][[&quot;LT.PD.Years&quot;]]</code></strong></li>
+</ol>
+<p>Planting dates estimated from rainfall data as per processes 5a, 5b and 5d.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;LongTerm&quot;</span>]][[<span class="st">&quot;LT.PD.Years&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,]</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    P.Year     P.Date Dev.Mean Dev.Med EU Season                    ID</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:   1984 1984-06-09    0.215       1 c6        11.1555 -12.5285 B400</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:   1985 1985-06-10    0.215       1 c6        11.1555 -12.5285 B400</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:   1986 1986-07-03   23.215      24 c6        11.1555 -12.5285 B400</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    P.Data.Flag</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:            </span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:            </span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:</span></span></code></pre></div>
+<p>The above data.table contains annual estimates of planting dates.</p>
+<pre><code>1.1. Rainfall estimated dates:
++  `P.Year` planting year of crop (y)
++  `P.Date` planting date of crop; class `Date` with format `%Y%m%d`
++  `P.Data.Flag` indicates if no seasons in a time-series met the rainfall thresholds required for planting. If this occurs then the  mid-point of the reported planting dates is used for `P.Year` and `P.Date` fields.
+
+1.2. Deviance from long-term averages:
++  `Dev.Mean` deviance in days of planting date from **mean** long-term  planting date calculated for location (d)
++  `Dev.Med` deviance in days of planting date from **median** long-term planting date calculated for location (d)
+
+1.3 Metadata fields:
++  `EU` ERA experimental unit (product) code see `ERAg::EUCodes` for translations
++  `Season` growing season of year for bimodal areas
++  `ID` unique ID for site provided to the `CalcClimate` function (for `ERA.Compiled` this is usually `Site.Key`)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Long-term Average Planting dates <code>[[&quot;LongTerm&quot;]][[&quot;LT.PD.Avg&quot;]]</code></strong><br />
+Long-term mean and median estimates of julian planting day across time as per process 5c.</li>
+</ol>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;LongTerm&quot;</span>]][[<span class="st">&quot;LT.PD.Avg&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,]</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Mean Median     SD  N  EU Season                    ID P.Data.Flag</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 160.785    160  7.704 27  c6        11.1555 -12.5285 B400            </span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 168.833    162 13.531 27  c6         13.2790 -5.9340 B600            </span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 187.105    187 10.922 27 c17         13.2790 -5.9340 B600</span></span></code></pre></div>
+<p>Fields are the same as <code>Climate[[&quot;LongTerm&quot;]][[&quot;LT.PD.Years&quot;]]</code> apart from:</p>
+<pre><code>+ Mean mean planting date in julian days (d)
++ Median median planting date in julian days (d)
++ SD standard deviation of mean planting date (d)
++ N number of years used to calculate long-term average</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Annual climate statistics <code>[[&quot;LongTerm&quot;]][[&quot;LT.Clim.Years&quot;]]</code></strong>: Climate statistics calculated using rainfall estimates planting dates as per processes 5e &amp; 5g.</li>
+</ol>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;LongTerm&quot;</span>]][[<span class="st">&quot;LT.Clim.Years&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,]</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    GDDlow   GDDopt GDDhigh GDDmax Rain.Days.L.0 Rain.Days.L.1 Rain.Days.L.5</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:  1.339  -38.211  -7.281 -0.022        -0.078        -0.078         -0.05</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: -7.161  -79.521   1.619 -0.022        -0.028        -0.028          0.00</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: -2.281 -118.031  -7.281 -0.022         0.082         0.082          0.05</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.Max.RSeq.0 Rain.Max.RSeq.0.1 Rain.Max.RSeq.1 Rain.Max.RSeq.5</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:           0.778             0.778           0.778            0.63</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:          -1.222            -1.222          -1.222           -1.37</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:           1.778             1.778           1.778            1.63</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T0.D7 Rain.N.RSeq.T1.D7 Rain.N.RSeq.T5.D7 Rain.N.RSeq.T0.D14</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                 0                 0                 0                  0</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                 0                 0                 0                  0</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                 0                 0                 0                  0</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T1.D14 Rain.N.RSeq.T5.D14 Rain.N.RSeq.T0.D21 Rain.N.RSeq.T1.D21</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                  0                  0                  0                  0</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                  0                  0                  0                  0</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                  0                  0                  0                  0</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T5.D21 Rain.sum ETo.sum WBalance  Tmax.mean    Tmax.sd</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                  0   -20.55    9.84   -30.39 -0.4331224 -0.7159834</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                  0   162.80   -3.67   166.47 -0.8891429  0.4610968</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                  0  -133.13  -19.54  -113.59 -1.2871020 -0.7812095</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Tmean.mean   Tmean.sd P.Year H.Year Variable EU Season                    ID</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: -0.3645714 -0.4211432   1984   1984 Dev.Mean c6        11.1555 -12.5285 B400</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: -0.7579388  0.2197598   1985   1985 Dev.Mean c6        11.1555 -12.5285 B400</span></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: -0.9232449 -0.4524519   1986   1986 Dev.Mean c6        11.1555 -12.5285 B400</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    W.Start W.End W.Name P.Data.Flag</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:      -3    94   Data            </span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:      -3    94   Data            </span></span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:      -3    94   Data</span></span></code></pre></div>
+<p>Fields are the same as the <code>Observed</code> table apart from:</p>
+<pre><code>+ `P.Year` year of planting (y)
++ `H.Year` year of harvest (or end of calculation window) (y)
++ `Variable` in rows where this field is `Annual.Value` statistics are calculated for the year in question, whereas statistics in `Dev.Mean` and `Dev.Med` rows show annual deviance from long-term averages (`[[&quot;LongTerm&quot;]][[&quot;LT.Clim.Avg&quot;]]`).</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;LongTerm&quot;</span>]][[<span class="st">&quot;LT.Clim.Years&quot;</span>]][,<span class="fu">unique</span>(Variable)]</span></code></pre></div>
+<pre><code>#&gt; [1] &quot;Dev.Mean&quot;     &quot;Dev.Med&quot;      &quot;Annual Value&quot;</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Long-term climate statistics <code>[[&quot;LongTerm&quot;]][[&quot;LT.Clim.Avg&quot;]]</code></strong>: Long-term mean and median estimates of planting statistics across time as per process 5f.</li>
+</ol>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;LongTerm&quot;</span>]][[<span class="st">&quot;LT.Clim.Avg&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,]</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      GDDlow  GDDopt GDDhigh GDDmax Rain.Days.L.0 Rain.Days.L.1 Rain.Days.L.5</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 1250.731 274.481   7.281  0.022         0.288         0.288         0.330</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 1250.420 254.600   2.730  0.000         0.290         0.290         0.330</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:    3.006  77.048   9.239  0.087         0.048         0.048         0.044</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.Max.RSeq.0 Rain.Max.RSeq.0.1 Rain.Max.RSeq.1 Rain.Max.RSeq.5</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:           4.222             4.222           4.222           4.370</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:           4.000             4.000           4.000           4.000</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:           1.086             1.086           1.086           1.115</span></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T0.D7 Rain.N.RSeq.T1.D7 Rain.N.RSeq.T5.D7 Rain.N.RSeq.T0.D14</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                 0                 0                 0                  0</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                 0                 0                 0                  0</span></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                 0                 0                 0                  0</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T1.D14 Rain.N.RSeq.T5.D14 Rain.N.RSeq.T0.D21 Rain.N.RSeq.T1.D21</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                  0                  0                  0                  0</span></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                  0                  0                  0                  0</span></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                  0                  0                  0                  0</span></span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Rain.N.RSeq.T5.D21 Rain.sum ETo.sum ETo.NA WBalance Tmax.mean Tmax.sd</span></span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:                  0 1053.060 339.140      0  713.920    27.247   2.040</span></span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:                  0 1053.100 337.050      0  709.580    27.084   1.821</span></span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:                  0  103.865  15.383      0  105.702     0.889   0.579</span></span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Tmean.mean Tmean.sd Variable  N EU Season                    ID W.Start</span></span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:     23.366    1.141     Mean 27 c6        11.1555 -12.5285 B400      -3</span></span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:     23.402    1.025   Median 27 c6        11.1555 -12.5285 B400      -3</span></span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:      0.501    0.308       SD 27 c6        11.1555 -12.5285 B400      -3</span></span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    W.End W.Name P.Data.Flag</span></span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:    94   Data            </span></span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:    94   Data            </span></span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:    94   Data</span></span></code></pre></div>
+<p>The <code>Variable</code> field values in this table indicates are <code>Mean</code>, <code>Median</code>, <code>SD</code>, <code>Min</code> and <code>Max</code> indicating the function applied to each climate statistic across the temporal period for each location x crop x season.</p>
+</div>
+<div id="output-bioclim" class="section level5">
+<h5>Output [[“BioClim”]]</h5>
+<p>If argument <code>Do.BioClim=T</code> then a list level named <code>BioClim</code> is output containing two data.tables.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Annual bioclimatic variables <code>[[&quot;BioClim&quot;]][[&quot;Annual.Estimates&quot;]]</code></strong></li>
+</ol>
+<p>Annual estimates of bioclimatic variables for each location as per processes 6a &amp; 6c.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;BioClim&quot;</span>]][[<span class="st">&quot;Annual.Estimates&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,]</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Year                   ID BIO 1 BIO 10 BIO 11  BIO 12 BIO 13 BIO 14 BIO 15</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: 1984 -0.0023 34.5939 B300  0.11   0.45   0.21 -392.23  -8.80      0  19.49</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: 1984 -0.0108 36.9617 B250  0.00   0.23  -0.62 -167.35 -39.50      0 -45.01</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: 1984 -0.0333 34.8000 B917  0.26   0.76   0.37 -367.66  -8.74      0   6.77</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    BIO 16 BIO 17 BIO 18 BIO 19 BIO 2 BIO 3 BIO 4 BIO 5 BIO 6 BIO 7 BIO 8 BIO 9</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: -22.76      0   6.90  -3.30  0.88  0.66 10.72  0.92 -0.47  1.39  3.91 -0.49</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: -40.38      0  -6.21  -0.81  0.98  0.31  2.25  0.80 -0.69  1.50 -2.14 -0.12</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: -23.01      0   8.15  36.04  0.87  0.21 15.27  1.26 -0.32  1.58 -1.97 -0.25</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Variable</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: Dev.Mean</span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: Dev.Mean</span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: Dev.Mean</span></span></code></pre></div>
+<p>For an explanation of the <code>BIO</code> codes see <code>ERAg::BioClimCodes</code>:</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>  ERAg<span class="sc">::</span>BioClimCodes</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Code Number                                                Description</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1:  BIO1      1                                    Annual Mean Temperature</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2:  BIO2      2 Mean Diurnal Range (Mean of monthly (max temp - min temp))</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3:  BIO3      3                          Isothermality (BIO2/BIO7) (* 100)</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4:  BIO4      4          Temperature Seasonality (standard deviation *100)</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5:  BIO5      5                           Max Temperature of Warmest Month</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6:  BIO6      6                           Min Temperature of Coldest Month</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7:  BIO7      7                       Temperature Annual Range (BIO5-BIO6)</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8:  BIO8      8                        Mean Temperature of Wettest Quarter</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9:  BIO9      9                         Mean Temperature of Driest Quarter</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10: BIO10     10                        Mean Temperature of Warmest Quarter</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11: BIO11     11                        Mean Temperature of Coldest Quarter</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12: BIO12     12                                       Annual Precipitation</span></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13: BIO13     13                             Precipitation of Wettest Month</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14: BIO14     14                              Precipitation of Driest Month</span></span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15: BIO15     15       Precipitation Seasonality (Coefficient of Variation)</span></span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16: BIO16     16                           Precipitation of Wettest Quarter</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17: BIO17     17                            Precipitation of Driest Quarter</span></span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18: BIO18     18                           Precipitation of Warmest Quarter</span></span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19: BIO19     19                           Precipitation of Coldest Quarter</span></span></code></pre></div>
+<p>Values in the <code>Variable</code> field indicate:</p>
+<pre><code>+ `Annual.Value` statistics are calculated for the year in question
++ `Dev.Mean` annual deviance from long-term mean
++ `Dev.Median` annual deviance from long-term median</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Long-term bioclimatic variables <code>[[&quot;BioClim&quot;]][[&quot;LT.Averages&quot;]]</code></strong></li>
+</ol>
+<p>Long-term averages of bioclimatic variables derived from <code>[[&quot;BioClim&quot;]][[&quot;Annual.Estimates&quot;]]</code> as per process 6b.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;BioClim&quot;</span>]][[<span class="st">&quot;LT.Averages&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,]</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                      ID BIO 1 BIO 10 BIO 11  BIO 12 BIO 13 BIO 14 BIO 15 BIO 16</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1: -0.0023 34.5939 B300 21.56  25.08  19.04 1710.85  39.78      0 112.77  75.55</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2: -0.0023 34.5939 B300 21.61  25.04  18.93 1712.67  37.91      0 113.35  72.45</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3: -0.0023 34.5939 B300  0.37   0.91   0.35  210.18  11.65      0   9.10  15.53</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    BIO 17 BIO 18 BIO 19 BIO 2 BIO 3  BIO 4 BIO 5 BIO 6 BIO 7 BIO 8 BIO 9</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:      0   6.53  16.07  9.94 51.88 133.39 32.56 13.35 19.21 21.21 21.74</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:      0   2.69  16.96  9.91 51.80 134.59 32.76 13.43 19.07 21.12 21.57</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:      0   8.25  14.90  0.45  2.58  21.37  1.33  0.63  1.37  1.18  1.06</span></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Variable  N</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1:     Mean 27</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2:   Median 27</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3:       SD 27</span></span></code></pre></div>
+<p>Values in the <code>Variable</code> field indicate whether the mean, median or standard deviation of each <code>BIO</code> field is taken.<br />
+The <code>N</code> field indicates the number of observations (years/seasons) in the time-series.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>Climate[[<span class="st">&quot;BioClim&quot;</span>]][[<span class="st">&quot;LT.Averages&quot;</span>]][,<span class="fu">unique</span>(Variable)]</span></code></pre></div>
+<pre><code>#&gt; [1] &quot;Mean&quot;   &quot;Median&quot; &quot;SD&quot;</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
