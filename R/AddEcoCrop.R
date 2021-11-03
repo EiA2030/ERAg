@@ -12,6 +12,7 @@
 #' * `cycle_min` = minimum of crop growing cycle duration range - days
 #' * `cycle_max` = maximum of crop growing cycle duration range - days
 #' @export
+#' @import data.table
 AddEcoCrop<-function(Products){
 
   E.Names<-data.table(EUCodes)[match(Products,Product),ECOCROP.Name]

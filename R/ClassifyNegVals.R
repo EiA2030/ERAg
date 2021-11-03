@@ -32,6 +32,7 @@
 #' * `Class` a character vector of class names
 #' * `Class.Val` a numeric vector of class values
 #' @export
+#' @import data.table
 ClassifyNegVals<-function(Data,
                        OCode,
                        Thresholds=c(0.7,0.95,1.05,1.3),

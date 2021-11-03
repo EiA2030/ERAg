@@ -184,6 +184,7 @@
 #' @importFrom circular circular
 #' @importFrom zoo rollapply as.zoo as.Date
 #' @import data.table
+#' @importFrom dismo biovars
 CalcClimate<-function(DATA,
                       CLIMATE,
                       ID,
