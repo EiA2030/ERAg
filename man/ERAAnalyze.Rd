@@ -98,7 +98,7 @@ to judge whether values based on mean proportional change, mean response ratio o
 \item \emph{weighted means} use the \link[stats]{weighted.mean} function
 \item \emph{weighted medians} use the \link[spatstat.geom]{weighted.median} function
 \item \emph{weighted standard errors} use the \link[diagis]{weighted_se} function
-\item \emph{weighted variance} uses the \link[Hmisc]{wtd.var} function
+\item \emph{weighted variance} uses the \link[Hmisc]{wtd.stats} \code{wtd.var} function
 \item \emph{weighted quantiles} use the \link[spatstat.geom]{weighted.median} (\code{weighted.quantile}) function with \code{probs=seq(0,1,0.25)}
 }
 \item Response ratios are back-transformed and converted to \% change with and without a correction for the Jensen inequality.

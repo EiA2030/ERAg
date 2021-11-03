@@ -34,7 +34,6 @@
 #' @export
 #' @importFrom circlize chordDiagram circos.trackPlotRegion circos.text circos.axis
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom ComplexHeatmap Legend draw
 #' @import data.table
 ERAChordPlot<-function(Chord.Data,
                        Type="Chord",
