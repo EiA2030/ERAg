@@ -29,6 +29,8 @@ Imports: broom,
          MASS,
          Matrix,
          miceadds,
+         metan,
+         metafor,
          ncdf4,
          parallel,
          pbapply,
@@ -48,10 +50,9 @@ VignetteBuilder: knitr
 Suggests: BiocStyle, 
           rmarkdown,
           treemap,
-          metan,
           rworldmap,
           rworldxtra,
           terra,
-          metafor
+          
 
 
