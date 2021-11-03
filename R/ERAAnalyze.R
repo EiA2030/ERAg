@@ -96,9 +96,8 @@
 #' @importFrom stats weighted.mean shapiro.test
 #' @importFrom spatstat.geom weighted.median weighted.quantile
 #' @importFrom diagis weighted_se
-#' @importFrom Hmisc wtd.var
+#' @importFrom Hmisc wtd.var wtd.stats
 #' @importFrom lmerTest lmer
-#' @import lme4
 #'
 ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   options(scipen=999)
