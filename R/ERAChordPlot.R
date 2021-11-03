@@ -32,6 +32,10 @@
 #' `Chord.Data$cat` which should form the vector names, for example  `Cat.Pal=setNames(c("blue", "green","Red"), c("A", "B","C"))`.
 #' @return Returns a \link[circlize]{chordDiagram} plot capture using `recordPlot()`.
 #' @export
+#' @importFrom circlize chordDiagram circos.trackPlotRegion circos.text circos.axis
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom ComplexHeatmap Legend draw
+#' @import data.table
 ERAChordPlot<-function(Chord.Data,
                        Type="Chord",
                        Alpha=0.5,
@@ -165,7 +169,7 @@ ERAChordPlot<-function(Chord.Data,
 
 
   circlize::circos.trackPlotRegion(ylim= c(0,1),track.index = 1, panel.fun = function(x, y) {
-    circos.text(x = CELL_META$xcenter,
+    circlize::circos.text(x = CELL_META$xcenter,
                 y = CELL_META$cell.ylim[1] + Lab.Adjust,
                 CELL_META$sector.index,
                 facing = Facing,
@@ -177,7 +181,7 @@ ERAChordPlot<-function(Chord.Data,
 
   if(Show.Axis.Labels==T){
     circlize::circos.trackPlotRegion(ylim= c(0,1),track.index = 1, panel.fun = function(x, y) {
-      circos.axis(h = "top",
+      circlize::circos.axis(h = "top",
                   major.tick.length = 0.2,
                   sector.index =  CELL_META$sector.index,
                   track.index = 2,

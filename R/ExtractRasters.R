@@ -24,6 +24,10 @@
 #' * `N.Cells` = total number of cells contained each locations bounding box
 #' * `NA.Cells` = number of NA cells contained each locations bounding box
 #' @export
+#' @import data.table
+#' @importFrom terra rast vect extract
+#' @importFrom sp spTransform CRS
+#' @importFrom data.table fread fwrite
 ExtractRasters<-function(DATA,
                         ID,
                         FILES,
@@ -81,9 +85,9 @@ X<-lapply(1:length(FILES),FUN=function(i){
 
   # Make sure buffers are in same CRS as raster
   if(as.character(pbuf@proj4string) != RASTER.CRS){
-    pbuf1<-vect(spTransform(pbuf,CRS(RASTER.CRS)))
+    pbuf1<-terra::vect(sp::spTransform(pbuf,CRS(RASTER.CRS)))
   }else{
-    pbuf1<-vect(pbuf)
+    pbuf1<-terra::vect(pbuf)
   }
 
   # Progress report
@@ -92,7 +96,7 @@ X<-lapply(1:length(FILES),FUN=function(i){
   flush.console()
 
   # extract values from RASTER
-  X<-data.table(extract(RASTER,pbuf1,exact=TRUE))
+  X<-data.table(terra::extract(RASTER,pbuf1,exact=TRUE))
 
   if(!ZIP){
     colnames(X)[2]<-"Values"
@@ -121,18 +125,13 @@ X<-lapply(1:length(FILES),FUN=function(i){
         colnames(Y)[2:7]<-paste0(NAME,".",colnames(Y)[2:7])
       }
       Y[,-1]
-
     }))
-
     X
-
-
   }
 
 })
 
 X<-do.call("cbind",X)
-
 X<-cbind(SS[,(ID)],X)
 
 if(!is.na(Save_Dir)){

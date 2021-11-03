@@ -11,6 +11,7 @@
 #' `Choice` and `Choice.Code` fields are simplified names/codes for hierarchical concept levels for user selection task. The remaining columns indicate the corresponding
 #' column names in the ERA dataset for user selections.
 #' @export
+#' @import data.table
 CreateConceptLevels<-function(){
 
   list(

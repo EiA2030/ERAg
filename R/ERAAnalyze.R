@@ -98,6 +98,7 @@
 #' @importFrom diagis weighted_se
 #' @importFrom Hmisc wtd.var
 #' @importFrom lmerTest lmer
+#' @import lme4
 #'
 ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   options(scipen=999)

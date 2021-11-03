@@ -46,6 +46,9 @@
 #' * `Diff.p.val.se` = the standard error of `Risk$Diff.p.val`
 #' * `Mean.p.val.se` = the standard error of `Risk$Mean.p.val`
 #' @export
+#' @import data.table
+#' @importFrom data.table copy setnames
+#' @importFrom diagis weighted_se
 RiskCalc<-function(Data,
                    PLevel = "PrName",
                    Out.Codes=101,

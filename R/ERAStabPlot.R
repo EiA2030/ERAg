@@ -8,6 +8,8 @@
 #' regression when `F `
 #' @return A list of stability plots.
 #' @export
+#' @importFrom ggplot2 ggplot aes geom_point geom_vline geom_hline geom_bin2d scale_fill_continuous geom_text labs theme_bw theme element_blank xlim ylim geom_abline
+#' @import data.table
 ERAStabPlot<-function(Data,Intercept=F,Robust=F){
 
   StabCalc<-data.table(Data$StabStats.Test)

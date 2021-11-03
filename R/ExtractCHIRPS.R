@@ -30,6 +30,9 @@
 #' * `Date` = date of observation (Date)
 #' * `DayCount` = days since date specified in `M.ORIGIN` parameter
 #' @export
+#' @import data.table
+#' @importFrom raster raster coordinates
+#' @importFrom miceadds load.Rdata2
 ExtractCHIRPS<-function(DATA,
                      ID,
                      CHIRPS_dir="/CHIRPS_Refomatted",
@@ -70,11 +73,11 @@ ExtractCHIRPS<-function(DATA,
 
   # READ RAINFALL DATA ####
   #  Make sure site buffers are in the correct CRS
-  p_open<-raster(paste0(CHIRPS_dir,FILES.tif[1]))
+  p_open<-raster::raster(paste0(CHIRPS_dir,FILES.tif[1]))
 
   #  BOUNDS
-  p_lat <-unique(as.matrix(coordinates(p_open))[,"y"])
-  p_lon <-unique(as.matrix(coordinates(p_open))[,"x"])
+  p_lat <-unique(as.matrix(raster::coordinates(p_open))[,"y"])
+  p_lon <-unique(as.matrix(raster::coordinates(p_open))[,"x"])
 
   # Read in exisiting data and subset new data requirements accordingly
   if(file.exists(paste0(Save_Dir,"CHIRPS.RData"))){

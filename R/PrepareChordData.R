@@ -18,6 +18,8 @@
 #' *`yi` = strength of relationship for from-to object pair as response ratio
 #' *`value` = strength of relationship for from-to object pair as response as vote count
 #' @export
+#' @import data.table
+#' @importFrom data.table copy
 PrepareChordData<-function(Data,
                            OutcomeCodes,
                            from,

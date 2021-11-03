@@ -18,6 +18,8 @@
 #' @return `StandColNames` returns a `data.table` of the supplied dataset with focal columns renamed to `Practice`, `Practice.Code`, `Practice.Base`,
 #' `Practice.Base.Code`, `Outcome`, `Outcome.Code`, `Product`, and `Product Code`.
 #' @export
+#' @import data.table
+#' @importFrom data.table setnames
 StandColNames<-function(Data,
                         PLevel=NA,
                         OLevel=NA,

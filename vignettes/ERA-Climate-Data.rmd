@@ -26,7 +26,7 @@ This vignette will explore how to download and extract climate information for p
     install.packages("pacman",dependencies = T)
   }
   
-  required.packages <- c("data.table","doSNOW","ERAg","doSNOW","miceadds","ncdf4","raster","rgeos","sp","terra")
+  required.packages <- c("data.table","doSNOW","ERAg","miceadds","ncdf4","raster","rgeos","sp","terra")
   p_load(char=required.packages,install = T,character.only = T)
     
 ```

@@ -6,6 +6,8 @@
 #' @param Save_dir A single integer value from 1983 onwards indicating the end year for which CHIRPS data should be downloaded. Default value = `2020`.
 #' @param Parallel Memory requirements for parallel processing seem rather high best to keep as F, unless you have a large amount of RAM
 #' @export
+#' @importFrom raster raster
+#' @importFrom R.utils gunzip
 ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS"),
                          Save_dir=paste0(getwd(),"/CHIRPS_Reformatted"))
                          {

@@ -33,6 +33,11 @@
 #' * `Date` = date of observation (Date)
 #' * `DayCount` = days since date specified in `M.ORIGIN` parameter
 #' @export
+#' @importFrom miceadds load.Rdata2
+#' @importFrom ncdf4 nc_open ncvar_get nc_close
+#' @importFrom parallel makeCluster clusterEvalQ stopCluster clusterExport
+#' @importFrom doSNOW registerDoSNOW
+#' @import data.table
 ExtractAgMERRA<-function(DATA,
                       ID,
                       AgMERRA_dir,
@@ -119,10 +124,10 @@ min_lon_c <- -1
 min_lat <- 1
 min_lat_c <- -1
 
-find_open<-nc_open(fname)
-find_lat <- ncvar_get(find_open, "latitude", start = c(min_lat), count = c(min_lat_c))
-find_lon <- ncvar_get(find_open, "longitude", start = c(min_lon), count = c(min_lon_c))
-nc_close(find_open)
+find_open<-ncdf4::nc_open(fname)
+find_lat <- ncdf4::ncvar_get(find_open, "latitude", start = c(min_lat), count = c(min_lat_c))
+find_lon <- ncdf4::ncvar_get(find_open, "longitude", start = c(min_lon), count = c(min_lon_c))
+ncdf4::nc_close(find_open)
 
 p.xmin<-0
 p.xmax<-0
@@ -166,7 +171,7 @@ if(!is.na(cores)){
   # Create Parallel Clusters
   cl<-makeCluster(cores)
   clusterEvalQ(cl, library(ncdf4))
-  registerDoSNOW(cl)
+  doSNOW::registerDoSNOW(cl)
 
   # Data extraction loop
   foreach (m = Data.SYear:Data.EYear) %dopar% { # YEAR LOOP
@@ -177,14 +182,14 @@ if(!is.na(cores)){
       for (k in Elements){ # ELEMENTS LOOP
         # Load .nc4 file for Element*Year
         fname<-paste0(AgMERRA_dir,"AgMERRA_",m,"_",k,".nc4")
-        fid1<-nc_open(fname)
+        fid1<-ncdf4::nc_open(fname)
         n<-1
         for (l in 1:if((((m %% 4 == 0) & (m %% 100 != 0)) | (m %% 400 == 0))){366}else{365}){  # DAY LOOP
           # Initialize start and count to read one timestep of the variable.
           start <- c(1,1,l)     # set timestep to DAYCOUNT(l)
           count <- c(1440,720,1) # read one timestep for entire spatial extent of datas
           #Extract values from nc4 file for specific day and area, average those values for the area, ignoring any NAs
-          VALUES<-as.matrix(ncvar_get(fid1, k, start=start, count=count))
+          VALUES<-as.matrix(ncdf4::ncvar_get(fid1, k, start=start, count=count))
           for(j in 1:nrow(SS)){ # LOCATION LOOP
             VAL<-mean(VALUES[p.xmin[j]:p.xmax[j],p.ymin[j]:p.ymax[j]],na.rm=T)
 
@@ -248,14 +253,14 @@ if(!is.na(cores)){
 
         # Load .nc4 file for Element*Year
         fname<-paste0(AgMERRA_dir,"AgMERRA_",m,"_",k,".nc4")
-        fid1<-nc_open(fname)
+        fid1<-ncdf4::nc_open(fname)
         n<-1
         for (l in 1:if((((m %% 4 == 0) & (m %% 100 != 0)) | (m %% 400 == 0))){366}else{365}){  # DAY LOOP
           # Initialize start and count to read one timestep of the variable.
           start <- c(1,1,l)     # set timestep to DAYCOUNT(l)
           count <- c(1440,720,1) # read one timestep for entire spatial extent of datas
           #Extract values from nc4 file for specific day and area, average those values for the area, ignoring any NAs
-          VALUES<-as.matrix(ncvar_get(fid1, k, start=start, count=count))
+          VALUES<-as.matrix(ncdf4::ncvar_get(fid1, k, start=start, count=count))
           for(j in 1:nrow(SS)){ # LOCATION LOOP
             VAL<-mean(VALUES[p.xmin[j]:p.xmax[j],p.ymin[j]:p.ymax[j]],na.rm=T)
 
@@ -296,7 +301,7 @@ if(!is.na(cores)){
             n<-n+1 # Update  counter
           } #LOCATIONS
         } # DAYS
-        nc_close(fid1)
+        ncdf4::nc_close(fid1)
       } # ELEMENTS
       # Join vectors and save:
       FINAL<-data.frame(ID=SITE,Latitude=as.numeric(as.character(LAT)),Longitude=as.numeric(as.character(LON)),Buffer=BUF,Year=YEAR,Day=DAY,Temp.Mean=Temp.Mean,Temp.Min=Temp.Min,

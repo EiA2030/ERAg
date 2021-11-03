@@ -21,6 +21,13 @@
 #' is subset to unique values of `Latitude` and `Longitude` plus these columns. Default = `NA`.
 #' @return AlphaD.Plot returns a `ggplot` object showing a map of point data density.
 #' @export
+#' @importFrom sf st_combine st_as_sf
+#' @importFrom rworldmap getMap
+#' @import rworldxtra
+#' @importFrom ggplot2 ggplot scale_fill_manual theme_bw theme geom_sf coord_sf aes element_blank element_text geom_tile stat_density_2d scale_fill_gradient2 geom_point
+#' @importFrom ggnewscale new_scale
+#' @importFrom raster crop
+#' @import data.table
 ERAAlphaPlot<-function(Data = ERA.Compiled,
                       Background = NA,
                       Background.Labs = NA,
@@ -34,12 +41,12 @@ ERAAlphaPlot<-function(Data = ERA.Compiled,
                       Point.Col = "Black",
                       ALevel = NA){
 
-  AfricaMap<-getMap(resolution = "high")
+  AfricaMap<-rworldmap::getMap(resolution = "high")
   AfricaMap<-AfricaMap[AfricaMap$REGION=="Africa"&!is.na(AfricaMap$REGION),]
-  AfricaMap <-st_as_sf(AfricaMap,crs = 4326)
+  AfricaMap <-sf::st_as_sf(AfricaMap,crs = 4326)
 
   if(class(Background)[1]!="logical"){
-    Background<-crop(Background,AfricaMap)
+    Background<-raster::crop(Background,AfricaMap)
   }
 
   # See below for use of new_scale("fill")

@@ -18,6 +18,7 @@
 #' * `N.Years`= the number of unique growing seasons reported for a value of `UID`.
 #' * `N.Obs` = the total number of observation for a value of `UID`.
 #' @export
+#' @import data.table
 ExtractMYOs<-function(Data){
   Data<-data.table(Data)
   Cols<-c("Outcome","Practice","Practice.Base","Practice.Code","plist","base.list","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")

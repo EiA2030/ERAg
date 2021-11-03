@@ -23,6 +23,8 @@
 #' @return If DoCombinations = F a data.table of the processed ERA dataset. If DoCombinations = T a list of two data.tables, "Data" as per combinations = F and "Data.Combos" where
 #' PrNames/SubPrName have been modified to reflect combination practices.
 #' @export
+#' @import data.table
+#' @importFrom data.table copy setnames rbindlist
 PrepareERA<-function(Data,
                     CombineAll=F,
                     DoCombinations=F,

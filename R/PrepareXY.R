@@ -18,6 +18,7 @@
 #' * `[[Data]]` returns a `data.table` of the supplied dataset with focal columns renamed to `Axis1`, `Axis2` and `Group`.
 #' * `[[Lab]]` returns a character vector of names corresponding to `Axis1`, `Axis2` and `Group`.
 #' @export
+#' @import data.table
 PrepareXY<-function(Data,Comparison,CodeAxes =c("Yes","Yes"),PLevel,OLevel,EULevel){
   Data<-data.table(Data)
   Data<-StandColNames(Data,PLevel,OLevel,EULevel)

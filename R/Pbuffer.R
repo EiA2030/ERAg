@@ -12,6 +12,8 @@
 #' if `FALSE` it has a geographic CRS `epsg:4326`.
 #' @return Pbuffer returns circular buffers in an object of class `SpatialPolygons`.
 #' @export
+#' @importFrom sp SpatialPoints spTransform SpatialPolygons SpatialPolygonsDataFrame spChFIDs CRS
+#' @importFrom rgeos gBuffer
 Pbuffer<-function(Data,ID=NA,Projected=F){
   Data<-data.frame(Data)
   Data<-Data[!(is.na(Data$Latitude)|is.na(Data$Longitude)|Data$Buffer==""|is.na(Data$Buffer)),]

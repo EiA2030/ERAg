@@ -22,6 +22,7 @@
 #' 2) `[[Season.Issues]]` a data.table containing Latitude + Longitude combinations where a mixture of season = 1 or 2 and season = NA are reported suggesting
 #' potential issues with consistency of temporal recording at these spatial coordinates.
 #' @export
+#' @import data.table
 EstPDayData<-function(DATA){
 
   DATA<-data.table(DATA)

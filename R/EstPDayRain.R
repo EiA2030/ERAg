@@ -44,6 +44,8 @@
 #' for rows of `Data` where planting uncertainty is within the range specfied by the `Uncertainty.Min` and `Uncertainty.Max` arguments. If the `Add.Values`
 #' arguments is `TRUE` then this field is appended to `Data` else it is returned in a separate `data.table.`
 #' @export
+#' @import data.table
+#' @importFrom zoo rollapply as.zoo
 EstPDayRain<-function(Data,
 ID,
 Rain.Data,
@@ -120,19 +122,19 @@ Use.Data.Dates = F
 
       Y<-X[(j),Plant.Start]
       Diff<-X[(j),Plant.Diff]
-      R<-which(rollapply(as.zoo(unlist(Rain[Date>=(Y-DaysBefore) & Date<=Y+Diff*MultiplyWin,..Rain.Field])),width=Widths[1],sum)>Rain.Thresholds[1])
+      R<-which(zoo::rollapply(zoo::as.zoo(unlist(Rain[Date>=(Y-DaysBefore) & Date<=Y+Diff*MultiplyWin,..Rain.Field])),width=Widths[1],sum)>Rain.Thresholds[1])
 
       if(length(R)>0){
         R<-Y+R[1]
       }else{
         if(!is.na(Window[1])){
-          R<-which(rollapply(as.zoo(unlist(Rain[Date>=Y+Diff*MultiplyWin+1 & Date<=Y+Diff*MultiplyWin+Window[1],..Rain.Field])),width=Widths[2],sum)>Rain.Thresholds[2])
+          R<-which(zoo::rollapply(zoo::as.zoo(unlist(Rain[Date>=Y+Diff*MultiplyWin+1 & Date<=Y+Diff*MultiplyWin+Window[1],..Rain.Field])),width=Widths[2],sum)>Rain.Thresholds[2])
         }
         if(length(R)>0){
           R<-Y+R[1]
         }else{
           if(!is.na(Window[2])){
-            R<-which(rollapply(as.zoo(unlist(Rain[Date>=Y+Diff*MultiplyWin+Window[1]+1 & Date<=Y+Diff*MultiplyWin+Window[1]+Window[2],..Rain.Field])),width=Widths[3],sum)>Rain.Thresholds[3])
+            R<-which(zoo::rollapply(zoo::as.zoo(unlist(Rain[Date>=Y+Diff*MultiplyWin+Window[1]+1 & Date<=Y+Diff*MultiplyWin+Window[1]+Window[2],..Rain.Field])),width=Widths[3],sum)>Rain.Thresholds[3])
           }
           if(length(R)>0){
             R<-Y+R[1]

@@ -18,6 +18,9 @@
 #' @param ALevel A character vector of length one that labels the legend of the plot, this should refer to any data aggregation by study or location that has occurred (or not); default = `Observation`
 #' @return `ERAMatrixPlot` returns a  \link[ggplot]{geom_tile} plot
 #' @export
+#' @import data.table
+#' @importFrom ggplot2 ggplot aes geom_tile geom_text coord_flip theme
+#' @importFrom viridis scale_fill_viridis
 ERAMatrixPlot<-function(Data,DoLog = "No",Palette = "plasma",FlipXY = "No",RotYlab = "Yes",ALevel = "Observation"){
 
 PlotData<-Data[[1]][,list(value=.N),by=list(Axis1,Axis2)]

@@ -16,6 +16,9 @@
 #'
 #' * * To be described*
 #' @export
+#' @import data.table
+#' @importFrom pbapply pblapply
+#' @importFrom data.table dcast rbindlist
 StabCalc2<-function(Data,
                     Do.Weight=T,
                     Weight.by.Study=T,
@@ -38,7 +41,7 @@ StabCalc2<-function(Data,
   Data<-split(Data,list(Data$Outcome,Data$Practice))
 
 
-  StabStats<-pblapply(1:length(Data),FUN=function(i){
+  StabStats<-pbapply::pblapply(1:length(Data),FUN=function(i){
     print(i)
     DATA<-Data[[i]]
     X<-StabCalc(Data=DATA,

@@ -17,6 +17,7 @@
 #' * `N.Focal`= the number of unique values of `Focal.Col` for each value of `MID`
 #' * `Focal.List` = unique values of `Focal.Col` concatenated with a `-` delim calculate for each value `MID`
 #' @export
+#' @import data.table
 MatchTreatments<-function(Data,
                           Match.Cols,
                           Focal.Col){

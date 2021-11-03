@@ -12,6 +12,14 @@
 #' @param Use.acv logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
 #' @return `StabCalc` returns a `data.table` *to be described*
 #' @export
+#' @importFrom metafor escalc rma.mv
+#' @importFrom Matrix bdiag forceSymmetric
+#' @importFrom plyr rbind.fill
+#' @importFrom sfsmisc f.robftest
+#' @importFrom broom glance
+#' @importFrom MASS rlm
+#' @importFrom data.table dcast rbindlist
+#' @import data.table
 StabCalc<-function(Data,
                    Do.Weight=T,
                    Weight.by.Study=T,
@@ -103,7 +111,7 @@ StabCalc<-function(Data,
                                                X_c="yieldexp",SD_c="sdexp",N_c="nryears",
                                                X_t="yieldcont",SD_t="sdcont",N_t="nryears",
                                                metric = metric)
-        commonexp[[2]] <- escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,
+        commonexp[[2]] <- metafor::escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,
                                  sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=commonexp[[2]])
       } else{
         commonexp <- list(
@@ -114,10 +122,10 @@ StabCalc<-function(Data,
       # 3) "normal" obs, not sharing any common control or experimental treatment (no Lajeunesse )
       sub <- obstable[is.na(obstable$cluster_exp) & is.na(obstable$cluster_cont),]
       if(nrow(sub)>0){
-        vi<-escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=sub)$vi
+        vi<-metafor::escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=sub)$vi
         nocommon <- list(
           if(length(vi)>1){diag(vi)}else{vi},   # Amendment to Knapp code - if length was 1 it either output 1 if vi>1 or a zero length matrix if vi<1
-          escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=sub))
+          metafor::escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=sub))
       } else{
         nocommon <- list(
           matrix(nrow=0,ncol=0),
@@ -126,14 +134,14 @@ StabCalc<-function(Data,
       }
       ####### combine
       out <- list(
-        bdiag(commoncont[[1]],commonexp[[1]],nocommon[[1]]),  # v matrix
-        rbind.fill(commoncont[[2]],commonexp[[2]],nocommon[[2]]) # obs table
+        Matrix::bdiag(commoncont[[1]],commonexp[[1]],nocommon[[1]]),  # v matrix
+        plyr::rbind.fill(commoncont[[2]],commonexp[[2]],nocommon[[2]]) # obs table
       )
 
     } else {    # when no lajeunese correction demanded, lajeunesse=FALSE in function call
       out <- list(
-        diag(escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=obstable)$vi),
-        escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=obstable))
+        diag(metafor::escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=obstable)$vi),
+        metafor::escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=obstable))
     }
     return(out)
   }
@@ -175,7 +183,7 @@ StabCalc<-function(Data,
       }else{
         Model<-data.table(Mean=model$b[,1],SE=model$se,Z.val=model$zval,CI.low=model$ci.lb,CI.high=model$ci.ub,P.Vals=model$pval,Model=class(model)[1])
       }}else{
-        sig<-f.robftest(model, var = "(Intercept)")$p.value
+        sig<-sfsmisc::f.robftest(model, var = "(Intercept)")$p.value
 
         ci.lb<-confint.default(object = model, parm = "(Intercept)", level = 0.95)[1]
         ci.ub<-confint.default(object = model, parm = "(Intercept)", level = 0.95)[2]
@@ -185,7 +193,7 @@ StabCalc<-function(Data,
           # 1) Mean = without correction for Jensen Inequality
           # 2) Norm = Jensen inequality corrected assuming data follows a normal distribution
           # 3) Smear = Jensen inequality corrected using the Smearing estimate (non-normal distrbution)
-          sigma.sq <-glance(model)$sigma^2
+          sigma.sq <-broom::glance(model)$sigma^2
 
 
           Model<-data.table(Mean=model$coefficients,
@@ -235,42 +243,42 @@ StabCalc<-function(Data,
     # add the respective response and variance-covariance matrix using the addmeasure() function (Knapp et al. 2018)
     tempmat <- addmeasure(obstable=Data,metric=Response,lajeunesse = T)
     respmat <- tempmat[[2]] # the actual data, with the the respective response
-    varmat <- forceSymmetric(tempmat[[1]]) # the variance-covariance matrix (VCV)
+    varmat <- Matrix::forceSymmetric(tempmat[[1]]) # the variance-covariance matrix (VCV)
 
     # fit mixed-model with rma.mv() from the metafor package
 
     if(Do.Weight){
       if(Weight.by.Study){
         if(DoRandom){
-          model <- rma.mv(yi~1,V=varmat,W=Weight.Study,data=respmat,control=Control,random = ~1|Code )
+          model <- metafor::rma.mv(yi~1,V=varmat,W=Weight.Study,data=respmat,control=Control,random = ~1|Code )
         }else{
-          model <- rma.mv(yi~1,V=varmat,W=Weight.Study,data=respmat,control=Control)
+          model <- metafor::rma.mv(yi~1,V=varmat,W=Weight.Study,data=respmat,control=Control)
         }
       }else{
         if(DoRandom){
-          model <- rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Control,random = ~1|Code )
+          model <- metafor::rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Control,random = ~1|Code )
         }else{
-          model <- rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Contro,random = ~1|Codel)
+          model <- metafor::rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Contro,random = ~1|Codel)
         }
       }
     }else{
       if(DoRandom){
-        model <- rma.mv(yi~1,V=varmat,data=respmat,control=Control)
+        model <- metafor::rma.mv(yi~1,V=varmat,data=respmat,control=Control)
       }else{
-        model <- rma.mv(yi~1,V=varmat,data=respmat,control=Control)
+        model <- metafor::rma.mv(yi~1,V=varmat,data=respmat,control=Control)
       }
     }
 
     Model<-M.details(model=model,Transform=Transform)[,Robust:=F
-    ][,Response:=Response]
+                                                      ][,Response:=Response]
 
     if(length(unique(respmat$ID))>1){
       # Robust model with cluster as the study (better p-values) - a vector specifying a clustering variable to use for constructing the sandwich estimator of the variance-covariance matrix.
-      r.model<-robust(model,cluster=respmat$ID,adjust=TRUE)
+      r.model<-metafor::robust(model,cluster=respmat$ID,adjust=TRUE)
       R.Model<-M.details(model=r.model,Transform=Transform)[,Robust:=T
       ][,Response:=Response]
     }else{
-      r.model<-rlm(yi~1,weights=Weight.Study,data=respmat,maxit=200)
+      r.model<-MASS::rlm(yi~1,weights=Weight.Study,data=respmat,maxit=200)
       R.Model<-M.details(model=r.model,Transform=Transform)[,Robust:=T
       ][,Response:=Response]
     }
@@ -288,11 +296,11 @@ StabCalc<-function(Data,
   Model<-lm(log(yieldratio)~log(cvratio),weights=Weight.Study,(data=Y))
   lm.CVR<-data.table(summary(Model)$coefficients)[,Coefficient:=c("Intercept","ln(CVR)")][,Variable:="CVR"][,Robust:=F][,Sigma.sq:=sum(summary(Model)$sigma)]
 
-  rlm.VR<-rlm(log(yieldratio)~log(sdratio),weights=Weight.Study,(data=Y),maxit =200)
-  rlm.VR<-data.table(summary(rlm.VR)$coefficients,`Pr(>|t|)`=c(f.robftest(rlm.VR, var = "(Intercept)")$p.value,f.robftest(rlm.VR, var = "log(sdratio)")$p.value))[,Coefficient:=c("Intercept","ln(VR)")][,Variable:="VR"][,Robust:=T][,Sigma.sq:=glance(rlm.VR)$sigma^2]
+  rlm.VR<-MASS::rlm(log(yieldratio)~log(sdratio),weights=Weight.Study,(data=Y),maxit =200)
+  rlm.VR<-data.table(summary(rlm.VR)$coefficients,`Pr(>|t|)`=c(sfsmisc::f.robftest(rlm.VR, var = "(Intercept)")$p.value,sfsmisc::f.robftest(rlm.VR, var = "log(sdratio)")$p.value))[,Coefficient:=c("Intercept","ln(VR)")][,Variable:="VR"][,Robust:=T][,Sigma.sq:=broom::glance(rlm.VR)$sigma^2]
 
-  rlm.CVR<-rlm(log(yieldratio)~log(cvratio),weights=Weight.Study,(data=Y),maxit =200)
-  rlm.CVR<-data.table(summary(rlm.CVR)$coefficients,`Pr(>|t|)`=c(f.robftest(rlm.CVR, var = "(Intercept)")$p.value,f.robftest(rlm.CVR, var = "log(cvratio)")$p.value))[,Coefficient:=c("Intercept","ln(CVR)")][,Variable:="CVR"][,Robust:=T][,Sigma.sq:=glance(rlm.CVR)$sigma^2]
+  rlm.CVR<-MASS::rlm(log(yieldratio)~log(cvratio),weights=Weight.Study,(data=Y),maxit =200)
+  rlm.CVR<-data.table(summary(rlm.CVR)$coefficients,`Pr(>|t|)`=c(sfsmisc::f.robftest(rlm.CVR, var = "(Intercept)")$p.value,sfsmisc::f.robftest(rlm.CVR, var = "log(cvratio)")$p.value))[,Coefficient:=c("Intercept","ln(CVR)")][,Variable:="CVR"][,Robust:=T][,Sigma.sq:=broom::glance(rlm.CVR)$sigma^2]
   LMs<-rbind(lm.VR,lm.CVR,rlm.VR,rlm.CVR,use.names=F)
   LMs[,Practice:=Y[1,"Practice"]
   ][,Practice.Code:=Y[1,"Practice.Code"]

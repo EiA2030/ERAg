@@ -11,6 +11,7 @@
 #' * `N.Obs.Study` = the number of observations contributed by a study (i.e., `Code`) within combinations of the grouping variables specified.
 #' * `Weight.Study` = a numeric weighting.
 #' @export
+#' @import data.table
 ERAWeight<-function(Data,Grouping.Cols){
 
   Data<-data.table(Data)

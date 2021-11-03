@@ -24,6 +24,7 @@
 #' @param DoWUE Logical `T/F`. If `T` water use efficiency outcome is derived from yield and TSP (total seasonal precipitation) data
 #' @return DeriveOutcomes returns the input `data.table` with additional rows appended for derived outcomes.
 #' @export
+#' @import data.table
 DeriveOutcomes<-function(Data = ERA.Compiled,
                          RmPartial = T,
                          DoBCR_VC = T,

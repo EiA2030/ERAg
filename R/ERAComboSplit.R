@@ -12,6 +12,7 @@
 #' @return `ERAComboSplit` returns a longer form version of `ERA.Compiled` with suffixed `.Combo` columns appended indicating a single practice x product
 #' combination in duplicate rows of the split dataset.
 #' @export
+#' @import data.table
 ERAComboSplit<-function(Data){
 
   X<-strsplit(unlist(Data[,SubPrName]),"-")

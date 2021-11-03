@@ -13,7 +13,9 @@
 #' 1) `plist` = a **list** of practice codes in the experimental treatment not in the control treatment.
 #' 2) `base.list` = a **vector** of practice codes shared by the experimental and control treatments, codes are concatenated with a `-` delim .
 #' @export
-
+#' @importFrom parallel makeCluster clusterEvalQ stopCluster clusterExport
+#' @importFrom doSNOW registerDoSNOW
+#' @import data.table
 ExtractTreatment<-function(Data,cores,N.Cols){
   Data<-data.frame(Data)
 

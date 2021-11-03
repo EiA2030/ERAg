@@ -16,6 +16,7 @@
 #' `Data.SLen.Acc` = a concantenation of the number of decimals places used in latitude/longitude matching and whether matching was conducted using
 #' `Product` (`P.Sub`) or `Product.Subtype` (`P`), for example `3-P.Sub`.
 #' @export
+#' @import data.table
 EstSLenData<-function(DATA){
 
 if(any("Data.SLen" %in% colnames(DATA))){
