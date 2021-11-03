@@ -25,7 +25,7 @@
 #'    * *weighted means* use the \link[stats]{weighted.mean} function
 #'    * *weighted medians* use the \link[spatstat.geom]{weighted.median} function
 #'    * *weighted standard errors* use the \link[diagis]{weighted_se} function
-#'    * *weighted variance* uses the \link[Hmisc]{wtd.var} function
+#'    * *weighted variance* uses the \link[Hmisc]{wtd.stats} `wtd.var` function
 #'    * *weighted quantiles* use the \link[spatstat.geom]{weighted.median} (`weighted.quantile`) function with `probs=seq(0,1,0.25)`
 #'
 #' 5) Response ratios are back-transformed and converted to % change with and without a correction for the Jensen inequality.
