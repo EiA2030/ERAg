@@ -1,14 +1,20 @@
 Package: ERAg
 Title: Evidence for Resilient Agriculture Tools
 Version: 0.0.1.0000
-Authors@R: 
+Authors@R: c(
     person(given = "Peter",
            family = "Steward",
            role = c("aut", "cre"),
            email = "p.steward@cgiar.org",
-           comment = c(ORCID = "0000-0003-3985-4911"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a license
+           comment = c(ORCID = "0000-0003-3985-4911")),
+    person(given = "Todd",
+           family = "Rosenstock",
+           role = c("ctb"),
+           email = "t.rosenstock@cgiar.org",
+           comment = c(ORCID = "0000-0002-1958-9500"))
+           )
+Description: The ERA dataset, tools and vignettes for its analysis.
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -52,7 +58,8 @@ Suggests: BiocStyle,
           treemap,
           rworldmap,
           rworldxtra,
-          terra,
+          terra
+Maintainer: Pete Steward <p.steward@cgiar.org>
           
 
 
