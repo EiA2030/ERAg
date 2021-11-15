@@ -108,20 +108,13 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   if(rmOut){
 
     Outliers<-unlist(Data[,R:=1:nrow(Data)
-    ][,list(Outliers=list(R[OutCalc(yi)])), by=Aggregate.By
+    ][,list(Outliers=list(R[ERAg::OutCalc(yi)])), by=Aggregate.By
     ][,Outliers])
 
     Data<-Data[!Outliers]
   }
 
   # Estimate treatment effect size ####
-
-  # In output tables:
-  # RR = response ratio
-  # RR.sd = standard deviation of response ratio
-  # pc = percent change
-  # pc.sd = standard deviation of percent change
-
 
   FunShap<-function(X){
     tryCatch(stats::shapiro.test(X)$p.val,error=function(cond) {as.numeric(NA)})
