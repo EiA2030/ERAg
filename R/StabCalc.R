@@ -12,7 +12,7 @@
 #' Natural log ratios are back-transformed with and without a corrections for the Jensen inequality. Corrections are applied as per
 #' \href{https://www.biorxiv.org/content/10.1101/179358v1}{Tandini & Mehrabi 2017} using two methods for back-transformation:
 #' 1) `exp(fitted(model) + summary(model)$sigma^2 / 2)`  situable for normally distributed data
-#' 2) a smearing estimate as `exp(fitted(model) \* (1 / nobs(model) \* sum(exp(resid(model))))`
+#' 2) a smearing estimate as `exp(fitted(model) * (1 / nobs(model) * sum(exp(resid(model))))`
 #'
 #' The `Tests` output contains the results of a weighted linear model of form `log(y) = a + b × log(x)` where `y` is a stability ratio and
 #' `x` is the mean yield ratio. The robust results in this table use a weighted robust linear model, see \link[MASS]{rlm}.
@@ -36,9 +36,9 @@
 #' \item`CI.low.Jen` numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
 #' \item`CI.high.Jen`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.ub[,1] + sigma.sq / 2)`
 #' \item`Sigma` numeric, estimated sigma^2 value(s)
-#' \item`Mean.Smear`numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as `exp(model$b[,1] \* (1 / nobs(model) \* sum(exp(resid(model)))))`
-#' \item`CI.low.Smear`numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.lb[,1] \* (1 / nobs(model) \* sum(exp(resid(model)))))`
-#' \item`CI.high.Smear`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.ub[,1] \* (1 / nobs(model) \* sum(exp(resid(model)))))`
+#' \item`Mean.Smear`numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as `exp(model$b[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`CI.low.Smear`numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.lb[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`CI.high.Smear`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.ub[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
 #' \item`P.Vals` numeric, p-value for test statistic
 #' \item`SE` numeric, standard error of the coefficients
 #' \item`Mean.exp`numeric, back-transformed response variable test coefficient not correcting for the Jensen inequality as `exp(model$b[,1])`
@@ -81,7 +81,7 @@
 #' \item`Practice` character, ERA practice
 #' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
-#' \item`PSymbol` character, \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
+#' \item`PSymbol` character, `*` P<=0.05, `**` P<=0.01, `***` P<=0.001, N.S. P>0.05.
 #' \item`N.Obs`  integer, depreciated field
 #' \item`N.Studies`integer, number of studies contributing to the analysis
 #' \item`Mean.Jen` numeric, back-transformed coefficient estimate correcting for the Jensen inequality as `exp(Estimate + sigma.sq / 2)`
@@ -110,9 +110,9 @@
 #' \item`P.Vals_lnCVR` numeric, p-value for lnCVR test statistic
 #' \item`P.Vals_lnRR` numeric, p-value for lnRR test statistic
 #' \item`P.Vals_lnVR` numeric, p-value for lnVR test statistic
-#' \item`PSymbol_lnCVR` character, lnCVR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
-#' \item`PSymbol_lnRR` character, lnRR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
-#' \item`PSymbol_lnVR` character, lnVR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
+#' \item`PSymbol_lnCVR` character, lnCVR `*` P<=0.05, `**` P<=0.01, `***` P<=0.001, N.S. P>0.05.
+#' \item`PSymbol_lnRR` character, lnRR `*` P<=0.05, `**` P<=0.01, `***` P<=0.001, N.S. P>0.05.
+#' \item`PSymbol_lnVR` character, lnVR `*` P<=0.05, `**` P<=0.01, `***` P<=0.001, N.S. P>0.05.
 #' \item`Sigma_lnCVR ` numeric, lnCVR estimated sigma^2 value(s)
 #' \item`Sigma_lnRR ` numeric, lnRR estimated sigma^2 value(s)
 #' \item`Sigma_lnVR ` numeric, lnVR estimated sigma^2 value(s)
