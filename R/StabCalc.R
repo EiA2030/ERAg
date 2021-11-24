@@ -26,7 +26,7 @@
 #' @param Responses character vector, this argument is depreciated do edit (default=`c("lnRR","lnVR","lnCVR")`)
 #' @param Use.acv logical, if `TRUE` scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
 #' @return `StabCalc` returns a  list is containing following data:
-#' ' \enumerate{
+#' \enumerate{
 #' \item **`[[Coefs]]`** A `data.table` of model coefficients, test statistics, confidence intervals:
 #' \itemize{
 #' \item`Mean` numeric, response variable test coefficient (see `Response` field) given the model used (see `Model` field)

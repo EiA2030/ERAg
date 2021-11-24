@@ -35,7 +35,7 @@ StabCalc(
 }
 \value{
 \code{StabCalc} returns a  list is containing following data:
-' \enumerate{
+\enumerate{
 \item \strong{\verb{[[Coefs]]}} A \code{data.table} of model coefficients, test statistics, confidence intervals:
 \itemize{
 \item\code{Mean} numeric, response variable test coefficient (see \code{Response} field) given the model used (see \code{Model} field)
