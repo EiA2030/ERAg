@@ -1,7 +1,7 @@
-#' Calculate Outcome Stability
+#' Calculate Outcome Stability For Each Element of Practice x Outcome
 #'
-#' `StabCalc2`runs splits the `data.table` output by `PrepareStabData` into a list using the `Outcome` & `Practice` fields then applies `StabCalc`
-#' to each element of the list.
+#' `StabCalc2`runs splits the `data.table` output by `PrepareStabData` into a list using the `Outcome` & `Practice` fields then applies `ERAg::StabCalc`
+#' to each element of the list. The output tables are bound backtogether and output in a list.
 #'
 #' @param Data A data.table output by the `ERAg::PrepareStabData` function
 #' @param Do.Weight logical, if `TRUE` coefficient estimates are weighted acccording to the supplied weightings in the `Data` object supplied(default = T)
@@ -11,10 +11,14 @@
 #' @param Control list, optional list of control values for the `rma.mv` estimation algorithms. If unspecified, default values are defined inside the function (default = `list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000)`)
 #' @param Responses character vector, this argument is depreciated do edit (default=`c("lnRR","lnVR","lnCVR")`)
 #' @param Use.acv logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
-#' @return `StabCalc2` returns a `data.table`
-#' Output fields:
-#'
-#' * * To be described*
+#' @return `StabCalc2` returns a `list`
+#' \enumerate{
+#' \item **`[[StabStats]]`** The first level of this list contains the outputs of `ERAg::StabCalc` for each Practice x Outcome combination present in `Data`
+#'  \item **`[[StabStats.Test]]`** This is the equivalent of the **`[[Tests]]`** `data.table` output by `ERAg::StabCalc`
+#'  \item **`[[StabStats.Tab]]`** This is the equivalent of the **`[[Coefs]]`** `data.table` output by `ERAg::StabCalc`
+#'  \item **`[[StabStats.Test2]]`** This is the equivalent of the **`[[Tests2]]`** `data.table` output by `ERAg::StabCalc`
+#'  \item **`[[StabList]]`** A `list` of the input `Data` `data.table` split by Practice and Outcome
+#'  }
 #' @export
 #' @import data.table
 #' @importFrom pbapply pblapply

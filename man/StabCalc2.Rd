@@ -2,7 +2,7 @@
 % Please edit documentation in R/StabCalc2.R
 \name{StabCalc2}
 \alias{StabCalc2}
-\title{Calculate Outcome Stability}
+\title{Calculate Outcome Stability For Each Element of Practice x Outcome}
 \usage{
 StabCalc2(
   Data,
@@ -34,16 +34,16 @@ StabCalc2(
 \item{Use.acv}{logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).}
 }
 \value{
-\code{StabCalc2} returns a \code{data.table}
-Output fields:
-\itemize{
-\item 
-\itemize{
-\item To be described*
-}
+\code{StabCalc2} returns a \code{list}
+\enumerate{
+\item \strong{\verb{[[StabStats]]}} The first level of this list contains the outputs of \code{ERAg::StabCalc} for each Practice x Outcome combination present in \code{Data}
+\item \strong{\verb{[[StabStats.Test]]}} This is the equivalent of the \strong{\verb{[[Tests]]}} \code{data.table} output by \code{ERAg::StabCalc}
+\item \strong{\verb{[[StabStats.Tab]]}} This is the equivalent of the \strong{\verb{[[Coefs]]}} \code{data.table} output by \code{ERAg::StabCalc}
+\item \strong{\verb{[[StabStats.Test2]]}} This is the equivalent of the \strong{\verb{[[Tests2]]}} \code{data.table} output by \code{ERAg::StabCalc}
+\item \strong{\verb{[[StabList]]}} A \code{list} of the input \code{Data} \code{data.table} split by Practice and Outcome
 }
 }
 \description{
-\code{StabCalc2}runs splits the \code{data.table} output by \code{PrepareStabData} into a list using the \code{Outcome} & \code{Practice} fields then applies \code{StabCalc}
-to each element of the list.
+\code{StabCalc2}runs splits the \code{data.table} output by \code{PrepareStabData} into a list using the \code{Outcome} & \code{Practice} fields then applies \code{ERAg::StabCalc}
+to each element of the list. The output tables are bound backtogether and output in a list.
 }
