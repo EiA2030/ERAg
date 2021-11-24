@@ -22,7 +22,7 @@ Two columns are appended to \code{Data}:
 }
 \description{
 This function takes a raw ERA dataset and determines set differences (practices in the experimental but not the control treatment) and
-commonalities (practices shared by experimental and control treatments) for each row of the data.
+commonalities (practices shared by experimental and control treatments) for each row of the data. Control \code{h} codes are removed from the comparison.
 }
 \details{
 In the raw dataset treatment practice codes are recorded in \code{T} columns (e.g., \code{T1},\code{T2}, etc.) for the experimental condition and \code{C} columns

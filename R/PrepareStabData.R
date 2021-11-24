@@ -1,13 +1,48 @@
 #' Prepare Data for Outcome Stability Analysis
 #'
-#' This function prepares data for use with the `StabCalc` function.
+#' This function prepares data for use with the `StabCalc` function. It calculates relative, absolute and adjusted coefficients of yield variation
+#' for unique temporal sequences of at least three years.
+#'
+#' The data supplied needs to have `Practice` and `Outcome` fields as generated using the `ERAg::StandColNames` function.
+#'
+#' The units of measurement (the `Unit` field) for the supplied data
+#' should contain values of only "Mg/ha", although there is limited functionality to harmonize other units ("kg/ha", "kg/acre", "Kg/fed", "Mg/fed", and
+#' "g/m2") to "Mg/ha".
 #'
 #' The Adjusted Coefficient of Variation (acv) is calculated using the metan::acv function.
 #'
 #' @param Data  a `data.frame` or `data.table` of ERA data with column names standardized using the `StandColNames` function.
 #' @param OutCodes A vector of outcome codes to consider in the analysis. Default = `101` (Crop Yield).
-#' @return a `data.table` of the supplied data with appended columns:
-#' * *column descriptions to be added*
+#' @return a `data.table` including fields of the data supplied, subset to unique temporal sequences with the following columns appended:
+#' * `UID` integer, a unique identifier for a pairing of control and experimental treatments (CT and ET) and their outcome that is used to match observations across time.
+#' * `UID.C` integer, a unique identifier for a CT that is used to match observations across time.
+#' * `UID.T` integer, a unique identifier for an ET that is used to match observations across time.
+#' * `yieldcont` numeric, the mean yield of the CT.
+#' * `minyieldcont` numeric, the minimum yield of the CT.
+#' * `yieldexp`  numeric, the mean yield of the ET.
+#' * `sdcont` numeric, the standard deviation of the CT.
+#' * `varcont`  numeric, the variance of the CT.
+#' * `sdexp` numeric, the standard deviation of the ET.
+#' * `varexp` numeric, the variance of the ET.
+#' * `cvcont` numeric, the coefficient of variation for the CT as `sdcont/yieldcont`.
+#' * `acvcont` numeric, the adjusted coefficient of variation for the CT.
+#' * `cvexp` numeric, the coefficient of variation for the ET as `sdexp/yieldexp`.
+#' * `acvexp`  numeric, the adjusted coefficient of variation for the ET.
+#' * `yieldratio` numeric, the ratio of ET:CT yields as `yieldexp/yieldcont`.
+#' * `sdratio` numeric, the absolute variance ratio of ET:CT yields as `sdexp/sdcont`.
+#' * `cvratio` numeric, the relative variance ratio of ET:CT yields as `cvexp/cvcont`.
+#' * `acvratio` numeric, the adjusted relative variance ratio of ET:CT yields as `acvexp/acvcont`.
+#' * `Rep`  integer, the number of replicates for the temporal sequence.
+#' * `nryears` integer, the number of yield observations in a temporal sequence.
+#' * `cluster_cont` integer, within a study (`Code` field) temporal sequences that share the same value have the same CT across multiple ETs.
+#' * `UID.C.Len` integer, the number of temporal sequences that have the same `cluster_cont` value within a study.
+#' * `cluster_exp` integer, within a study (`Code` field) temporal sequences that share the same value have the same ET across multiple CTs.
+#' * `UID.T.Len` integer, the number of temporal sequences that have the same `cluster_xp` value within a study.
+#' * `UID1` integer, a unique identifier for each UID within outcomes (UID is unique across all the data).
+#' * `N.Obs` integer, the number of temporal sequences for a UID (this should equal one).
+#' * `N.Obs.Study` integer, number of temporal sequences contribude by a study (a unique `Code` field value) for a Practice x Outcome combination.
+#' * `Weight.Study` numeric, a weighting value calculated as `(Rep^2/(2xRep))/N.Obs.Study`.
+#' * `Weight` numeric, a weighting value calculated as `(Rep^2/(2xRep))/N.Obs`.
 #' @export
 #' @import data.table
 #' @importFrom metan acv
@@ -46,9 +81,6 @@ PrepareStabData<-function(Data,OutCodes=101){
   ][Units %in% g.Units,MeanT:=(MeanT/10^6)*10^4
   ][Units %in% g.Units,Units:="Mg Dry Matter/ha"]
 
-  Data[Units %in% c("Mg/ha/yr","Mt/ha"),Units:="Mg/ha"]
-
-
   Data<-Data[Units %in% c("Mg/ha","Mg Dry Matter/ha")]
 
   # Code below can be used to interrogate any strange yield values
@@ -56,7 +88,7 @@ PrepareStabData<-function(Data,OutCodes=101){
   # ERA.Compiled[Code=="NJ0059" & Outcode==101 & (MeanT>10|MeanC>10),list(Units,MeanC,MeanT,Product.Simple,DataLoc,Author,M.Year)]
 
   # Create unique identity for observation removing temporal elements
-  Cols<-c("Outcome","Practice","Practice.Base","Practice.Code","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","TID","CID","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep","Units")
+  Cols<-c("Outcome","Practice","plist","Practice.Base","base.list","Practice.Code","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","TID","CID","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep","Units")
   suppressWarnings(Data[,UID:=apply(Data[,..Cols],1,FUN=function(X){paste(X,collapse="")})])
 
   # Calculate statistics per unique time-series

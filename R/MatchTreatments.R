@@ -2,11 +2,11 @@
 #'
 #' This simple function will add a identification field `MID` to the table supplied for unique combinations of the grouping columns supplied.
 #'
-#' For example, if you wish to know which outcomes are shared between the same pairings of experimental and control treatments you could specify
-#' `Match.Cols = c("Code","Site.ID","C.Descrip","T.Descrip","SubPrName","SubPrName.Base","M.Year")` and `Focal.Col = Out.SubInd` this would give a unique
+#' For example, if you wish to know which outcomes are shared between the same pairings of experimental and control treatments you would specify
+#' `Match.Cols = c("Code","Site.ID","C.Descrip","T.Descrip","SubPrName","SubPrName.Base","M.Year")` and `Focal.Col = Out.SubInd` this gives a unique
 #' `MID` to observations that have the same control and treatment practices, location, growing season and study. The `N.Focal` column of the output
-#'  dataset would tell you how many unique values of `Out.SubInd` are present in each group, and `Focal.List` would concatenate
-#'  these values.
+#'  dataset tells you how many unique values of `Out.SubInd` are present in each group, and  the `Focal.List` field in the output data.table
+#'  concatenates the unique values in alphabetical order with a - delimiter.
 #'
 #' @param Data An ERA dataset (e.g. `ERAg::ERACompiled`)
 #' @param Match.Cols A character vector of column names that must all contain identical values for rows in the dataset to match (i.e. share the same `MID`)

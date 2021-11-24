@@ -23,5 +23,6 @@ This simple function will weight ERA observations based on replicates (\code{Rep
 within combinations of the grouping variables specified.
 }
 \details{
-Weightings are calculated using the formula \code{(Rep^2/(2*Rep))/N.Obs.Study}.
+For each observations weightings are calculated using the formula \code{(Rep^2/(2*Rep))/N.Obs.Study} where \code{Rep} is the number of experimental replicates
+and \code{N.Obs.Study} is the number of observations contributed from the observation's study for the grouping variables provided.
 }

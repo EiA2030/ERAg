@@ -12,14 +12,49 @@ PrepareStabData(Data, OutCodes = 101)
 \item{OutCodes}{A vector of outcome codes to consider in the analysis. Default = \code{101} (Crop Yield).}
 }
 \value{
-a \code{data.table} of the supplied data with appended columns:
+a \code{data.table} including fields of the data supplied, subset to unique temporal sequences with the following columns appended:
 \itemize{
-\item \emph{column descriptions to be added}
+\item \code{UID} integer, a unique identifier for a pairing of control and experimental treatments (CT and ET) and their outcome that is used to match observations across time.
+\item \code{UID.C} integer, a unique identifier for a CT that is used to match observations across time.
+\item \code{UID.T} integer, a unique identifier for an ET that is used to match observations across time.
+\item \code{yieldcont} numeric, the mean yield of the CT.
+\item \code{minyieldcont} numeric, the minimum yield of the CT.
+\item \code{yieldexp}  numeric, the mean yield of the ET.
+\item \code{sdcont} numeric, the standard deviation of the CT.
+\item \code{varcont}  numeric, the variance of the CT.
+\item \code{sdexp} numeric, the standard deviation of the ET.
+\item \code{varexp} numeric, the variance of the ET.
+\item \code{cvcont} numeric, the coefficient of variation for the CT as \code{sdcont/yieldcont}.
+\item \code{acvcont} numeric, the adjusted coefficient of variation for the CT.
+\item \code{cvexp} numeric, the coefficient of variation for the ET as \code{sdexp/yieldexp}.
+\item \code{acvexp}  numeric, the adjusted coefficient of variation for the ET.
+\item \code{yieldratio} numeric, the ratio of ET:CT yields as \code{yieldexp/yieldcont}.
+\item \code{sdratio} numeric, the absolute variance ratio of ET:CT yields as \code{sdexp/sdcont}.
+\item \code{cvratio} numeric, the relative variance ratio of ET:CT yields as \code{cvexp/cvcont}.
+\item \code{acvratio} numeric, the adjusted relative variance ratio of ET:CT yields as \code{acvexp/acvcont}.
+\item \code{Rep}  integer, the number of replicates for the temporal sequence.
+\item \code{nryears} integer, the number of yield observations in a temporal sequence.
+\item \code{cluster_cont} integer, within a study (\code{Code} field) temporal sequences that share the same value have the same CT across multiple ETs.
+\item \code{UID.C.Len} integer, the number of temporal sequences that have the same \code{cluster_cont} value within a study.
+\item \code{cluster_exp} integer, within a study (\code{Code} field) temporal sequences that share the same value have the same ET across multiple CTs.
+\item \code{UID.T.Len} integer, the number of temporal sequences that have the same \code{cluster_xp} value within a study.
+\item \code{UID1} integer, a unique identifier for each UID within outcomes (UID is unique across all the data).
+\item \code{N.Obs} integer, the number of temporal sequences for a UID (this should equal one).
+\item \code{N.Obs.Study} integer, number of temporal sequences contribude by a study (a unique \code{Code} field value) for a Practice x Outcome combination.
+\item \code{Weight.Study} numeric, a weighting value calculated as \verb{(Rep^2/(2xRep))/N.Obs.Study}.
+\item \code{Weight} numeric, a weighting value calculated as \verb{(Rep^2/(2xRep))/N.Obs}.
 }
 }
 \description{
-This function prepares data for use with the \code{StabCalc} function.
+This function prepares data for use with the \code{StabCalc} function. It calculates relative, absolute and adjusted coefficients of yield variation
+for unique temporal sequences of at least three years.
 }
 \details{
+The data supplied needs to have \code{Practice} and \code{Outcome} fields as generated using the \code{ERAg::StandColNames} function.
+
+The units of measurement (the \code{Unit} field) for the supplied data
+should contain values of only "Mg/ha", although there is limited functionality to harmonize other units ("kg/ha", "kg/acre", "Kg/fed", "Mg/fed", and
+"g/m2") to "Mg/ha".
+
 The Adjusted Coefficient of Variation (acv) is calculated using the metan::acv function.
 }

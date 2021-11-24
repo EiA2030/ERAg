@@ -33,11 +33,11 @@ suffixes:
 }
 \description{
 For a dataset containing point locations with a buffer of spatial uncertainty this function averages raster values for a
-character vector pointing to the location of raster files or zipped files. Note if a zipped file containing muliple rasters is supplied
+character vector pointing to the location of raster files or zipped files. Note if a zipped file containing multiple rasters is supplied
 it is assumed to be a raster stack and the rasters must share the same extents, origin and  resolutions.
 }
 \details{
-Extraction uses the
+Extraction uses the extract function of the terra package.
 
 Zipped files are unzipped to the working directory, we suggest running \code{unlink(unzip(zip.filename,list=T)$Name)} to remove these files once extraction is complete.
 }

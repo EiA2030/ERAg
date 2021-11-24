@@ -1,16 +1,125 @@
 #' Calculate Outcome Stability
 #'
-#' `StabCalc` calculates relative and absolute outcome stability for MYOs based on the methods of \href{https://doi.org/10.1038/s41467-018-05956-1}{Knapp *el al.* (2018)}
+#' `StabCalc` calculates relative and absolute outcome stability for MYOs based on the methods of \href{https://doi.org/10.1038/s41467-018-05956-1}{Knapp *el al.* (2018)}. This
+#' function is designed for use within the `ERAg::StabCalc2` function.
 #'
-#' @param Data *To be described*
-#' @param Do.Weight *To be described*
-#' @param Weight.by.Study *To be described*
-#' @param Rm.Out *To be described*
-#' @param Transform *To be described*
-#' @param Control *To be described*
-#' @param Responses *To be described*
-#' @param Use.acv logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
-#' @return `StabCalc` returns a `data.table` *to be described*
+#' In the `Coefs`, `Models`, `Tests2` outputs of this function class estimates of the response variables `lnRR` = natural log of response ratio, `lnVR` =
+#' natural log of absolute variability ratio, and `lnCVR` = natural log of relative variability ratio are obtained with the rma.mv function with
+#' formula `response.variable~1`. Confidence intervals at P<0.95 are obtained by default for all (non-fixed) variance and correlation components of
+#' the models. Cluster-robust tests, confidence intervals, and significance of the model coefficients from  `rma.mv` models are additionally calculated using the
+#' \link[metafor]{robust} and \link[sfsmisc]{f.robftest} functions.
+#'
+#' Natural log ratios are back-transformed with and without a corrections for the Jensen inequality. Corrections are applied as per
+#' \href{https://www.biorxiv.org/content/10.1101/179358v1}{Tandini & Mehrabi 2017} using two methods for back-transformation:
+#' 1) $$ exp(\tilde{y} + \tilde{\sigma}_\epsilon^2) $$  situable for normally distributed data
+#' 2) a smearing estimate as `exp(fitted(model) * (1 / nobs(model) * sum(exp(resid(model))))`
+#'
+#' The `Tests` output contains the results of a weighted linear model of form $$log(y) = a + b × log(x)$$ where `y` is a stability ratio and
+#' `x` is the mean yield ratio. The robust results in this table use a weighted robust linear model, see \link[MASS]{rlm}.
+#'
+#' @param Data A data.table output by the `ERAg::PrepareStabData` function
+#' @param Do.Weight logical, if `TRUE` coefficient estimates are weighted acccording to the supplied weightings in the `Data` object supplied(default = T)
+#' @param Weight.by.Study logical, depreciated (default = `T`)
+#' @param Rm.Out logical, if `TRUE` extreme outliers are removed withing each Practice x Outcome combination as per the method detailed in `ERAg::OutCalc` (default = `T`)
+#' @param Transform logical, if `TRUE` back-transformed coefficient estimates and confidence intervals are appended to outputs  (default = `T`)
+#' @param Control list, optional list of control values for the `rma.mv` estimation algorithms. If unspecified, default values are defined inside the function (default = `list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000)`)
+#' @param Responses character vector, this argument is depreciated do edit (default=`c("lnRR","lnVR","lnCVR")`)
+#' @param Use.acv logical, if `TRUE` scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
+#' @return `StabCalc` returns a  list is containing following data:
+#' ' \enumerate{
+#' \item **`[[Coefs]]`** A `data.table` of model coefficients, test statistics, confidence intervals:
+#' \itemize{
+#' \item`Mean` numeric, response variable test coefficient (see `Response` field) given the model used (see `Model` field)
+#' \item`CI.low` numeric, response variable test coefficient lower confidence limit see \link[metafor]{confint.rma}
+#' \item*`CI.high` numeric, response variable test coefficient upper confidence limit see \link[metafor]{confint.rma}
+#' \item`Mean.Jen` numeric, back-transformed response variable test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
+#' \item`CI.low.Jen` numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
+#' \item`CI.high.Jen`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.ub[,1] + sigma.sq / 2)`
+#' \item`Sigma` numeric, estimated σ2 value(s)
+#' \item`Mean.Smear`numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as `exp(model$b[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`CI.low.Smear`numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.lb[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`CI.high.Smear`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.ub[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`P.Vals` numeric, p-value for test statistic
+#' \item`SE` numeric, standard error of the coefficients
+#' \item`Mean.exp`numeric, back-transformed response variable test coefficient not correcting for the Jensen inequality as `exp(model$b[,1])`
+#' \item`CI.low.exp` numeric, back-transformed response variable test coefficient lower confidence limit not correcting for the Jensen inequality as `exp(model$ci.lb[,1])`
+#' \item`CI.high.exp`numeric, back-transformed response variable test coefficient upper confidence limit not correcting for the Jensen inequality as `exp(model$ci.ub[,1])`
+#' \item`Z.val` numeric, test statistic of the coefficient
+#' \item`Model` numeric, test used to generate test statistics and confidence intervals `rma.mv` =  Multivariate/Multilevel Linear (Mixed-Effects) Model see \link[metafor]{rma.mv} or `robust.rma` = Cluster-Robust Tests and Confidence Intervals for 'rma' objects see  \link[metafor]{robust}
+#' \item`Robust` logical, when `T` robust tests are used, when `F` they are not
+#' \item`Response`character, `lnRR` = natural log of response ratio, `lnVR` = natural log of absolute variability ratio, `lnCVR` = natural log of relative variability ratio see `ERAg::PrepareStabData` function for more information.
+#' \item`N.Studies`integer, number of studies contributing to the analysis
+#' \item`N.Seq` integer, number of unique temporal sequences contributing to the analysis
+#' \item`N.Obs`  integer, depreciated field
+#' \item`Practice` character, ERA practice
+#' \item`Practice.Code` character, ERA practice code
+#' \item`Outcome` character, ERA outcome
+#' }
+#' \item**`[[Models]]`** Multivariate Meta-Analysis Model objects
+#' \itemize{
+#' \item`lnRR`= model where response variable is `lnRR` = natural log of response ratio
+#' \item`lnVR`= model where response variable is `lnVR` = natural log of absolute variability ratio
+#' \item`lnCVR`= model where response variable is `lnCVR` = natural log of relative variability ratio
+#' }
+#' \item**`[[R.Models]]`** Cluster-Robust Tests and Confidence Intervals applied to the Multivariate Meta-Analysis objects
+#' \itemize{
+#' \item`lnRR`= model where repose variable is `lnRR` = naturl log of response ratio
+#' \item`lnVR`= model where response variable is `lnVR` = natural log of absolute variability ratio
+#' \item`lnCVR`= model where response variable is `lnCVR` = natural log of relative variability ratio
+#' }
+#' \item**`[[Tests]]`** A `data.table` containing the results of a weighted linear model of form `ln(y) = a + b × ln(x)` where `y` is a stability ratio and
+#' `x` is the mean yield ratio. Robust results use a weighted robust linear model, see \link[MASS]{rlm}.
+#' \itemize{
+#' \item`Estimate` numeric, coefficient estimate
+#' \item`Std.Error`numeric, standard error of the coefficient estimate
+#' \item`t value` numeric, test statistic of the coefficient estimate
+#' \item`Pr(>|t|)` numeric, p-value for test statistic
+#' \item`Coefficient`character, coefficient (intercept or beta)
+#' \item`Variable` character, `lnRR` = natural log of response ratio, `lnVR` = natural log of absolute variability ratio, `lnCVR` = natural log of relative variability ratio see `ERAg::PrepareStabData` function for more information.
+#' \item`Robust` logical, when `T` robust tests are used, when `F` they are not
+#' \item`Sigma.sq` numeric, estimated σ2 value(s)
+#' \item`Practice` character, ERA practice
+#' \item`Practice.Code` character, ERA practice code
+#' \item`Outcome` character, ERA outcome
+#' \item`PSymbol` character, \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
+#' \item`N.Obs`  integer, depreciated field
+#' \item`N.Studies`integer, number of studies contributing to the analysis
+#' \item`Mean.Jen` numeric, back-transformed coefficient estimate correcting for the Jensen inequality as `exp(Estimate + sigma.sq / 2)`
+#' \item`CI.low.Jen` numeric, back-transformed coefficient estimate less standard error correcting for the Jensen inequality as `exp(Estimate - Std.Error + Sigma.sq / 2)`
+#' \item`CI.high.Jen` numeric, back-transformed coefficient estimate plus standard error correcting for the Jensen inequality as `exp(Estimate + Std.Error + Sigma.sq / 2)`
+#' }
+#' \item**`[[Tests2]]`** = as per the `Coeffs` data.table but transformed to be a wide format for Response variables.
+#' \itemize{
+#' \item`Model` numeric, test used to generate test statistics and confidence intervals `rma.mv` =  Multivariate/Multilevel Linear (Mixed-Effects) Model see \link[metafor]{rma.mv} or `robust.rma` = Cluster-Robust Tests and Confidence Intervals for 'rma' objects see  \link[metafor]{robust}
+#' \item`Robust` logical, when `T` robust tests are used, when `F` they are not
+#' \item`N.Studies`integer, number of studies contributing to the analysis
+#' \item`N.Seq` integer, number of unique temporal sequences contributing to the analysis
+#' \item`N.Obs`  integer, depreciated field
+#' \item`Mean_lnCVR` numeric, lnCVR test coefficient
+#' \item`Mean_lnRR` numeric, lnRR test coefficient
+#' \item`Mean_lnVR` numeric, lnVR test coefficient
+#' \item`Mean.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
+#' \item`Mean.Jen_lnRR` numeric, back-transformed lnRR test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
+#' \item`Mean.Jen_lnVR` numeric, back-transformed lnVR test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
+#' \item`CI.low.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
+#' \item`CI.high.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
+#' \item`CI.low.Jen_lnRR` numeric, back-transformed lnRR test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
+#' \item`CI.high.Jen_lnRR` numeric, back-transformed lnRR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
+#' \item`CI.low.Jen_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
+#' \item`CI.high.Jen_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
+#' \item`P.Vals_lnCVR` numeric, p-value for lnCVR test statistic
+#' \item`P.Vals_lnRR` numeric, p-value for lnRR test statistic
+#' \item`P.Vals_lnVR` numeric, p-value for lnVR test statistic
+#' \item`PSymbol_lnCVR` character, lnCVR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
+#' \item`PSymbol_lnRR` character, lnRR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
+#' \item`PSymbol_lnVR` character, lnVR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
+#' \item`Sigma_lnCVR ` numeric, lnCVR estimated σ2 value(s)
+#' \item`Sigma_lnRR ` numeric, lnRR estimated σ2 value(s)
+#' \item`Sigma_lnVR ` numeric, lnVR estimated σ2 value(s)
+#' \item`Practice` character, ERA practice
+#' \item`Practice.Code` character, ERA practice code
+#' \item`Outcome` character, ERA outcome
+#' }
 #' @export
 #' @importFrom metafor escalc rma.mv
 #' @importFrom Matrix bdiag forceSymmetric
@@ -148,9 +257,9 @@ StabCalc<-function(Data,
 
   psymbol<-function(X){
     Y<-rep("N.S.",length(X))
-    Y[X<0.05]<-"*"
-    Y[X<0.01]<-"**"
-    Y[X<0.001]<-"***"
+    Y[X<=0.05]<-"*"
+    Y[X<=0.01]<-"**"
+    Y[X<=0.001]<-"***"
     return(Y)
   }
   M.details<-function(model,Transform){
@@ -158,9 +267,9 @@ StabCalc<-function(Data,
     ### extract back-transformed mean and 95% confidence interval (CI) for intercept
     if(!"rlm" %in% class(model)){
       if(Transform){
-        # 1) Mean = without correction for Jensen Inequality
-        # 2) Norm = Jensen inequality corrected assuming data follows a normal distribution
-        # 3) Smear = Jensen inequality corrected using the Smearing estimate (non-normal distrbution)
+        # 1) .exp = without correction for Jensen Inequality
+        # 2) .Jen = Jensen inequality corrected assuming data follows a normal distribution
+        # 3) .Smear = Jensen inequality corrected using the Smearing estimate (non-normal distrbution)
         sigma.sq <- sum(summary(model)$sigma2)
 
         Model<-data.table(Mean=model$b[,1],
@@ -258,12 +367,12 @@ StabCalc<-function(Data,
         if(DoRandom){
           model <- metafor::rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Control,random = ~1|Code )
         }else{
-          model <- metafor::rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Contro,random = ~1|Codel)
+          model <- metafor::rma.mv(yi~1,V=varmat,W=Weight,data=respmat,control=Control)
         }
       }
     }else{
       if(DoRandom){
-        model <- metafor::rma.mv(yi~1,V=varmat,data=respmat,control=Control)
+        model <- metafor::rma.mv(yi~1,V=varmat,data=respmat,control=Control,random = ~1|Code)
       }else{
         model <- metafor::rma.mv(yi~1,V=varmat,data=respmat,control=Control)
       }
@@ -283,7 +392,9 @@ StabCalc<-function(Data,
       ][,Response:=Response]
     }
 
-    Coefs<-rbind(Model,R.Model)[,N.Studies:=length(unique(respmat[!is.na("yi"),"Code"]))][,N.Seq:=nrow(respmat[!is.na("yi")])][,N.Obs:=sum(respmat[!is.na("yi"),"N.Obs"])]
+    Coefs<-rbind(Model,R.Model)[,N.Studies:=length(unique(respmat[!is.na("yi"),"Code"]))
+                                ][,N.Seq:=nrow(respmat[!is.na("yi")])
+                                  ][,N.Obs:=sum(respmat[!is.na("yi"),"N.Obs"])]
     return(list(Model=model,R.Model=r.model,Coefs=Coefs))
   })
 
@@ -291,7 +402,6 @@ StabCalc<-function(Data,
 
   Model<-lm(log(yieldratio)~log(sdratio),weights=Weight.Study,(data=Y))
   lm.VR<-data.table(summary(Model)$coefficients)[,Coefficient:=c("Intercept","ln(VR)")][,Variable:="VR"][,Robust:=F][,Sigma.sq:=sum(summary(Model)$sigma)]
-
 
   Model<-lm(log(yieldratio)~log(cvratio),weights=Weight.Study,(data=Y))
   lm.CVR<-data.table(summary(Model)$coefficients)[,Coefficient:=c("Intercept","ln(CVR)")][,Variable:="CVR"][,Robust:=F][,Sigma.sq:=sum(summary(Model)$sigma)]

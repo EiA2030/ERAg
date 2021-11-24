@@ -3,7 +3,8 @@
 #' This simple function will weight ERA observations based on replicates (`Reps` column) and the number of observations contributed by a study (`N.Obs.Study`)
 #'  within combinations of the grouping variables specified.
 #'
-#' Weightings are calculated using the formula `(Rep^2/(2*Rep))/N.Obs.Study`.
+#' For each observations weightings are calculated using the formula `(Rep^2/(2*Rep))/N.Obs.Study` where `Rep` is the number of experimental replicates
+#' and `N.Obs.Study` is the number of observations contributed from the observation's study for the grouping variables provided.
 #'
 #' @param Data An ERA data.table containing columns `Reps` and `Code`.
 #' @param Grouping.Cols A vector of columns names; these are grouping variables and weightings are calculated for each combination of their values. Default = `NA`.

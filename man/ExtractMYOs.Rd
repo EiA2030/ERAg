@@ -7,6 +7,8 @@
 ExtractMYOs(Data)
 }
 \arguments{
+\item{Data}{A prepared (ERA) dataset, see the \code{ERA.Prepare} function.}
+
 \item{Prac}{The column name of the variable in \code{Data} that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = \code{PrName} (Practice).}
 
 \item{Out.Codes}{A vector of outcome codes to consider in the analysis. Default = \code{101} (Crop Yield).}

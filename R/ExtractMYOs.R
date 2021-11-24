@@ -8,7 +8,7 @@
 #' This situation may arise where there are *levels* to an ERA practice such as different amounts of mulch application, but these were not captured in
 #' the the Treatment description. The ERA team will be working to solve these issues in a future release.
 #'
-#`#' @param Data A prepared (ERA) dataset, see the `ERA.Prepare` function.
+#' @param Data A prepared (ERA) dataset, see the `ERA.Prepare` function.
 #' @param Prac The column name of the variable in `Data` that describes the practice. Use this parameter to choose different levels of the practice hierarchy. Default = `PrName` (Practice).
 #' @param Out.Codes A vector of outcome codes to consider in the analysis. Default = `101` (Crop Yield).
 #' @param MinYear An integer value for the minimum length of a MYO sequence. Sequences with fewer growing season than this number are excluded from analysis. Default = `3`.

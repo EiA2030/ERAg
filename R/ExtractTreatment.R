@@ -1,7 +1,7 @@
 #' Determine Practice Set Differences and Commonalities
 #'
 #' This function takes a raw ERA dataset and determines set differences (practices in the experimental but not the control treatment) and
-#' commonalities (practices shared by experimental and control treatments) for each row of the data.
+#' commonalities (practices shared by experimental and control treatments) for each row of the data. Control `h` codes are removed from the comparison.
 #'
 #' In the raw dataset treatment practice codes are recorded in `T` columns (e.g., `T1`,`T2`, etc.) for the experimental condition and `C` columns
 #' for the control condition.

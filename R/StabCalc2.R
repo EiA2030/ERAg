@@ -3,13 +3,13 @@
 #' `StabCalc2`runs splits the `data.table` output by `PrepareStabData` into a list using the `Outcome` & `Practice` fields then applies `StabCalc`
 #' to each element of the list.
 #'
-#' @param Data *To be described*
-#' @param Do.Weight *To be described*
-#' @param Weight.by.Study *To be described*
-#' @param Rm.Out *To be described*
-#' @param Transform *To be described*
-#' @param Control *To be described*
-#' @param Responses *To be described*
+#' @param Data A data.table output by the `ERAg::PrepareStabData` function
+#' @param Do.Weight logical, if `TRUE` coefficient estimates are weighted acccording to the supplied weightings in the `Data` object supplied(default = T)
+#' @param Weight.by.Study logical, depreciated (default = `T`)
+#' @param Rm.Out logical, if `TRUE` extreme outliers are removed withing each Practice x Outcome combination as per the method detailed in `ERAg::OutCalc` (default = `T`)
+#' @param Transform logical, if `TRUE` back-transformed coefficient estimates and confidence intervals are appended to outputs  (default = `T`)
+#' @param Control list, optional list of control values for the `rma.mv` estimation algorithms. If unspecified, default values are defined inside the function (default = `list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000)`)
+#' @param Responses character vector, this argument is depreciated do edit (default=`c("lnRR","lnVR","lnCVR")`)
 #' @param Use.acv logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).
 #' @return `StabCalc2` returns a `data.table`
 #' Output fields:
@@ -31,15 +31,12 @@ StabCalc2<-function(Data,
 
   Data<-data.table(Data)
 
-  # MYOs at least 3 years long (redundant now this is incorporated into PrepareStabData?)
+  # Ensure at least 3 years long
   Data<-Data[nryears>=3]
   Data<-Data[,N:=.N,by=list(Practice,Outcome)]
-
-  # At least 3 MYOs
   Data<-Data[N>=3]
 
   Data<-split(Data,list(Data$Outcome,Data$Practice))
-
 
   StabStats<-pbapply::pblapply(1:length(Data),FUN=function(i){
     print(i)
