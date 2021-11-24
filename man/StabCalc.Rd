@@ -44,10 +44,10 @@ StabCalc(
 \item\code{Mean.Jen} numeric, back-transformed response variable test coefficient correcting for the Jensen inequality as \code{exp(model$b[,1] + sigma.sq / 2)}
 \item\code{CI.low.Jen} numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality as \code{exp(model$ci.lb[,1] + sigma.sq / 2)}
 \item\code{CI.high.Jen}numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality as \code{exp(model$ci.ub[,1] + sigma.sq / 2)}
-\item\code{Sigma} numeric, estimated σ2 value(s)
-\item\code{Mean.Smear}numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as \code{exp(model$b[,1] * (1 / nobs(model) * sum(exp(resid(model)))))}
-\item\code{CI.low.Smear}numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as \code{exp(model$ci.lb[,1] * (1 / nobs(model) * sum(exp(resid(model)))))}
-\item\code{CI.high.Smear}numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as \code{exp(model$ci.ub[,1] * (1 / nobs(model) * sum(exp(resid(model)))))}
+\item\code{Sigma} numeric, estimated sigma^2 value(s)
+\item\code{Mean.Smear}numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as \verb{exp(model$b[,1] \\* (1 / nobs(model) \\* sum(exp(resid(model)))))}
+\item\code{CI.low.Smear}numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as \verb{exp(model$ci.lb[,1] \\* (1 / nobs(model) \\* sum(exp(resid(model)))))}
+\item\code{CI.high.Smear}numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as \verb{exp(model$ci.ub[,1] \\* (1 / nobs(model) \\* sum(exp(resid(model)))))}
 \item\code{P.Vals} numeric, p-value for test statistic
 \item\code{SE} numeric, standard error of the coefficients
 \item\code{Mean.exp}numeric, back-transformed response variable test coefficient not correcting for the Jensen inequality as \code{exp(model$b[,1])}
@@ -77,7 +77,7 @@ StabCalc(
 \item\code{lnCVR}= model where response variable is \code{lnCVR} = natural log of relative variability ratio
 }
 \item**\verb{[[Tests]]}** A \code{data.table} containing the results of a weighted linear model of form \verb{ln(y) = a + b × ln(x)} where \code{y} is a stability ratio and
-\code{x} is the mean yield ratio. Robust results use a weighted robust linear model, see \link[MASS]{rlm}.
+\code{x} is the mean yield ratio. Robust results use a weighted robust linear model, see \link[MASS]{rlm}
 \itemize{
 \item\code{Estimate} numeric, coefficient estimate
 \item\code{Std.Error}numeric, standard error of the coefficient estimate
@@ -86,7 +86,7 @@ StabCalc(
 \item\code{Coefficient}character, coefficient (intercept or beta)
 \item\code{Variable} character, \code{lnRR} = natural log of response ratio, \code{lnVR} = natural log of absolute variability ratio, \code{lnCVR} = natural log of relative variability ratio see \code{ERAg::PrepareStabData} function for more information.
 \item\code{Robust} logical, when \code{T} robust tests are used, when \code{F} they are not
-\item\code{Sigma.sq} numeric, estimated σ2 value(s)
+\item\code{Sigma.sq} numeric, estimated sigma^2 value(s)
 \item\code{Practice} character, ERA practice
 \item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
@@ -122,9 +122,9 @@ StabCalc(
 \item\code{PSymbol_lnCVR} character, lnCVR \* P<=0.05, \\emph{\} P<=0.01, \\emph{\}\* P<=0.001, N.S. P>0.05.
 \item\code{PSymbol_lnRR} character, lnRR \* P<=0.05, \\emph{\} P<=0.01, \\emph{\}\* P<=0.001, N.S. P>0.05.
 \item\code{PSymbol_lnVR} character, lnVR \* P<=0.05, \\emph{\} P<=0.01, \\emph{\}\* P<=0.001, N.S. P>0.05.
-\item\code{Sigma_lnCVR } numeric, lnCVR estimated σ2 value(s)
-\item\code{Sigma_lnRR } numeric, lnRR estimated σ2 value(s)
-\item\code{Sigma_lnVR } numeric, lnVR estimated σ2 value(s)
+\item\code{Sigma_lnCVR } numeric, lnCVR estimated sigma^2 value(s)
+\item\code{Sigma_lnRR } numeric, lnRR estimated sigma^2 value(s)
+\item\code{Sigma_lnVR } numeric, lnVR estimated sigma^2 value(s)
 \item\code{Practice} character, ERA practice
 \item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
@@ -146,7 +146,7 @@ Natural log ratios are back-transformed with and without a corrections for the J
 \href{https://www.biorxiv.org/content/10.1101/179358v1}{Tandini & Mehrabi 2017} using two methods for back-transformation:
 \enumerate{
 \item \code{exp(fitted(model) + summary(model)$sigma^2 / 2)}  situable for normally distributed data
-\item a smearing estimate as \verb{exp(fitted(model) * (1 / nobs(model) * sum(exp(resid(model))))}
+\item a smearing estimate as \verb{exp(fitted(model) \\* (1 / nobs(model) \\* sum(exp(resid(model))))}
 }
 
 The \code{Tests} output contains the results of a weighted linear model of form \verb{log(y) = a + b × log(x)} where \code{y} is a stability ratio and

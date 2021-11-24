@@ -12,7 +12,7 @@
 #' Natural log ratios are back-transformed with and without a corrections for the Jensen inequality. Corrections are applied as per
 #' \href{https://www.biorxiv.org/content/10.1101/179358v1}{Tandini & Mehrabi 2017} using two methods for back-transformation:
 #' 1) `exp(fitted(model) + summary(model)$sigma^2 / 2)`  situable for normally distributed data
-#' 2) a smearing estimate as `exp(fitted(model) * (1 / nobs(model) * sum(exp(resid(model))))`
+#' 2) a smearing estimate as `exp(fitted(model) \* (1 / nobs(model) \* sum(exp(resid(model))))`
 #'
 #' The `Tests` output contains the results of a weighted linear model of form `log(y) = a + b × log(x)` where `y` is a stability ratio and
 #' `x` is the mean yield ratio. The robust results in this table use a weighted robust linear model, see \link[MASS]{rlm}.
@@ -35,10 +35,10 @@
 #' \item`Mean.Jen` numeric, back-transformed response variable test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
 #' \item`CI.low.Jen` numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
 #' \item`CI.high.Jen`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.ub[,1] + sigma.sq / 2)`
-#' \item`Sigma` numeric, estimated σ2 value(s)
-#' \item`Mean.Smear`numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as `exp(model$b[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
-#' \item`CI.low.Smear`numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.lb[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
-#' \item`CI.high.Smear`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.ub[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`Sigma` numeric, estimated sigma^2 value(s)
+#' \item`Mean.Smear`numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as `exp(model$b[,1] \* (1 / nobs(model) \* sum(exp(resid(model)))))`
+#' \item`CI.low.Smear`numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.lb[,1] \* (1 / nobs(model) \* sum(exp(resid(model)))))`
+#' \item`CI.high.Smear`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.ub[,1] \* (1 / nobs(model) \* sum(exp(resid(model)))))`
 #' \item`P.Vals` numeric, p-value for test statistic
 #' \item`SE` numeric, standard error of the coefficients
 #' \item`Mean.exp`numeric, back-transformed response variable test coefficient not correcting for the Jensen inequality as `exp(model$b[,1])`
@@ -68,7 +68,7 @@
 #' \item`lnCVR`= model where response variable is `lnCVR` = natural log of relative variability ratio
 #' }
 #' \item**`[[Tests]]`** A `data.table` containing the results of a weighted linear model of form `ln(y) = a + b × ln(x)` where `y` is a stability ratio and
-#' `x` is the mean yield ratio. Robust results use a weighted robust linear model, see \link[MASS]{rlm}.
+#' `x` is the mean yield ratio. Robust results use a weighted robust linear model, see \link[MASS]{rlm}
 #' \itemize{
 #' \item`Estimate` numeric, coefficient estimate
 #' \item`Std.Error`numeric, standard error of the coefficient estimate
@@ -77,7 +77,7 @@
 #' \item`Coefficient`character, coefficient (intercept or beta)
 #' \item`Variable` character, `lnRR` = natural log of response ratio, `lnVR` = natural log of absolute variability ratio, `lnCVR` = natural log of relative variability ratio see `ERAg::PrepareStabData` function for more information.
 #' \item`Robust` logical, when `T` robust tests are used, when `F` they are not
-#' \item`Sigma.sq` numeric, estimated σ2 value(s)
+#' \item`Sigma.sq` numeric, estimated sigma^2 value(s)
 #' \item`Practice` character, ERA practice
 #' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
@@ -113,9 +113,9 @@
 #' \item`PSymbol_lnCVR` character, lnCVR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
 #' \item`PSymbol_lnRR` character, lnRR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
 #' \item`PSymbol_lnVR` character, lnVR \* P<=0.05, \*\* P<=0.01, \*\*\* P<=0.001, N.S. P>0.05.
-#' \item`Sigma_lnCVR ` numeric, lnCVR estimated σ2 value(s)
-#' \item`Sigma_lnRR ` numeric, lnRR estimated σ2 value(s)
-#' \item`Sigma_lnVR ` numeric, lnVR estimated σ2 value(s)
+#' \item`Sigma_lnCVR ` numeric, lnCVR estimated sigma^2 value(s)
+#' \item`Sigma_lnRR ` numeric, lnRR estimated sigma^2 value(s)
+#' \item`Sigma_lnVR ` numeric, lnVR estimated sigma^2 value(s)
 #' \item`Practice` character, ERA practice
 #' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
