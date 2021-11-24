@@ -130,6 +130,7 @@ StabCalc(
 \item\code{Outcome} character, ERA outcome
 }
 }
+}
 \description{
 \code{StabCalc} calculates relative and absolute outcome stability for MYOs based on the methods of \href{https://doi.org/10.1038/s41467-018-05956-1}{Knapp \emph{el al.} (2018)}. This
 function is designed for use within the \code{ERAg::StabCalc2} function.

@@ -120,6 +120,7 @@
 #' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
 #' }
+#' }
 #' @export
 #' @importFrom metafor escalc rma.mv
 #' @importFrom Matrix bdiag forceSymmetric
