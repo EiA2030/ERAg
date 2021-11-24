@@ -144,10 +144,10 @@ the models. Cluster-robust tests, confidence intervals, and significance of the 
 Natural log ratios are back-transformed with and without a corrections for the Jensen inequality. Corrections are applied as per
 \href{https://www.biorxiv.org/content/10.1101/179358v1}{Tandini & Mehrabi 2017} using two methods for back-transformation:
 \enumerate{
-\item $$ exp(\tilde{y} + \tilde{\sigma}_\epsilon^2) $$  situable for normally distributed data
+\item \code{exp(fitted(model) + summary(model)$sigma^2 / 2)}  situable for normally distributed data
 \item a smearing estimate as \verb{exp(fitted(model) * (1 / nobs(model) * sum(exp(resid(model))))}
 }
 
-The \code{Tests} output contains the results of a weighted linear model of form $$log(y) = a + b × log(x)$$ where \code{y} is a stability ratio and
+The \code{Tests} output contains the results of a weighted linear model of form \verb{log(y) = a + b × log(x)} where \code{y} is a stability ratio and
 \code{x} is the mean yield ratio. The robust results in this table use a weighted robust linear model, see \link[MASS]{rlm}.
 }

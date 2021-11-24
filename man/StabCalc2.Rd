@@ -17,19 +17,19 @@ StabCalc2(
 )
 }
 \arguments{
-\item{Data}{\emph{To be described}}
+\item{Data}{A data.table output by the \code{ERAg::PrepareStabData} function}
 
-\item{Do.Weight}{\emph{To be described}}
+\item{Do.Weight}{logical, if \code{TRUE} coefficient estimates are weighted acccording to the supplied weightings in the \code{Data} object supplied(default = T)}
 
-\item{Weight.by.Study}{\emph{To be described}}
+\item{Weight.by.Study}{logical, depreciated (default = \code{T})}
 
-\item{Rm.Out}{\emph{To be described}}
+\item{Rm.Out}{logical, if \code{TRUE} extreme outliers are removed withing each Practice x Outcome combination as per the method detailed in \code{ERAg::OutCalc} (default = \code{T})}
 
-\item{Transform}{\emph{To be described}}
+\item{Transform}{logical, if \code{TRUE} back-transformed coefficient estimates and confidence intervals are appended to outputs  (default = \code{T})}
 
-\item{Control}{\emph{To be described}}
+\item{Control}{list, optional list of control values for the \code{rma.mv} estimation algorithms. If unspecified, default values are defined inside the function (default = \code{list(optimizer="optim",optmethod="Nelder-Mead",maxit=10000)})}
 
-\item{Responses}{\emph{To be described}}
+\item{Responses}{character vector, this argument is depreciated do edit (default=\code{c("lnRR","lnVR","lnCVR")})}
 
 \item{Use.acv}{logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).}
 }
