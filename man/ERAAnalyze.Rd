@@ -29,12 +29,16 @@ Output columns when \code{Fast} is \code{TRUE}:
 \item \code{RR} = weighted mean of RR
 \item \code{RR} = weighted median of RR
 \item \code{RR.se} = weighted standard error of RR
+\item \code{RR.CIlow} = lower 95\% confidence interval of RR
+\item \code{RR.CIhigh} = upper 95\% confidence interval of RR
 \item \code{RR.var} = weighted variance of RR
 \item \code{RR.Quantiles05} = weighted quantiles of the RR
 \item \code{PC.Shapiro.Sig} = P-value from a Shapiro-Wilk test of PC
 \item \code{PC} = weighted mean of PC
 \item \code{PC} = weighted median of PC
 \item \code{PC.se} = weighted standard error of PC
+\item \code{PC.CIlow} = lower 95\% confidence interval of PC
+\item \code{PC.CIhigh} = upper 95\% confidence interval of PC
 \item \code{PC.var} = weighted variance of PC
 \item \code{PC.Quantiles05} = weighted quantiles of the PC
 \item \code{PC.pc} = percent change based on PC (\verb{100 x PC - 100})
@@ -46,10 +50,9 @@ Output columns when \code{Fast} is \code{TRUE}:
 \item \code{RR.pc.jen} = \% change based on RR with correction for Jensen inequality (\verb{100 x exp(RR+RR.var/2) - 100})
 \item \code{RR.pc.jen.low} = lower standard error confidence interval of \% change based on RR with correction for Jensen inequality
 \item \code{RR.pc.jen.high} = upper standard error confidence interval of \% change based on RR with correction for Jensen inequality
-}
-
+\item \code{RR.pc.jen.CIlow} = lower 95\% confidence interval of \% change based on RR with correction for Jensen inequality
+\item \code{RR.pc.jen.CIhigh} = upper 95\% standard error confidence interval of \% change based on RR with correction for Jensen inequality
 Where all units are indentical for the grouping variables (row) then the following columns will have values (else they are NA):
-\itemize{
 \item \code{Units} = the unit of recording for an outcome (e.g. kg/ha)
 \item \code{MeanT.Obs} = number of experimental treatment observations
 \item \code{MeanT} = weighted mean of experimental treatment outcome values
@@ -98,6 +101,7 @@ to judge whether values based on mean proportional change, mean response ratio o
 \item \emph{weighted means} use the \link[stats]{weighted.mean} function
 \item \emph{weighted medians} use the \link[spatstat.geom]{weighted.median} function
 \item \emph{weighted standard errors} use the \link[diagis]{weighted_se} function
+\item \emph{95\% confidence intervals} use the \link[stats]{confint} function with \code{method = "Wald"}
 \item \emph{weighted variance} uses the \link[Hmisc]{wtd.stats} \code{wtd.var} function
 \item \emph{weighted quantiles} use the \link[spatstat.geom]{weighted.median} (\code{weighted.quantile}) function with \code{probs=seq(0,1,0.25)}
 }

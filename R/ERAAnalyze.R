@@ -25,6 +25,7 @@
 #'    * *weighted means* use the \link[stats]{weighted.mean} function
 #'    * *weighted medians* use the \link[spatstat.geom]{weighted.median} function
 #'    * *weighted standard errors* use the \link[diagis]{weighted_se} function
+#'    * *95% confidence intervals* use the \link[stats]{confint} function with `method = "Wald"`
 #'    * *weighted variance* uses the \link[Hmisc]{wtd.stats} `wtd.var` function
 #'    * *weighted quantiles* use the \link[spatstat.geom]{weighted.median} (`weighted.quantile`) function with `probs=seq(0,1,0.25)`
 #'
@@ -53,12 +54,16 @@
 #' * `RR` = weighted mean of RR
 #' * `RR` = weighted median of RR
 #' * `RR.se` = weighted standard error of RR
+#' * `RR.CIlow` = lower 95% confidence interval of RR
+#' * `RR.CIhigh` = upper 95% confidence interval of RR
 #' * `RR.var` = weighted variance of RR
 #' * `RR.Quantiles05` = weighted quantiles of the RR
 #' * `PC.Shapiro.Sig` = P-value from a Shapiro-Wilk test of PC
 #' * `PC` = weighted mean of PC
 #' * `PC` = weighted median of PC
 #' * `PC.se` = weighted standard error of PC
+#' * `PC.CIlow` = lower 95% confidence interval of PC
+#' * `PC.CIhigh` = upper 95% confidence interval of PC
 #' * `PC.var` = weighted variance of PC
 #' * `PC.Quantiles05` = weighted quantiles of the PC
 #' * `PC.pc` = percent change based on PC (`100 x PC - 100`)
@@ -70,7 +75,9 @@
 #' * `RR.pc.jen` = % change based on RR with correction for Jensen inequality (`100 x exp(RR+RR.var/2) - 100`)
 #' * `RR.pc.jen.low` = lower standard error confidence interval of % change based on RR with correction for Jensen inequality
 #' * `RR.pc.jen.high` = upper standard error confidence interval of % change based on RR with correction for Jensen inequality
-#'
+#' * `RR.pc.jen.CIlow` = lower 95% confidence interval of % change based on RR with correction for Jensen inequality
+#' * `RR.pc.jen.CIhigh` = upper 95% standard error confidence interval of % change based on RR with correction for Jensen inequality
+#
 #' Where all units are indentical for the grouping variables (row) then the following columns will have values (else they are NA):
 #' * `Units` = the unit of recording for an outcome (e.g. kg/ha)
 #' * `MeanT.Obs` = number of experimental treatment observations
@@ -136,12 +143,16 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               RR=stats::weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
               RR.median=spatstat.geom::weighted.median(log(MeanT/MeanC),Weight.Study,na.rm = T),
               RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
+              RR.CIlow=confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[1],
+              RR.CIhigh=confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[2],
               RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
               RR.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               PC.Shapiro.Sig=round(FunShap(MeanT/MeanC),ROUND),
               PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
               PC.median=spatstat.geom::weighted.median(MeanT/MeanC,Weight.Study,na.rm = T),
               PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
+              PC.CIlow=confint(lm(MeanT/MeanC~1,weights=Weight.Study))[1],
+              PC.CIhigh=confint(lm(MeanT/MeanC~1,weights=Weight.Study))[2],
               PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
               PC.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"}
@@ -154,7 +165,10 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
       ][,RR.pc.se.high:=round(100*exp(RR+RR.se)-100,ROUND)
       ][,RR.pc.jen:=round(100*exp(RR+RR.var/2)-100,ROUND)
       ][,RR.pc.jen.low:=round(100*exp(RR-RR.se+RR.var/2)-100,ROUND)
-      ][,RR.pc.jen.high:=round(100*exp(RR+RR.se+RR.var/2)-100,ROUND)],
+      ][,RR.pc.jen.high:=round(100*exp(RR+RR.se+RR.var/2)-100,ROUND)
+      ][,RR.pc.jen.CIlow:=round(100*exp(RR.CIlow+RR.var/2)-100,ROUND)
+      ][,RR.pc.jen.CIhigh:=round(100*exp(RR.CIhigh+RR.var/2)-100,ROUND)
+      ],
 
       Data[,list(MeanT=mean(MeanT),Rep=mean(Rep,na.rm=T)),by=c(Weight.Group,"TID")
       ][,N.Obs.Study:=.N,by=Weight.Group # Recalculate Weightings by study within observations grouping
@@ -223,11 +237,15 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               RR.median=spatstat.geom::weighted.median(x=log(MeanT/MeanC),w=Weight.Study,na.rm = T),
               RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
               RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
+              RR.CIlow=confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[1],
+              RR.CIhigh=confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[1],
               RR.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(x=log(MeanT/MeanC),w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               PC.Shapiro.Sig=FunShap(MeanT/MeanC),
               PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
               PC.median=spatstat.geom::weighted.median(x=MeanT/MeanC,w=Weight.Study,na.rm = T),
               PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
+              PC.CIlow=confint(lm(MeanT/MeanC~1,weights=Weight.Study))[1],
+              PC.CIhigh=confint(lm(MeanT/MeanC~1,weights=Weight.Study))[1],
               PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
               PC.Quantiles0.25=paste(round(spatstat.geom::weighted.quantile(x=MeanT/MeanC,w=Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|"),
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"},
@@ -283,6 +301,25 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
       round(ExtractModel(ANALYSED.Data[i,RR.lmer][[1]],"RR"),ROUND)
     }))
 
+    RR.CI<-lapply(1:nrow(ANALYSED.Data),FUN=function(i){
+      X<-ANALYSED.Data[i,RR.lmer][[1]]
+      suppressWarnings(
+        if(!is.na(X)){
+          X<-round(confint(X,method="Wald"),ROUND)
+          if(nrow(X)>1){
+            X[3,]
+          }else{
+            X
+          }
+        }else{
+          c(NA,NA)
+        }
+      )
+    })
+
+    XRR.CIhigh<-unlist(lapply(RR.CI,"[",2))
+    XRR.CIlow<-unlist(lapply(RR.CI,"[",1))
+
     PC.Models<-do.call("rbind",lapply(1:nrow(ANALYSED.Data),FUN=function(i){
       round(ExtractModel(ANALYSED.Data[i,PC.lmer][[1]],"PC"),ROUND)
     }))
@@ -302,7 +339,12 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
     ][,RR.pc.jen:=round(100*exp(RR+RR.Sigma2/2)-100,ROUND)
     ][is.na(RR.pc.jen) & !RR.se==0,RR.pc.jen:=round(100*exp(RR+RR.var/2)-100,ROUND)
     ][,RR.pc.jen.high:=round(100*exp(RR+RR.se+RR.Sigma2/2)-100,ROUND)
-    ][is.na(RR.pc.jen.high) & !RR.se==0,RR.pc.jen:=round(100*exp(RR+RR.se+RR.var/2)-100,ROUND)]
+    ][is.na(RR.pc.jen.high) & !RR.se==0,RR.pc.jen:=round(100*exp(RR+RR.se+RR.var/2)-100,ROUND)
+    ][,RR.CIlow:=XRR.CIlow
+    ][,RR.CIhigh:=XRR.CIhigh
+    ][,RR.pc.jen.CIlow:=round(100*exp(RR.CIlow+RR.Sigma2/2)-100,ROUND)
+    ][,RR.pc.jen.CIhigh:=round(100*exp(RR.CIhigh+RR.Sigma2/2)-100,ROUND)]
+
 
     ANALYSED.Data[!is.na(PC.Estimate),PC:=PC.Estimate
     ][!is.na(`PC.Std. Error`),PC.se:=`PC.Std. Error`
