@@ -18,6 +18,83 @@ ERA.Compiled
 \item{Index}{unique row identity}
 \item{Code}{unique publication identity}
 \item{Author}{primary author of the publication}
+\item{Date}{the year of publication}
+\item{Journal}{abbreviation of the journal name}
+\item{DOI}{doi (or url if no doi available) of article. DOI = digital object identifier}
+\item{Country}{country name}
+\item{LatD}{latitude of study location in degrees or decimal degrees, the latter recorded to same accuracy as in publication (or estimated from googlemaps where locations were found from site names/descriptions). For decimal degrees the sign is not recorded here, but in the LatH column instead (all values should be positive)}
+\item{LatM}{latitude: when study locations were reported as degrees and minutes, minutes are recorded in this column}
+\item{LatS}{latitude: when study locations were reported as degrees minutes and seconds, seconds are recorded in this column}
+\item{LatH}{latitude: hemisphere N or S}
+\item{LonD}{longitude of study location in decimcal degrees, recorded to same accuracy as in publication (or estimated from googlemaps where locations were found from site names/descriptions). For decimal degrees the sign is not recorded here, but in the LatH column instead (all values should be positive)}
+\item{LonM}{Longitude of study location: when locations were reported as degrees and minutes, minutes are recorded in this column}
+\item{LonS}{longitude of study location: when locations were reported as degrees minutes and seconds, seconds are recorded in this column}
+\item{LonH}{longitude: hemisphere E or W}
+\item{Lat.Diff}{if the study location is the average of several sites (aggregated spatial location) then the average difference is recorded here. Calculated using minutes as (max(latitude)-min(latitude)+(max(longitude)-min(longitude)/2. This field can used to estimated radius of spatial uncertainty for sites with spatial aggregation.}
+\item{ISO.3166-1.alpha-3}{Standardized country name using ISO.3166-1.alpha-3. This field should be auto filled using the country selected and data in the Levels Tab}
+\item{Site.Type}{one of the following: Farm, Station, Greenhouse, Survey, or Lab. Farm research is conducted in a farmer’s field and can be managed by the farmer or researcher. Station research is conducted in a controlled setting of research station, university or school. Survey research is conducted via interviews that yields quantitative data based on testimonial. Greenhouse is conducted in a greenhouse and is only relevant for studies of greenhouse gas emissions data. Lab studies can include fisheries feeding trials conducted at a small scale in university research labs}
+\item{Site.ID}{free text name to identify the site. Include institution/station name and location or village/town in county/district, but not the country}
+\item{Buffer.Manual}{manual estimation (e.g. from measuring on google earth) in m of the spatial uncertainty for a point location. The site should within an X m radius (the buffer.manual amount) of the point location specified. Unit is meters}
+\item{MAT}{reported mean annual temperature in degrees C. If a range is given, average the values and enter the average. If mean highs and lows are given, they can be averaged to estimate the mean annual temperature}
+\item{MAP}{mean annual precipitation (mm) for the location. This should be a long-term average for more than 10 years of data}
+\item{TAP}{total annual precipitation (mm) for the location in the year corresponding to the outcome data}
+\item{MSP}{mean seasonal precipitation (mm) for the location in the season corresponding to the outcome data. This should be a long-term average from more than 10 years of data}
+\item{TSP}{total seasonal precipitation (mm) for the location in the season corresponding to the outcome data}
+\item{Elevation}{the elevation in meters (m). Provide the mid-point if a range is given}
+\item{Soil.Type}{list the given soil classification/name in lowercase letters. If more than one soil type is given (within the same taxonomic system) enter both separated by a period ‘.’}
+\item{Soil.Classification}{list the taxonomic system used to classify the soil. Choose from (FAO, USDA, other)}
+\item{Soil.Texture}{list the soil texture provided in the text or in tables in lowercase letters. If no texture is named, but \% of sand, silt and clay are given, use the soil texture triangle to estimate soil texture (https://www.nrcs.usda.gov/wps/portal/nrcs/detail/soils/survey/?cid=nrcs142p2_054167)}
+\item{SOC}{soil organic carbon value derived during site characterization}
+\item{SOC.Unit}{units provided for soil organic carbon. Usually either g/kg or \% (also can be density kg/m3 or stocks t/ha)}
+\item{SOC.Depth}{concatenate min (top) and max (bottom) depths user entered with a "-", e.g. 0-10}
+\item{Soil.pH}{soil pH value derived during site characterization}
+\item{Soil.pH.Method}{method used to calculate soil pH}
+\item{Rep}{the number of replicates for the treatments}
+\item{Plot.Size}{the size of the smallest treatment plot unit in m2}
+\item{CID}{a unique identifier (within study) describing a set of management practices that occurred in the control which is used to identify the treatment combinations tested, to allow comparison across outcomes in a paper. A default system of T1, T2, T3, etc. can be used. CID should describe the treatment used as the control for this observation}
+\item{C.Descrip}{(superceded by C.Descrip.Clean column) Free text description of the control treatment}
+\item{C1:Cn}{codes corresponding to all practices used on the control treatment described in C.Descrip. Only one code is placed in each column (see subpractices column of PRACTICES2 tab)}
+\item{C.NI}{amount of inorganic (chemical) nitrogen applied to control plots in kg/ha}
+\item{C.NO}{amount of nitrogen in organic materials (manures or compost, but not residues) applied to control plots, preferably in kg/ha}
+\item{TID}{a unique identifier (within study) describing a set of management practices that occurred in treatment which is used to identify the treatment combinations tested, to allow comparison across outcomes in a paper. A default system of T1, T2, T3, etc. can be used. TID should describe the treatment used as the control for this observation}
+\item{T.Descrip}{(superceded by T.Descrip.Clean column) Free text description of the CSA treatment}
+\item{T1:Tn}{codes corresponding to all practices used on the CSA treatment described in T.Descrip. Only one code is placed in each column (see subpractices column of PRACTICES2 tab)}
+\item{T.NI}{amount of inorganic (chemical) nitrogen (N) applied to CSA treatment in kg/ha}
+\item{T.NO}{amount of nitrogen (N) in organic materials (manures or compost) applied to CSA treatment, preferably in kg/ha}
+\item{Diversity}{name of species in intercrop or rotations including the crop. Dash(-) indicates intercrop and slash (/) indicates a rotation}
+\item{Crop.Var}{commercial name of the crop or animal variety}
+\item{Tree}{Name of tree species used in agroforestry experiments, can be both as an intercrop or as an agroforestry mulch}
+\item{Duration}{length of time the experiment has been ongoing up to the date the data are being reported for in years. In bimodal rainfall systems with multiple growing seasons, seasons are identified by fractions of the year, 0.5, etc. If outcomes are reported in a unimodal rainfall system with one growing season per year, the duration can be equivalent to one year}
+\item{M.Year}{the calendar year the measurement was taken. Seasons in multi-season systems are identified by decimals ‘.1’ or ‘.2’ for the first and second season respectively. When the measurements are average values for more than one year create a decimal for the years covered}
+\item{M.Year.Start}{first year the measurement was taken (YYYY). For yield or similar outcomes this should relate to the harvest year (rather than the planting year)}
+\item{M.Year.End}{this only required for temporally aggregated observations (e.g. a result that has been averaged from crop yields reported from 2000,2001 and 2002)}
+\item{Season.Start}{this only required in areas where there are mutiple growing seasons in a year (e.g., areas with bimodal rainfall or irrigated cropping in dry seasons of a unimodal system)}
+\item{Season.End}{this only required for temporally aggregated observations in areas with more than one growing season (e.g. a result that has been averaged from crop yields reported from 2000 season 1,2001 season 1 and 2002 season 1)}
+\item{Plant.Start}{starting of planting period (dd.mm.yyyy)}
+\item{Plant.End}{end of planting period (dd.mm.yyyy)}
+\item{Harvest.Start}{starting of harvest period (dd.mm.yyyy)}
+\item{Harvest.End}{end of harvest period (dd.mm.yyyy)}
+\item{EU}{the experimental unit (EU) for which experiment outcomes are reported. This usually a crop or animal product. For cookstove papers it may be a cookstove. The EU for soil outcomes should be the crop(s) grown on the soil unless no crops are grown at all. Letters in the code should be lowercase. If the outcome refers to multiple experimental units (e.g. soil outcomes during an intercropping experiment) select all experimental units separated by a period (see EU2 tab)}
+\item{Outcome}{the productivity, resilience, or mitigation outcome indicator that data are being reported on (see OUTCOMES2 tab)}
+\item{Units}{free text description of the units of the data being reported without special characters or formatting}
+\item{MeanC}{the value that corresponds to the control treatment and outcome. Please standard yields to t/ha where appropropriate, keeping as many decimal places as there is data for}
+\item{MeanT}{the value that corresponds to the CSA treatment and outcome. Please standard yields to kg/ha where appropropriate, keeping as many decimal places as there is data for}
+\item{Upper}{the depth for which the MeanC and MeanT correspond for soil properties in cm (lowest depth value = upper, so if you have a depth of 0-20 cm the lowest value = 20)}
+\item{Lower}{the depth for which the MeanC and MeanT correspond for soil properties in cm (highest depth value = lower, so if you have a depth of 0-20 cm the highest value = 0)}
+\item{DataLoc}{the location in the paper where the data can be found. This should be three letters (fig, tab, or txt) in lowercase and a number (for figures and tables) to signify figure, table or text, respectively}
+\item{USD2010.C}{monetary outcomes converted to USD equivalent in 2010 using World Bank CPI figures and exchange rates (see Currency Tab). There are no reliable data for Zimbabwe}
+\item{USD2010.T}{monetary outcomes converted to USD equivalent in 2010 using World Bank CPI figures and exchange rates (see Currency Tab). There are no reliable data for Zimbabwe}
+\item{T.Descrip.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
+\item{C.Descrip.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
+\item{Variety.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
+\item{Tree.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
+\item{Diversity.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
+\item{MeanFlip}{is a negative result considered better than a positive result (i.e. MeanT/MeanC <1 = good)? This is indexed in using the Outcode field in the compednium and the "Negative Values" field in the OUTCOMES tab}
+\item{T.Feed.Source}{where were livestock diets in the treatment practice(s) sourced from?}
+\item{C.Feed.Source}{Where were livestock diets in the control practice(s) sourced from?}
+\item{Species}{}
+\iten{Partial.Outcome.Name}{}
+\item{Partial.Outcome.Code}{}
 ...
 }
 }

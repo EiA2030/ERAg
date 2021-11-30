@@ -5,7 +5,7 @@
 \alias{PracticeCodes}
 \title{Practice Codes}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 174 rows and 14 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 155 rows and 11 columns.
 }
 \source{
 \emph{To be added}
@@ -23,6 +23,9 @@ PracticeCodes
 \item{Subpractice}{concepts in the lowest and most detailed level of the practice hierarchy. Subpractice is nested under practice.}
 \item{Subpractice.Code}{short code corresponding to the subpractice name for use in plotting}
 \item{Subpractice.S}{shorter name for subpractice}
+\item{Subpractice.Suffix}{suffix for the subpractice}
+\item{Definition}{description of Subpractice}
+\item{Notes}{free text used to clarify the defition of the practice}
 ...
 }
 }
