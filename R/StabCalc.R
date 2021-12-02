@@ -34,21 +34,21 @@
 #' \item*`CI.high` numeric, response variable test coefficient upper confidence limit see \link[metafor]{confint.rma}
 #' \item`Mean.Jen` numeric, back-transformed response variable test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
 #' \item`CI.low.Jen` numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
-#' \item`CI.high.Jen`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.ub[,1] + sigma.sq / 2)`
+#' \item`CI.high.Jen` numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.ub[,1] + sigma.sq / 2)`
 #' \item`Sigma` numeric, estimated sigma^2 value(s)
-#' \item`Mean.Smear`numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as `exp(model$b[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
-#' \item`CI.low.Smear`numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.lb[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
-#' \item`CI.high.Smear`numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.ub[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`Mean.Smear` numeric, back-transformed response variable test coefficient correcting for the Jensen inequality using the Smearing estimate as `exp(model$b[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`CI.low.Smear` numeric, back-transformed response variable test coefficient lower confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.lb[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
+#' \item`CI.high.Smear` numeric, back-transformed response variable test coefficient upper confidence limit correcting for the Jensen inequality using the Smearing estimate as `exp(model$ci.ub[,1] * (1 / nobs(model) * sum(exp(resid(model)))))`
 #' \item`P.Vals` numeric, p-value for test statistic
 #' \item`SE` numeric, standard error of the coefficients
-#' \item`Mean.exp`numeric, back-transformed response variable test coefficient not correcting for the Jensen inequality as `exp(model$b[,1])`
+#' \item`Mean.exp` numeric, back-transformed response variable test coefficient not correcting for the Jensen inequality as `exp(model$b[,1])`
 #' \item`CI.low.exp` numeric, back-transformed response variable test coefficient lower confidence limit not correcting for the Jensen inequality as `exp(model$ci.lb[,1])`
-#' \item`CI.high.exp`numeric, back-transformed response variable test coefficient upper confidence limit not correcting for the Jensen inequality as `exp(model$ci.ub[,1])`
+#' \item`CI.high.exp` numeric, back-transformed response variable test coefficient upper confidence limit not correcting for the Jensen inequality as `exp(model$ci.ub[,1])`
 #' \item`Z.val` numeric, test statistic of the coefficient
 #' \item`Model` numeric, test used to generate test statistics and confidence intervals `rma.mv` =  Multivariate/Multilevel Linear (Mixed-Effects) Model see \link[metafor]{rma.mv} or `robust.rma` = Cluster-Robust Tests and Confidence Intervals for 'rma' objects see  \link[metafor]{robust}
 #' \item`Robust` logical, when `T` robust tests are used, when `F` they are not
-#' \item`Response`character, `lnRR` = natural log of response ratio, `lnVR` = natural log of absolute variability ratio, `lnCVR` = natural log of relative variability ratio see `ERAg::PrepareStabData` function for more information.
-#' \item`N.Studies`integer, number of studies contributing to the analysis
+#' \item`Response` character, `lnRR` = natural log of response ratio, `lnVR` = natural log of absolute variability ratio, `lnCVR` = natural log of relative variability ratio see `ERAg::PrepareStabData` function for more information.
+#' \item`N.Studies` integer, number of studies contributing to the analysis
 #' \item`N.Seq` integer, number of unique temporal sequences contributing to the analysis
 #' \item`N.Obs`  integer, depreciated field
 #' \item`Practice` character, ERA practice
@@ -101,6 +101,15 @@
 #' \item`Mean.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
 #' \item`Mean.Jen_lnRR` numeric, back-transformed lnRR test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
 #' \item`Mean.Jen_lnVR` numeric, back-transformed lnVR test coefficient correcting for the Jensen inequality as `exp(model$b[,1] + sigma.sq / 2)`
+#' \item`SE_lnCVR` numeric, standard error of lnCVR test coefficient
+#' \item`SE_lnRR` numeric, standard error of lnRR test coefficient
+#' \item`SE_lnVR` numeric, standard error of lnVR test coefficient
+#' \item`CI.low_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
+#' \item`CI.high_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
+#' \item`CI.low_lnRR` numeric, back-transformed lnRR test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
+#' \item`CI.high_lnRR` numeric, back-transformed lnRR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
+#' \item`CI.low_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
+#' \item`CI.high_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
 #' \item`CI.low.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
 #' \item`CI.high.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
 #' \item`CI.low.Jen_lnRR` numeric, back-transformed lnRR test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
