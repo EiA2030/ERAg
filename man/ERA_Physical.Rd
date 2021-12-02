@@ -8,7 +8,7 @@
 An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1541 rows and 20 columns.
 }
 \source{
-\emph{to be added}
+Void filled Aster GDEM version 2 downloaded from http://www.viewfinderpanoramas.org/Coverage\%20map\%20viewfinderpanoramas_org3.htm
 }
 \usage{
 ERA_Physical

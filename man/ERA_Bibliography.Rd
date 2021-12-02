@@ -8,7 +8,7 @@
 An object of class \code{data.table} (inherits from \code{data.frame}) with 2147 rows and 16 columns.
 }
 \source{
-\emph{To be added}
+ERA Project Team (2021)
 }
 \usage{
 ERA_Bibliography

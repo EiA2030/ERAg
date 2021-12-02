@@ -8,13 +8,13 @@
 An object of class \code{data.table} (inherits from \code{data.frame}) with 155 rows and 11 columns.
 }
 \source{
-\emph{To be added}
+ERA Project Team (2021)
 }
 \usage{
 PracticeCodes
 }
 \description{
-\describe{ The organizational hierarchy of improved farming practice concepts considered in ERA and their descriptions.
+\describe{The organizational hierarchy of improved farming practice concepts considered in ERA and their descriptions.
 \item{Code}{unique alpha numeric code}
 \item{Theme}{concepts in the highest level in the practice hierarchy}
 \item{Theme.Code}{currently a duplicate of theme}

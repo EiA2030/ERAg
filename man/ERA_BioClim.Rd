@@ -14,7 +14,7 @@ https://www.worldclim.org/data/bioclim.html version 2.1 climate data for 1970-20
 ERA_BioClim
 }
 \description{
-\describe{There are  19 “bioclimatic” variables which are derived from the monthly temperature and rainfall values in order to generate biologically meaningful variables.
+\describe{There are  19 bioclimatic variables which are derived from the monthly temperature and rainfall values in order to generate biologically meaningful variables.
 These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual
 trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or
 limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter

@@ -8,7 +8,7 @@
 An object of class \code{data.table} (inherits from \code{data.frame}) with 355 rows and 20 columns.
 }
 \source{
-\emph{To be added}
+ERA Project Team (2021)
 }
 \usage{
 EUCodes
@@ -33,7 +33,7 @@ EUCodes
 \item{Mulched}{ERA mulch code based on the nitrogen fixing properties specified in Nfix. NA for animal products}
 \item{Incorp}{ERA mulch incorporated code based on the nitrogen fixing properties specified in Nfix. NA for animal products}
 \item{Unknown.Fate}{ERA code for unknown fate of the crop biomass. NA for animal products}
-\item{ECOCROP.Name}{scientific name of the product exported from FAO's crop model Ecocrop}
+\item{ECOCROP.Name}{scientific name of the product exported from FAO's crop model- Ecocrop}
 \item{ECOCROP.Notes}{free text to clarify andy details in ECOCROP.Name}
 ...
 }

@@ -8,7 +8,7 @@
 An object of class \code{data.table} (inherits from \code{data.frame}) with 102 rows and 17 columns.
 }
 \source{
-\emph{To be added}
+ERA Project Team (2021)
 }
 \usage{
 OutcomeCodes
