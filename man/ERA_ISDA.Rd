@@ -14,9 +14,19 @@ ISDA: https://www.isda-africa.com/isdasoil/  African Soil and Agronomy Data Cube
 ERA_ISDA
 }
 \description{
-
+\describe{
+Using the  African Soil and Agronomy Data Cube ISDA soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
+uncertainty. Variable information & descriptions can be found on the African Soil and Agronomy Data Cube website.
+\item{Median}{median value of the soil variable}
+\item{Mean}{mean value of the soil variable}
+\item{SD}{standard deviation of the soil variable}
+\item{Mode}{mode value of the soil variable}
+\item{Sum}{sum of the soil variable}
+\item{Ncells}{number of ISDA cells within buffer}
+\item{NAcells}{number of NA ISDA cells within buffer}
+\item{Variable}{soil variables including the soil depth. Variable include bulk density, soil pH, sand, silt and clay content etc}
+\item{Site.Key}{longitude, latitude and buffer for the site}
+...
 }
-\details{
-
 }
 \keyword{datasets}

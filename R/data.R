@@ -186,8 +186,7 @@
 #' ERA_Search_Terms
 #'
 #'  \describe{
-#'    \item{Database}{Scopus and WoS (Web of Science)  are abstract and citation database of peer-reviewed literature:
-#'     scientific journals, books and conference proceedings. Scopus: https://www.scopus.com/home.uri; WoS: https://www.webofscience.com/wos/alldb/basic-search}
+#'    \item{Database}{Scopus and WoS (Web of Science) are abstract and citation database of peer-reviewed literature, scientific journals, books and conference proceedings. Scopus: https://www.scopus.com/home.uri; WoS: https://www.webofscience.com/wos/alldb/basic-search}
 #'    \item{Topic}{topic is the high level focal concept that the search focusses on, we have practices (list in parenthesis), outcomes (list in parenthesis) and geographic region}
 #'    \item{Keywords}{keywords used in the peer-reviewed literature}
 #'    \item{Date}{the year of publication}
@@ -281,8 +280,6 @@
 #'   \item{NAcells}{number of NA ISDA cells within buffer}
 #'   \item{Variable}{soil variables including the soil depth. Variable include bulk density, soil pH, sand, silt and clay content etc}
 #'   \item{Site.Key}{longitude, latitude and buffer for the site}
-#'
-#'
 #'   ...
 #' }
 #' @source ISDA: https://www.isda-africa.com/isdasoil/  African Soil and Agronomy Data Cube: https://gitlab.com/openlandmap/africa-soil-and-agronomy-data-cube.
