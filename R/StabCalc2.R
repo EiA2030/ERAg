@@ -43,7 +43,6 @@ StabCalc2<-function(Data,
   Data<-split(Data,list(Data$Outcome,Data$Practice))
 
   StabStats<-pbapply::pblapply(1:length(Data),FUN=function(i){
-    print(i)
     DATA<-Data[[i]]
     X<-StabCalc(Data=DATA,
                 Do.Weight=Do.Weight,

@@ -127,11 +127,11 @@ PrepareStabData<-function(Data,OutCodes=101){
 
   # Calculate Adjusted Coefficent of Variation
   X<-unique(Data[,list(UID.C,yieldcont,varcont,Outcome)])
-  X[,acv:=metan::acv(yieldcont,varcont)[,"acv"],by=Outcome]
+  suppressWarnings(X[,acv:=metan::acv(yieldcont,varcont)[,"acv"],by=Outcome])
   Data[,acvcont:=X[match(Data[,UID.C],UID.C),acv]]
 
   Y<-unique(Data[,list(UID.T,yieldexp,varexp,Outcome)])
-  Y[,acv:=metan::acv(yieldexp,varexp)[,"acv"],by=Outcome]
+  suppressWarnings(Y[,acv:=metan::acv(yieldexp,varexp)[,"acv"],by=Outcome])
   Data[,acvexp:=Y[match(Data[,UID.T],UID.T),acv]]
 
   Data[,acvratio:=acvexp/acvcont]
