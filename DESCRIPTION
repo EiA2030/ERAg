@@ -1,6 +1,6 @@
 Package: ERAg
 Title: Evidence for Resilient Agriculture Tools
-Version: 0.0.1.0000
+Version: 0.0.1.1
 Authors@R: c(
     person(given = "Peter",
            family = "Steward",
@@ -19,7 +19,7 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Depends:  R (>= 2.10),
+Depends: R (>= 2.10),
           data.table
 Imports: broom,
          circular,
@@ -61,6 +61,3 @@ Suggests: BiocStyle,
           rworldxtra,
           terra
 Maintainer: Pete Steward <p.steward@cgiar.org>
-          
-
-
