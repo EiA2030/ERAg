@@ -387,9 +387,9 @@ ERA.Yields<-cbind(ERA.Yields,ERAg::AddEcoCrop(Products = ERA.Yields[,Product]))
 
 ### Prepare Climate dataset
 Here we:  
-1) replace the rainfall data in the POWER agroclimatology data with the superior data provided by CHIRPS  
-2) calculate Penman-Montieth reference evapotranspiration (ETo) in case this has not already been derived  
-3) ensure fields are correct classes.  
+1) Replace the rainfall data in the POWER agroclimatology data with the superior data provided by CHIRPS;  
+2) Calculate Penman-Montieth reference evapotranspiration (ETo) in case this has not already been derived;  
+3) Ensure fields are correct classes.  
 
 Note that you can also download this dataset pre-prepared as `POWER.CHIRPS.RData` using the piggyback method.  
 
@@ -489,7 +489,7 @@ EcoCrop data for crop cycle length estimates (how long a crop takes to grow) can
   N1<-which(!is.na(N))
   ERA.Yields$cycle_min[N1]<-B$SLEN.med[N[N1]]
   ERA.Yields$cycle_max[N1]<-B$SLEN.med[N[N1]]
-
+  
 ```
 
 ### Refine uncertain planting dates using rainfall data
