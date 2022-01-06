@@ -205,6 +205,12 @@ CalcClimate<-function(DATA,
                       ROUND=5){
 
   DATA<-data.table(DATA)
+
+  DATA[Season.Start==1 & Season.End==1,M.Year.Code:="1"
+  ][Season.Start==2 & Season.End==2,M.Year.Code:="2"
+  ][Season.Start==1 & Season.End==2,M.Year.Code:="1&2"
+  ][M.Year=="",M.Year:=NA]
+
   CLIMATE<-data.table(CLIMATE)
 
   if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){

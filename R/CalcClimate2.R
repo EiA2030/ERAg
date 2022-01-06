@@ -228,6 +228,16 @@ CalcClimate2<-function(DATA,
                        ROUND=5){
 
   DATA<-data.table(DATA)
+
+  # Add Season Code
+  DATA[Season.Start==1 & Season.End==1,M.Year.Code:="1"
+  ][Season.Start==2 & Season.End==2,M.Year.Code:="2"
+  ][Season.Start==1 & Season.End==2,M.Year.Code:="1&2"
+  ][M.Year=="",M.Year:=NA]
+
+  # Remove any rows with blank products
+  DATA<-DATA[Product!=""]
+
   CLIMATE<-data.table(CLIMATE)
 
   if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
