@@ -11,7 +11,9 @@
 #' If Latitude + Longitude combinations have a mixture of season = 1 or 2 and season = NA values this suggests a potential issue
 #' with the consistency of temporal recording at the spatial coordinates. Observations with such issues are excluded from the analysis and flagged in
 #' the output `[[Season.Issues]]` list object.
-#
+#'
+#' Observation with irrigation in the control and treatment are removed from consideration as these will not have realistic planting dates for rainfed areas.
+#'
 #' @param DATA An ERA dataset (e.g. `ERA.Compiled`)
 #' @return A list of two elements is returned:
 #' 1) `[[DATA]]` a data.table where the following fields are appended to the input dataset:
@@ -35,7 +37,8 @@ EstPDayData<-function(DATA){
   ][,Plant.End:=as.Date(Plant.End,"%d.%m.%Y")
   ][,Data.PS.Date:=as.Date(NA)][,Data.PE.Date:=as.Date(NA)]
 
-  Exists<-unique(DATA[!is.na(Plant.Start),list(Plant.Start,Plant.End,Latitude,Longitude,Product.Simple,M.Year.Start,M.Year.End,Season.Start,Season.End)])
+  # Find observations in the data with planting dates removing any observations that are irrigated in control and treatment.
+  Exists<-unique(DATA[!is.na(Plant.Start) & !(Irrigation.C & Irrigation.T),list(Plant.Start,Plant.End,Latitude,Longitude,Product.Simple,M.Year.Start,M.Year.End,Season.Start,Season.End)])
   Exists<-Exists[,list(PS.Mean=mean(Plant.Start,na.rm=T),
                        PS.Median=as.Date(median(Plant.Start,na.rm=T)),
                        PE.Mean=mean(Plant.End,na.rm=T),

@@ -34,4 +34,6 @@ on \code{Product.Subtype} (e.g. cereals or legumes).
 If Latitude + Longitude combinations have a mixture of season = 1 or 2 and season = NA values this suggests a potential issue
 with the consistency of temporal recording at the spatial coordinates. Observations with such issues are excluded from the analysis and flagged in
 the output \verb{[[Season.Issues]]} list object.
+
+Observation with irrigation in the control and treatment are removed from consideration as these will not have realistic planting dates for rainfed areas.
 }
