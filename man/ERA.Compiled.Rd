@@ -5,7 +5,7 @@
 \alias{ERA.Compiled}
 \title{The compiled ERA dataset}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 105065 rows and 144 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 105009 rows and 146 columns.
 }
 \source{
 ERA Project Team (2021)
