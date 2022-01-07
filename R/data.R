@@ -1,4 +1,4 @@
-#' The compiled ERA dataset
+#' The compiled ERA dataset (version = Comb 2021.11.23 2022.01.07)
 #'
 #' \describe{
 #'   \item{Index}{unique row identity}
@@ -86,7 +86,7 @@
 #' @source ERA Project Team (2021)
 "ERA.Compiled"
 #'
-#' Practice Codes
+#' Practice Codes (version 06.09.2021)
 #'
 #' \describe{The organizational hierarchy of improved farming practice concepts considered in ERA and their descriptions.
 #'   \item{Code}{unique alpha numeric code}
@@ -105,7 +105,7 @@
 #' @source ERA Project Team (2021)
 "PracticeCodes"
 #'
-#' Outcome Codes
+#' Outcome Codes (Version 03.05.2021")
 #'
 #' \describe{The organizational hierarchy of outcomes considered in ERA and their descriptions.
 #'   \item{Code}{unique alpha numeric code}
@@ -130,7 +130,7 @@
 #' @source ERA Project Team (2021)
 "OutcomeCodes"
 #'
-#' EU Codes
+#' EU Codes (28.10.2021)
 #'
 #' \describe{The organizational hierarchy of experimental units considered in ERA and their descriptions.
 #'   \item{EU}{unique alpha numeric code}
