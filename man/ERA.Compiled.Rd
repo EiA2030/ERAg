@@ -3,9 +3,9 @@
 \docType{data}
 \name{ERA.Compiled}
 \alias{ERA.Compiled}
-\title{The compiled ERA dataset}
+\title{The compiled ERA dataset (version = Comb 2021.11.23 2022.01.07)}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 105009 rows and 146 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 105589 rows and 146 columns.
 }
 \source{
 ERA Project Team (2021)

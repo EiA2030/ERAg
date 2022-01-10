@@ -3,7 +3,7 @@
 \docType{data}
 \name{PracticeCodes}
 \alias{PracticeCodes}
-\title{Practice Codes}
+\title{Practice Codes (version 06.09.2021)}
 \format{
 An object of class \code{data.table} (inherits from \code{data.frame}) with 155 rows and 11 columns.
 }

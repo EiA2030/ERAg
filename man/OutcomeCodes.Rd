@@ -3,7 +3,7 @@
 \docType{data}
 \name{OutcomeCodes}
 \alias{OutcomeCodes}
-\title{Outcome Codes}
+\title{Outcome Codes (Version 03.05.2021")}
 \format{
 An object of class \code{data.table} (inherits from \code{data.frame}) with 102 rows and 17 columns.
 }
