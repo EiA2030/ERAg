@@ -502,6 +502,7 @@ CalcClimate2<-function(DATA,
         Tmax.range=diff(range(Tmax)),
 
         Tmean.max=max(Tmean),
+        Tmean.min=min(Tmean),
         Tmean.mean=mean(Tmean),
         Tmean.var=var(Tmean),
         Tmean.sd=sd(Tmean),
@@ -650,8 +651,6 @@ CalcClimate2<-function(DATA,
     MissingLines<-NULL
     S.existing<-NULL
 
-    # Create vector sites in dataset
-    Sites<-as.vector(unlist(unique(SS[,..ID])))
 
     if(nrow(SS)>0){
 
@@ -686,8 +685,10 @@ CalcClimate2<-function(DATA,
         SS<-SS[!Site.Key %in% MissingRain]
       }
 
-      MCode.SS<-apply(SS[,c(..ID,"EU","P.Date.Merge","M.Year")],1,paste,collapse="_")
+      # Create vector sites in dataset
+      Sites<-as.vector(unlist(unique(SS[,..ID])))
 
+      MCode.SS<-apply(SS[,c(..ID,"EU","P.Date.Merge","M.Year")],1,paste,collapse="_")
 
       # Determine years for which complete data is available (only to be used for annual calcs., e.g. BIOCLIM)
       Years<-table(CLIMATE[[1]]$Year)
