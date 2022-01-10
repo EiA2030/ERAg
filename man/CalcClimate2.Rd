@@ -8,11 +8,18 @@ CalcClimate2(
   DATA,
   CLIMATE,
   ID,
+  LoadExisting = T,
   Rain.Data.Name,
   Temp.Data.Name,
   Rain.Windows = c(6 * 7, 4 * 7, 2 * 7, 2 * 7),
-  Widths = c(3, 3, 2, 2),
-  Rain.Threshold = c(30, 30, 20, 15),
+  Rain.Window.Widths = c(3, 3, 2, 2),
+  Rain.Window.Threshold = c(30, 30, 20, 15),
+  Temp.Threshold = data.table(Threshold = c(20, 30, 35), Direction = c("lower",
+    "higher", "higher")),
+  TSeqLen = c(5, 10, 20),
+  Rain.Threshold = data.table(Threshold = c(0.1, 1, 5), Direction = c("lower", "lower",
+    "lower")),
+  RSeqLen = c(5, 10, 20),
   Win.Start = 1,
   Do.LT.Avg = T,
   Max.LT.Avg = 2010,
@@ -22,7 +29,8 @@ CalcClimate2(
   ErrorDir = "Climate Stats/Errors/",
   Exclude.EC.Diff = F,
   EC.Diff = 0.6,
-  ROUND = 5
+  ROUND = 5,
+  DebugMode = T
 )
 }
 \arguments{
@@ -34,6 +42,8 @@ named \code{Date}; and 7) location identity as per \code{ID} argument and named 
 
 \item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided}
 
+\item{LoadExisting}{Logical \code{T/F}; If the analysis has already been conducted given the parameters supplied then setting this parameter to \code{T} will load the pre-existing data.}
+
 \item{Rain.Data.Name}{A character vector of length one containing the name of the rainfall dataset in \code{CLIMATE}, this must be the same has the rainfall data used when preparing \code{DATA} using
 the \code{EstPDayRain} function. This can be the same as \code{Temp.Data.Name}.}
 
@@ -42,14 +52,26 @@ the \code{EstPDayRain} function. This can be the same as \code{Temp.Data.Name}.}
 \item{Rain.Windows}{An integer vector; the width in days of four temporal windows within which rainfall is assessed for potential planting dates. The first
 value in the series specifies a period before the planting date, then subsequent values define three consecutive windows after the planting date.}
 
-\item{Widths}{An integer vector of length equivalent to length(\code{Window}); the width of the scanning window in days within which rainfall is summed for
+\item{Rain.Window.Widths}{An integer vector of length equivalent to length(\code{Window}); the width of the scanning window in days within which rainfall is summed for
 the corresponding \code{Rain.Windows} entry.}
 
-\item{Rain.Threshold}{An integer vector of length equivalent to length(\code{Rain.Windows}); the amount of rainfall that has to fall in the temporal windows considered.}
+\item{Rain.Window.Threshold}{An integer vector of length equivalent to length(\code{Rain.Windows}); the amount of rainfall that has to fall in the temporal windows considered.}
+
+\item{Temp.Threshold}{A data.table with two fields. The \code{Threshold} field must contain integer values of max or min temperatures, for a given day in a climate window if these thresholds are exceeded then
+the day is counted towards the relevant climate statistics. The \code{Direction} field should be of class character and contain only the values \code{higher} or \code{lower} corresponding to the direction of exceedance for the thresholds provided in in the \code{Thresholds} field. For example,
+if row 1 is \code{30} and \code{higher} then days where the max temperature is >30 will be counted. Similarly if row 2 is \code{20} and \code{lower} then days where the min temperature is <20 will be counted.}
+
+\item{TSeqLen}{A integer vector of sequence lengths (days). For each row of \code{Temp.Threshold} (\code{i}) and each value of \code{TSeqLen} (\code{j}) the number of consecutive day sequences where \code{Temp.Threshold[i]} is exceeded for \code{TSeqLen[j]} days or more is calculated.}
+
+\item{Rain.Threshold}{A data.table with two fields. The \code{Threshold} field must contain integer values of rainfall, for a given day in a climate window if these thresholds are exceeded then
+the day is counted towards the relevant climate statistics. The \code{Direction} field should be of class character and contain only the values \code{higher} or \code{lower} corresponding to the direction of exceedance for the thresholds provided in in the \code{Thresholds} field. For example,
+if row 1 is \code{1} and \code{ower} then days where rainfall is <1 will be counted.}
+
+\item{RSeqLen}{A integer vector of sequence lengths (days). For each row of \code{Rain.Threshold} (\code{i}) and each value of \code{RSeqLen} (\code{j}) the number of consecutive day sequences where \code{Rain.Threshold[i]} is exceeded for \code{TSeqLen[j]} days or more is calculated.}
 
 \item{Win.Start}{Integer value of length one; when should the window for climate calculations begin relative to the planting date (estimated or reported) in days? for example: 0 = day of planting, -1 = one day before planting, +1 = one day after planting.}
 
-\item{Do.LT.Avg}{Logical \code{T/F;} if \code{T} long term averages and deviances are calculated.}
+\item{Do.LT.Avg}{Logical \code{T/F}; if \code{T} long term averages and deviances are calculated.}
 
 \item{Max.LT.Avg}{Integer of length one only relevant if \code{Do.LT.Avg==T}; maximum year considered when calculating long-term averages.}
 
@@ -68,63 +90,47 @@ For example \code{data.table(Name="Plant.1-30",Start=1,End=30)} is a temporal pe
 If \code{Exclude.EC.Diff==T} and \code{abs(Reported.Season.Length-EcoCrop.Season.Length)/EcoCrop.Season.Length>EC.Diff} then observations are excluded from analysis.}
 
 \item{ROUND}{An integer vector of length one indicating the number of decimal places to round output values to.}
+
+\item{DebugMode}{Logical \code{T/F}; if \code{T} function progress is shown line by line in the consule, if \code{F} progress is kept to a single line and continously overwritten.}
 }
 \value{
 A list is output containing following data.tables:
 \enumerate{
-\item \strong{\verb{[[Observed]]}} = a \code{data.table} of seasonal climate statistics with the fields:
+\item \strong{\verb{[[Observed]]}} = a \code{data.table} of seasonal climate statistics. Characters in parenthesis indicate SI units
 \itemize{
 \item\code{GDDlow} growing degree hours below optimal EcoCrop temperature threshold (h)
 \item\code{GDDopt} growing degree hours within optimal EcoCrop temperature thresholds (h)
 \item\code{GDDhigh} growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)
 \item\code{GDDmax} growing degree hours above EcoCrop maximum temperature threshold (h)
-\item\code{Rain.Days.L0} total number of days with 0 mm rainfall (d)
-\item\code{Rain.Days.L1} total number of days with less than 1 mm rainfall (d)
-\item\code{Rain.Days.L5} total number of days with less than 5 mm rainfall (d)
-\item\code{Rain.Max.RSeq.L0} longest continuous period of days with 0 mm rainfall (d)
-\item\code{Rain.Max.RSeq.L0.1} longest continuous period of days with less than 0.1 mm rainfall (d)
-\item\code{Rain.Max.RSeq.L1} longest continuous period of days with less than 1 mm rainfall (d)
-\item\code{Rain.Max.RSeq.L5} longest continuous period of days with less than 5 mm rainfall (d)
-\item\code{Rain.N.RSeq.TL0.D7} number of continuous periods of 7 days or more of 0 mm rainfall
-\item\code{Rain.N.RSeq.TL1.D7} number of continuous periods of 7 days or more of less than 1 mm rainfall
-\item\code{Rain.N.RSeq.TL5.D7} number of continuous periods of 7 days or more of less than 5 mm rainfall
-\item\code{Rain.N.RSeq.TL0.D14} number of continuous periods of 14 days or more of 0 mm rainfall
-\item\code{Rain.N.RSeq.TL1.D14} number of continuous periods of 14 days or more of less than 1 mm rainfall
-\item\code{Rain.N.RSeq.TL5.D14} number of continuous periods of 14 days or more of less than 5 mm rainfall
-\item\code{Rain.N.RSeq.TL0.D21} number of continuous periods of 21 days or more of 0 mm rainfall
-\item\code{Rain.N.RSeq.TL1.D21} number of continuous periods of 21 days or more of less than 1 mm rainfall
-\item\code{Rain.N.RSeq.TL5.D21} number of continuous periods of 21 days or more of less than 5 mm rainfall
+\item\code{Rain.L#.Days} or \code{Rain.G#.Days} total number of days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per parameters specified in \code{Rain.Threshold} (d)
+\item\code{Rain.L#.Days.Pr} or \code{Rain.G#.Days.Pr} as per above, but divided by total length of climate window (d)
+\item\code{Rain.L#.Max.RSeq} or \code{Rain.G#.Max.RSeq} longest continuous period of days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per parameters specified in \code{Rain.Threshold} (d)
+\item\code{Rain.L#.N.RSeq.D#} or \code{Rain.G#.N.RSeq.D#} number of continuous periods of \code{RSeq.D#} days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per parameters specified in \code{Rain.Threshold} (d)
 \item\code{Rain.sum} total rainfall (mm)
 \item\code{ETo.sum} summed Penman-Monteith reference evapotranspiration (mm)
 \item\code{ETo.NA} number of NA values in Penman-Monteith reference evapotranspiration
 \item\code{WBalance} \code{Rain.sum-ETo.sum} difference between rainfall and reference evapotranspiration (mm)
-\item\code{Tmax.mean} mean of daily maximum temperatures (C)
-\item\code{Tmin.Days.TL20}total number of days with min temp less than 20C (d)
-\item\code{Tmax.Days.TG35}total number of days with max temp greater than 35C (d)
-\item\code{Tmax.Days.TG30}total number of days with max temp greater than 30C (d)
-\item\code{Tmin.Max.RSeq.TL20} longest continuous period of days with min temp less than 20C (d)
-\item\code{Tmax.Max.RSeq.TG35}longest continuous period of days with max temp greater than 35C (d)
-\item\code{Tmax.Max.RSeq.TG30}longest continuous period of days with max temp greater than 30C (d)
-\item\code{Tmin.N.RSeq.TL20.D5}number of continuous periods of 5 days or more with min temp less than 20C
-\item\code{Tmin.N.RSeq.TL20.D10}number of continuous periods of 10 days or more with min temp less than 20C
-\item\code{Tmin.N.RSeq.TL20.D20}number of continuous periods of 20 days or more with min temp less than 20C
-\item\code{Tmax.N.RSeq.TG30.D5}number of continuous periods of 5 days or more with max temp greater than 30C
-\item\code{Tmax.N.RSeq.TG30.D10}number of continuous periods of 10 days or more with max temp greater than 30C
-\item\code{Tmax.N.RSeq.TG30.D20}number of continuous periods of 20 days or more with max temp greater than 30C
-\item\code{Tmax.N.RSeq.TG35.D5} number of continuous periods of 5 days or more with max temp greater than 35C
-\item\code{Tmax.N.RSeq.TG35.D10} number of continuous periods of 10 days or more with max temp greater than 35C
-\item\code{Tmax.N.RSeq.TG35.D20} number of continuous periods of 20 days or more with max temp greater than 35C
+\item\code{WBalance.NegDays} \code{sum((Rain-ETo)<0)} the number of days where the difference between rainfall and reference evapotranspiration (mm) is negative (d)
+\item\code{Tmin.L#.Days} or \code{Tmax.G#.Days} total number of days with minimum temperatures less than \code{Tmin.L#} or maximum temperatures greater than \code{Tmax.G#} as per parameters specified in \code{Temp.Threshold} (d)
+\item\code{Tmin.L#.Days.Pr} or \code{Tmax.G#.Days.Pr} as per above, but divided by total length of climate window (d)
+\item\code{Tmin.L#.Max.RSeq} or \code{Tmax.G#.Max.RSeq} longest continuous period of days with minimum temperatures less than \code{Tmin.L#} or maximum temperatures greater than \code{Tmax.G#} as per parameters specified in \code{Temp.Threshold} (d)
+\item\code{Tmin.L#.N.RSeq.D#} or \code{Tmax.G#.N.RSeq.D#} number of continuous periods of \code{D#} days with minimum temperatures less than \code{Tmin.L#} or maximum temperatures greater than \code{Tmax.G#} as per parameters specified in \code{Temp.Threshold} (d)
 \item\code{Tmin.min} min temp minimum (C)
 \item\code{Tmin.mean} min temp mean (C)
 \item\code{Tmin.var} min temp variance (C)
+\item\code{Tmin.sd} min temp standard deviation (C)
 \item\code{Tmin.range} min temp range(C)
 \item\code{Tmax.max} max temp maxiumum (C)
 \item\code{Tmax.mean} max temp mean (C)
-\item\code{Tmax.var} max temp variance (C)
+\item\code{Tmax.var} max temp variance (C
+\item\code{Tmax.sd} max temp standard deviation (C))
 \item\code{Tmax.range} max temp range (C)
-\item\code{Tmax.sd} standard deviation of daily maximum temperatures (C)
+\item\code{Tmean.max} max of daily mean temperatures (C)
+\item\code{Tmean.min} min of daily mean temperatures (C)
 \item\code{Tmean.mean} mean of daily mean temperatures (C)
+\item\code{Tmean.var} mean temp variance (C)
 \item\code{Tmean.sd} standard deviation of daily mean temperatures (C)
+\item\code{Tmean.range} mean temp range (C)
 \item\code{EU} ERA experimental unit (or product) code see \code{ERAg::EUCodes} for translations
 \item\code{PD.Used} planting date used in calculations
 \item\code{W.Start} adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)
@@ -221,7 +227,13 @@ optimal and absolute temperate thresholds (fields \code{Tlow}, \code{Topt.low}, 
 The \code{GDDcalc} function outputs four fields \code{GDDlow}, \code{GDDopt}, \code{GDDhigh} and \code{GDDmax} and the values of these are summed for the temporal period;
 ii) \strong{precipitation and reference evapotranspiration (ETo)} statistics are estimated using the \code{RAIN.Calc} function which outputs a number of variables
 described in the documentation for this function;
-iii) \strong{max and mean temperatures} are averaged with standard deviation (\code{Tmax.Mean},\code{Tmax.sd},\code{Tmean.mean} and \code{Tmean.sd} fields).
+iii) \strong{min, max and mean daily temperatures and rainfall plus variance}
+iv) Using the \code{Rain.Threhold} and \code{Temp.Threshold} parameters thresholds and their direction (greater or lower) can be specified for rainfall and
+minimum and maximum temperatures. Within a temporal period the total number of threshold exceedance days are calculated. The \code{RSeqLen} and \code{TSeqLen}
+parameters define sequence lengths (e.g. 5 days), for each value of these parameters the number of sequences of consecutive days in exceedance of rainfall or
+temperature thresholds equal to higher than the specified sequence length are summed. If the rainfall threshold is \code{1} with direction \code{lower} and \code{RSeqLen}
+is 5, then the number of sequences of consecutive days with less than 1mm rainfall of sequence length 5 days or more are counted. Note in the previous
+scenario a sequence of length 30 days would only count as one sequence.
 \item If argument \code{Do.LT.Avg==T} annual and long-term climate statistics an planting dates are calculated  for each combination of location and product. Note
 that each season in the data is treated separately. The process logic is as follows:
 i) The median planting julian day of the year is taken for the location x product combination;
