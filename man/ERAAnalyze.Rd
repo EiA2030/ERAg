@@ -115,4 +115,6 @@ least three observations. The model is weighted and includes a random intercept 
 \item If the minimum data requirements for the lm are not met no test is applied to the outcome values.
 }
 }
+
+Also note that any groupings of data specified in the Aggregate.By parameter for which values of MeanC and MeanT are identical are removed from the dataset before analysis.
 }

@@ -38,6 +38,8 @@
 #'     * If the minimum data requirements for the lmer are not met then a linear model with weights is applied (`lm(Value~1,weights=Weights)`) if there are at least 5 outcome observations for the grouping variable combination.
 #'     * If the minimum data requirements for the lm are not met no test is applied to the outcome values.
 #'
+#' Also note that any groupings of data specified in the Aggregate.By parameter for which values of MeanC and MeanT are identical are removed from the dataset before analysis.
+#'
 #' @param Data A preapred ERA dataset (see PrepareERA function)
 #' @param rmOut Logical T/F. If TRUE extreme outliers are detected and removed for each combination of grouping variables.
 #' @param Aggregate.By Column names for grouping variables. Statistics will be compiled for each combination of these variables.
@@ -120,6 +122,11 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
 
     Data<-Data[!Outliers]
   }
+
+  # Remove any data where MeanC and MeanT are identical (creates Error in asMethod(object) : not a positive definite matrix)
+
+  Data<-Data[,Identical:=all(MeanT==MeanC),by=Aggregate.By][Identical==F][,Identical:=NULL]
+
 
   # Estimate treatment effect size ####
 
