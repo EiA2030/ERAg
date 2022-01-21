@@ -104,12 +104,12 @@
 #' \item`SE_lnCVR` numeric, standard error of lnCVR test coefficient
 #' \item`SE_lnRR` numeric, standard error of lnRR test coefficient
 #' \item`SE_lnVR` numeric, standard error of lnVR test coefficient
-#' \item`CI.low_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
-#' \item`CI.high_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
-#' \item`CI.low_lnRR` numeric, back-transformed lnRR test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
-#' \item`CI.high_lnRR` numeric, back-transformed lnRR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
-#' \item`CI.low_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
-#' \item`CI.high_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
+#' \item`CI.low_lnCVR` numeric,  lnCVR test coefficient lower confidence limit
+#' \item`CI.high_lnCVR` numeric, lnCVR test coefficient upper confidence limit
+#' \item`CI.low_lnRR` numeric, lnRR test coefficient lower confidence limit
+#' \item`CI.high_lnRR` numeric, lnRR test coefficient upper confidence limit
+#' \item`CI.low_lnVR` numeric, lnVR test coefficient lower confidence limit
+#' \item`CI.high_lnVR` numeric, lnVR test coefficient upper confidence limit
 #' \item`CI.low.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
 #' \item`CI.high.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
 #' \item`CI.low.Jen_lnRR` numeric, back-transformed lnRR test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
