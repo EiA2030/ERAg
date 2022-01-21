@@ -104,12 +104,12 @@
 #' \item`SE_lnCVR` numeric, standard error of lnCVR test coefficient
 #' \item`SE_lnRR` numeric, standard error of lnRR test coefficient
 #' \item`SE_lnVR` numeric, standard error of lnVR test coefficient
-#' \item`CI.low_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
-#' \item`CI.high_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
-#' \item`CI.low_lnRR` numeric, back-transformed lnRR test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
-#' \item`CI.high_lnRR` numeric, back-transformed lnRR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
-#' \item`CI.low_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
-#' \item`CI.high_lnVR` numeric, back-transformed lnVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
+#' \item`CI.low_lnCVR` numeric,  lnCVR test coefficient lower confidence limit
+#' \item`CI.high_lnCVR` numeric, lnCVR test coefficient upper confidence limit
+#' \item`CI.low_lnRR` numeric, lnRR test coefficient lower confidence limit
+#' \item`CI.high_lnRR` numeric, lnRR test coefficient upper confidence limit
+#' \item`CI.low_lnVR` numeric, lnVR test coefficient lower confidence limit
+#' \item`CI.high_lnVR` numeric, lnVR test coefficient upper confidence limit
 #' \item`CI.low.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
 #' \item`CI.high.Jen_lnCVR` numeric, back-transformed lnCVR test coefficient lower confidence limit correcting for the Jensen inequality as `exp(model$ci.b[,1] + sigma.sq / 2)`
 #' \item`CI.low.Jen_lnRR` numeric, back-transformed lnRR test coefficient upper confidence limit correcting for the Jensen inequality as `exp(model$ci.lb[,1] + sigma.sq / 2)`
@@ -231,7 +231,7 @@ StabCalc<-function(Data,
                                                X_t="yieldcont",SD_t="sdcont",N_t="nryears",
                                                metric = metric)
         commonexp[[2]] <- metafor::escalc(measure=measure,m1i=yieldexp,m2i=yieldcont,
-                                 sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=commonexp[[2]])
+                                          sd1i=sdexp,sd2i=sdcont,n1i=nryears,n2i=nryears,data=commonexp[[2]])
       } else{
         commonexp <- list(
           matrix(nrow=0,ncol=0),
@@ -389,7 +389,7 @@ StabCalc<-function(Data,
     }
 
     Model<-M.details(model=model,Transform=Transform)[,Robust:=F
-                                                      ][,Response:=Response]
+    ][,Response:=Response]
 
     if(length(unique(respmat$ID))>1){
       # Robust model with cluster as the study (better p-values) - a vector specifying a clustering variable to use for constructing the sandwich estimator of the variance-covariance matrix.
@@ -403,8 +403,8 @@ StabCalc<-function(Data,
     }
 
     Coefs<-rbind(Model,R.Model)[,N.Studies:=length(unique(respmat[!is.na("yi"),"Code"]))
-                                ][,N.Seq:=nrow(respmat[!is.na("yi")])
-                                  ][,N.Obs:=sum(respmat[!is.na("yi"),"N.Obs"])]
+    ][,N.Seq:=nrow(respmat[!is.na("yi")])
+    ][,N.Obs:=sum(respmat[!is.na("yi"),"N.Obs"])]
     return(list(Model=model,R.Model=r.model,Coefs=Coefs))
   })
 
