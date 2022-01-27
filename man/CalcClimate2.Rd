@@ -20,6 +20,7 @@ CalcClimate2(
   Rain.Threshold = data.table(Threshold = c(0.1, 1, 5), Direction = c("lower", "lower",
     "lower")),
   RSeqLen = c(5, 10, 20),
+  PrePlantWindow = 10,
   Win.Start = 1,
   Do.LT.Avg = T,
   Max.LT.Avg = 2010,
@@ -30,7 +31,7 @@ CalcClimate2(
   Exclude.EC.Diff = F,
   EC.Diff = 0.6,
   ROUND = 5,
-  DebugMode = T
+  DebugMode = F
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ the day is counted towards the relevant climate statistics. The \code{Direction}
 if row 1 is \code{1} and \code{ower} then days where rainfall is <1 will be counted.}
 
 \item{RSeqLen}{A integer vector of sequence lengths (days). For each row of \code{Rain.Threshold} (\code{i}) and each value of \code{RSeqLen} (\code{j}) the number of consecutive day sequences where \code{Rain.Threshold[i]} is exceeded for \code{TSeqLen[j]} days or more is calculated.}
+
+\item{PrePlantWindow}{A integer vector; defines a period before planting in days for which rainfall and Penman-Monteith reference evapotranspiration are summed.}
 
 \item{Win.Start}{Integer value of length one; when should the window for climate calculations begin relative to the planting date (estimated or reported) in days? for example: 0 = day of planting, -1 = one day before planting, +1 = one day after planting.}
 
@@ -131,6 +134,8 @@ A list is output containing following data.tables:
 \item\code{Tmean.var} mean temp variance (C)
 \item\code{Tmean.sd} standard deviation of daily mean temperatures (C)
 \item\code{Tmean.range} mean temp range (C)
+\item\code{Rain.sum.PrePlant#} the sum of rainfall for a period \verb{#} days before planting to the day before planting (defined in the \code{PrePlantWindow} parameter)
+\item\code{ETo.sum.PrePlant#}the sum of Penman-Monteith reference evapotranspiration for a period \verb{#} days before planting to the day before planting (defined in the \code{PrePlantWindow} parameter)
 \item\code{EU} ERA experimental unit (or product) code see \code{ERAg::EUCodes} for translations
 \item\code{PD.Used} planting date used in calculations
 \item\code{W.Start} adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)

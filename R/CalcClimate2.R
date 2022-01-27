@@ -98,6 +98,7 @@
 #' the day is counted towards the relevant climate statistics. The `Direction` field should be of class character and contain only the values `higher` or `lower` corresponding to the direction of exceedance for the thresholds provided in in the `Thresholds` field. For example,
 #' if row 1 is `1` and `ower` then days where rainfall is <1 will be counted.
 #' @param RSeqLen A integer vector of sequence lengths (days). For each row of `Rain.Threshold` (`i`) and each value of `RSeqLen` (`j`) the number of consecutive day sequences where `Rain.Threshold[i]` is exceeded for `TSeqLen[j]` days or more is calculated.
+#' @param PrePlantWindow A integer vector; defines a period before planting in days for which rainfall and Penman-Monteith reference evapotranspiration are summed.
 #' @param Win.Start Integer value of length one; when should the window for climate calculations begin relative to the planting date (estimated or reported) in days? for example: 0 = day of planting, -1 = one day before planting, +1 = one day after planting.
 #' @param Do.LT.Avg Logical `T/F`; if `T` long term averages and deviances are calculated.
 #' @param Max.LT.Avg Integer of length one only relevant if `Do.LT.Avg==T`; maximum year considered when calculating long-term averages.
@@ -148,6 +149,8 @@
 #' \item`Tmean.var` mean temp variance (C)
 #' \item`Tmean.sd` standard deviation of daily mean temperatures (C)
 #' \item`Tmean.range` mean temp range (C)
+#' \item`Rain.sum.PrePlant#` the sum of rainfall for a period `#` days before planting to the day before planting (defined in the `PrePlantWindow` parameter)
+#' \item`ETo.sum.PrePlant#`the sum of Penman-Monteith reference evapotranspiration for a period `#` days before planting to the day before planting (defined in the `PrePlantWindow` parameter)
 #' \item`EU` ERA experimental unit (or product) code see `ERAg::EUCodes` for translations
 #' \item`PD.Used` planting date used in calculations
 #' \item`W.Start` adjust of the start date of the climate calculation window as days before (negative) or after (positive) after planting date (days)
@@ -218,6 +221,7 @@ CalcClimate2<-function(DATA,
                        TSeqLen = c(5,10,20),
                        Rain.Threshold = data.table(Threshold=c(0.1,1,5),Direction=c("lower","lower","lower")),
                        RSeqLen = c(5,10,20),
+                       PrePlantWindow=10,
                        Win.Start = 1,
                        Do.LT.Avg=T,
                        Max.LT.Avg=2010,
@@ -228,8 +232,7 @@ CalcClimate2<-function(DATA,
                        Exclude.EC.Diff=F,
                        EC.Diff=0.6,
                        ROUND=5,
-                       DebugMode=T){
-
+                       DebugMode=F){
 
   # Analysis parameter code for cross-reference of saved data to current analysis
   Params<-paste0(paste0(Rain.Windows,collapse=""),
@@ -240,6 +243,7 @@ CalcClimate2<-function(DATA,
                  gsub("higher","H",gsub("lower","L",paste0(apply(Temp.Threshold,1,paste,collapse=""),collapse=""))),
                  paste0(TSeqLen,collapse=""),
                  Max.LT.Avg,
+                 PrePlantWindow,
                  paste(apply(Windows[,2:3],1,paste,collapse=""),collapse = ""),
                  Win.Start,
                  substr(Temp.Data.Name,1,3),
@@ -591,6 +595,7 @@ CalcClimate2<-function(DATA,
                       Temp.Threshold=c("Temp.Threshold:",unlist(Temp.Threshold)),
                       TSeqLen = c("TSeqLen:",TSeqLen),
                       Max.LT.Avg=c("Max.LT.Avg:",Max.LT.Avg),
+                      PrePlantWindow=PrePlantWindow,
                       Windows=c("Windows:",unlist(Windows)),
                       Win.Start=Win.Start,
                       Rain.Data.Name=c("Rain.Data.Name:",Rain.Data.Name),
@@ -613,7 +618,6 @@ CalcClimate2<-function(DATA,
 
     CLIMATE<-data.table(CLIMATE)
 
-
     DATA<-data.table(DATA)
 
     DATA[Season.Start==1 & Season.End==1,M.Year.Code:="1"
@@ -628,7 +632,6 @@ CalcClimate2<-function(DATA,
 
     # Refine Season Length where uncertainty in the timing of planting or harvest exists
     DATA[,PDiff:=Plant.End-Plant.Start][,H.Diff:=Harvest.End-Harvest.Start]
-
 
     # Create unique Site x EU x Date combinations
     SS<-SLen(RName=Rain.Data.Name,DATA,ErrorDir,EC.Diff,Exclude.EC.Diff)
@@ -728,13 +731,17 @@ CalcClimate2<-function(DATA,
             Z<-lapply(1:nrow(WINS),FUN=function(j){
               if(!is.na(WINS[j,End])){
                 C<-Climate[Climate$Date>=(SS.N[i,P.Date.Merge]+ WINS[j,Start])& Climate$Date<=(SS.N[i,P.Date.Merge] + WINS[j,End])]
+
+                D<-Climate[Climate$Date>=(SS.N[i,P.Date.Merge]-PrePlantWindow) & Climate$Date<SS.N[i,P.Date.Merge]]
+
                 # Make sure the climate dataset is complete
                 if(!(nrow(C)<(WINS[j,End]-WINS[j,Start]) | sum(is.na(C$Rain)>0))){ # Technically should have a +1 on the left, here we are giving -1 day leeway
 
                   C<-c(sapply(GDD(Tmax=C$Temp.Max,Tmin=C$Temp.Min,Tlow=SS.N[i,Tlow],Thigh=SS.N[i,Thigh],Topt.low = SS.N[i,Topt.low],Topt.high = SS.N[i,Topt.high],ROUND=2),sum),
                        unlist(RAIN.Calc(C$Rain,C$ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen)),
                        unlist(TEMP.Calc(Tmax=C$Temp.Max, Tmin=C$Temp.Min, Tmean=C$Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen)))
-
+                  suppressWarnings(C[[paste0("Rain.sum.PrePlant",PrePlantWindow)]]<-D[,sum(Rain)])
+                  suppressWarnings(C[[paste0("ETo.sum.PrePlant",PrePlantWindow)]]<-D[,sum(ETo)])
                   suppressWarnings(C$EU<-SS.N$EU[i])
                   C$PD.Used<-SS.N$P.Date.Merge[i]
                   C$W.Start<-WINS$Start[j]
@@ -815,7 +822,6 @@ CalcClimate2<-function(DATA,
               }else{
                 C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
               }
-
 
               LT.Mean<-as.numeric(round(mean(C.val,na.rm=T)*180/pi*365/360,ROUND))
               LT.Median<-as.numeric(round(median(C.val,na.rm=T)*180/pi*365/360,ROUND))
@@ -1148,6 +1154,7 @@ CalcClimate2<-function(DATA,
                     Temp.Threshold=Temp.Threshold,
                     TSeqLen=TSeqLen,
                     Max.LT.Avg=Max.LT.Avg,
+                    PrePlantWindow=PrePlantWindow,
                     Windows=Windows,
                     Win.Start=Win.Start,
                     Rain.Data.Name=Rain.Data.Name,
