@@ -3,9 +3,9 @@
 \docType{data}
 \name{PracticeCodes}
 \alias{PracticeCodes}
-\title{Practice Codes (version 06.09.2021)}
+\title{Practice Codes (version 31.01.2022)}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 155 rows and 11 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 174 rows and 14 columns.
 }
 \source{
 ERA Project Team (2021)
