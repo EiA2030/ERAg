@@ -86,7 +86,7 @@
 #' @source ERA Project Team (2021)
 "ERA.Compiled"
 #'
-#' Practice Codes (version 06.09.2021)
+#' Practice Codes (version 31.01.2022)
 #'
 #' \describe{The organizational hierarchy of improved farming practice concepts considered in ERA and their descriptions.
 #'   \item{Code}{unique alpha numeric code}
