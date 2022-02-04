@@ -5,7 +5,7 @@
 \alias{ERA_Physical}
 \title{ERA_Physical}
 \format{
-An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1541 rows and 20 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 1508 rows and 20 columns.
 }
 \source{
 Void filled Aster GDEM version 2 downloaded from http://www.viewfinderpanoramas.org/Coverage\%20map\%20viewfinderpanoramas_org3.htm

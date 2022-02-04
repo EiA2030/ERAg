@@ -5,7 +5,7 @@
 \alias{ERA_AEZ_MAP_MAT}
 \title{Agroecological zones}
 \format{
-An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1615 rows and 6 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 1043 rows and 6 columns.
 }
 \source{
 HarvestChoice; International Food Policy Research Institute (IFPRI), 2015, "Agro-Ecological Zones for Africa South of the Sahara", https://doi.org/10.7910/DVN/M7XIUB, Harvard Dataverse, V3
