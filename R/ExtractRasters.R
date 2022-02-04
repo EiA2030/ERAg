@@ -25,7 +25,7 @@
 #' * `NA.Cells` = number of NA cells contained each locations bounding box
 #' @export
 #' @import data.table
-#' @importFrom terra rast vect extract
+#' @importFrom terra rast vect extract crs
 #' @importFrom sp spTransform CRS
 #' @importFrom data.table fread fwrite
 ExtractRasters<-function(DATA,
@@ -81,7 +81,7 @@ X<-lapply(1:length(FILES),FUN=function(i){
     ZIP<-F
   }
 
-  RASTER.CRS<-crs(RASTER,proj4=T)
+  RASTER.CRS<-terra::crs(RASTER,proj=T)
 
   # Make sure buffers are in same CRS as raster
   if(as.character(pbuf@proj4string) != RASTER.CRS){
