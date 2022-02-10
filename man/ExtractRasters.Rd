@@ -12,8 +12,7 @@ ExtractRasters(DATA, ID, FILES, Save_Dir, Save_Name)
 
 \item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.}
 
-\item{FILES}{A character vector listing the paths to raster files. Zipped files can be supplied. If a zipped file containing multiple rasters is supplied
-it is assumed to be a raster stack and the rasters must share the same extents, origin and  resolutions.}
+\item{FILES}{A character vector listing the paths to raster files.}
 
 \item{Save_Dir}{A character vector of length one containing the path to the directory where the extracted data are to be saved. Set to NA if you do not want to save the returned dataset.}
 
@@ -33,11 +32,8 @@ suffixes:
 }
 \description{
 For a dataset containing point locations with a buffer of spatial uncertainty this function averages raster values for a
-character vector pointing to the location of raster files or zipped files. Note if a zipped file containing multiple rasters is supplied
-it is assumed to be a raster stack and the rasters must share the same extents, origin and  resolutions.
+character vector pointing to the location of raster files.
 }
 \details{
 Extraction uses the extract function of the terra package.
-
-Zipped files are unzipped to the working directory, we suggest running \code{unlink(unzip(zip.filename,list=T)$Name)} to remove these files once extraction is complete.
 }
