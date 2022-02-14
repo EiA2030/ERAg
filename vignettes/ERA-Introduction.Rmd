@@ -479,7 +479,7 @@ A number of datasets including many from the former HarvestChoice website now fo
 can be found in the `ERA_Other_Linked_Data` dataset. You can find details of these in the `ERA_Other_Linked_Data_Fields` object:
 
 ```{r Other Datasets, echo=T, warning=FALSE}
- knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
+ knitr::kable(ERA_Other_Linked_Data_Fields$Dataset_Descriptions[-(1:4),c("Name","Description")])
 ```
 
 
