@@ -1,5 +1,4 @@
 #' The compiled ERA dataset (version = Comb 2022.02.01 2022.02.04)
-#' **Test pushing
 #' \describe{
 #'   \item{Index}{unique row identity}
 #'   \item{Code}{unique publication identity}
@@ -7,26 +6,16 @@
 #'   \item{Date}{the year of publication}
 #'   \item{Journal}{abbreviation of the journal name}
 #'   \item{DOI}{doi (or url if no doi available) of article. DOI = digital object identifier}
+#'   \item{Elevation}{the elevation in meters (m). Provide the mid-point if a range is given}
 #'   \item{Country}{country name}
-#'   \item{LatD}{latitude of study location in degrees or decimal degrees, the latter recorded to same accuracy as in publication (or estimated from googlemaps where locations were found from site names/descriptions). For decimal degrees the sign is not recorded here, but in the LatH column instead (all values should be positive)}
-#'   \item{LatM}{latitude: when study locations were reported as degrees and minutes, minutes are recorded in this column}
-#'   \item{LatS}{latitude: when study locations were reported as degrees minutes and seconds, seconds are recorded in this column}
-#'   \item{LatH}{latitude: hemisphere N or S}
-#'   \item{LonD}{longitude of study location in decimal degrees, recorded to same accuracy as in publication (or estimated from googlemaps where locations were found from site names or descriptions). For decimal degrees the sign is not recorded here, but in the LatH column instead. All values should be positive.}
-#'   \item{LonM}{longitude of study location: when locations were reported as degrees and minutes, minutes are recorded in this column}
-#'   \item{LonS}{longitude of study location: when locations were reported as degrees minutes and seconds, seconds are recorded in this column}
-#'   \item{LonH}{longitude: hemisphere E or W}
-#'   \item{Lat.Diff}{if the study location is the average of several sites (aggregated spatial location) then the average difference is recorded here. Calculated using minutes as (max(latitude)-min(latitude)+(max(longitude)-min(longitude)/2. This field can used to estimated radius of spatial uncertainty for sites with spatial aggregation.}
 #'   \item{ISO.3166-1.alpha-3}{Standardized country name using ISO.3166-1.alpha-3. This field should be auto filled using the country selected and data in the Levels Tab}
 #'   \item{Site.Type}{one of the following: Farm, Station, Greenhouse, Survey, or Lab. Farm research is conducted in a farmers field and can be managed by the farmer or researcher. Station research is conducted in a controlled setting of research station, university or school. Survey research is conducted via interviews that yields quantitative data based on testimonial. Greenhouse is conducted in a greenhouse and is only relevant for studies of greenhouse gas emissions data. Lab studies can include fisheries feeding trials conducted at a small scale in university research labs}
 #'   \item{Site.ID}{free text name to identify the site. Include institution/station name and location or village/town in county/district, but not the country}
-#'   \item{Buffer.Manual}{manual estimation (e.g. from measuring on google earth) in m of the spatial uncertainty for a point location. The site should within an X m radius (the buffer.manual amount) of the point location specified. Unit is meters}
 #'   \item{MAT}{reported mean annual temperature in degrees C. If a range is given, average the values and enter the average. If mean highs and lows are given, they can be averaged to estimate the mean annual temperature}
 #'   \item{MAP}{mean annual precipitation (mm) for the location. This should be a long-term average for more than 10 years of data}
 #'   \item{TAP}{total annual precipitation (mm) for the location in the year corresponding to the outcome data}
 #'   \item{MSP}{mean seasonal precipitation (mm) for the location in the season corresponding to the outcome data. This should be a long-term average from more than 10 years of data}
 #'   \item{TSP}{total seasonal precipitation (mm) for the location in the season corresponding to the outcome data}
-#'   \item{Elevation}{the elevation in meters (m). Provide the mid-point if a range is given}
 #'   \item{Soil.Type}{list the given soil classification/name in lowercase letters. If more than one soil type is given (within the same taxonomic system) enter both separated by a period}
 #'   \item{Soil.Classification}{list the taxonomic system used to classify the soil. Choose from (FAO, USDA, other)}
 #'   \item{Soil.Texture}{list the soil texture provided in the text or in tables in lowercase letters. If no texture is named, but % of sand, silt and clay are given, use the soil texture triangle to estimate soil texture (https://www.nrcs.usda.gov/wps/portal/nrcs/detail/soils/survey/?cid=nrcs142p2_054167)}
@@ -35,20 +24,22 @@
 #'   \item{SOC.Depth}{concatenate min (top) and max (bottom) depths user entered with a "-", e.g. 0-10}
 #'   \item{Soil.pH}{soil pH value derived during site characterization}
 #'   \item{Soil.pH.Method}{method used to calculate soil pH}
+#'   \item{Plant.Start}{starting of planting period (dd.mm.yyyy)}
+#'   \item{Plant.End}{end of planting period (dd.mm.yyyy)}
+#'   \item{Harvest.Start}{starting of harvest period (dd.mm.yyyy)}
+#'   \item{Harvest.End}{end of harvest period (dd.mm.yyyy)}
 #'   \item{Rep}{the number of replicates for the treatments}
 #'   \item{Plot.Size}{the size of the smallest treatment plot unit in m2}
 #'   \item{CID}{a unique identifier (within study) describing a set of management practices that occurred in the control which is used to identify the treatment combinations tested, to allow comparison across outcomes in a paper. A default system of T1, T2, T3, etc. can be used. CID should describe the treatment used as the control for this observation}
 #'   \item{C.Descrip}{(superceded by C.Descrip.Clean column) Free text description of the control treatment}
-#'   \item{C1:Cn}{codes corresponding to all practices used on the control treatment described in C.Descrip. Only one code is placed in each column (see subpractices column of PRACTICES2 tab)}
 #'   \item{C.NI}{amount of inorganic (chemical) nitrogen applied to control plots in kg/ha}
 #'   \item{C.NO}{amount of nitrogen in organic materials (manures or compost, but not residues) applied to control plots, preferably in kg/ha}
 #'   \item{TID}{a unique identifier (within study) describing a set of management practices that occurred in treatment which is used to identify the treatment combinations tested, to allow comparison across outcomes in a paper. A default system of T1, T2, T3, etc. can be used. TID should describe the treatment used as the control for this observation}
 #'   \item{T.Descrip}{(superceded by T.Descrip.Clean column) Free text description of the CSA treatment}
-#'   \item{T1:Tn}{codes corresponding to all practices used on the CSA treatment described in T.Descrip. Only one code is placed in each column (see subpractices column of PRACTICES2 tab)}
 #'   \item{T.NI}{amount of inorganic (chemical) nitrogen (N) applied to CSA treatment in kg/ha}
 #'   \item{T.NO}{amount of nitrogen (N) in organic materials (manures or compost) applied to CSA treatment, preferably in kg/ha}
 #'   \item{Diversity}{name of species in intercrop or rotations including the crop. Dash(-) indicates intercrop and slash (/) indicates a rotation}
-#'   \item{Crop.Var}{commercial name of the crop or animal variety}
+#'   \item{Variety}{commercial name of the crop or animal variety}
 #'   \item{Tree}{Name of tree species used in agroforestry experiments, can be both as an intercrop or as an agroforestry mulch}
 #'   \item{Duration}{length of time the experiment has been ongoing up to the date the data are being reported for in years. In bimodal rainfall systems with multiple growing seasons, seasons are identified by fractions of the year, 0.5, etc. If outcomes are reported in a unimodal rainfall system with one growing season per year, the duration can be equivalent to one year}
 #'   \item{M.Year}{the calendar year the measurement was taken. Seasons in multi-season systems are identified by decimals .1 or .2 for the first and second season respectively. When the measurements are average values for more than one year create a decimal for the years covered}
@@ -56,12 +47,8 @@
 #'   \item{M.Year.End}{this only required for temporally aggregated observations (e.g. a result that has been averaged from crop yields reported from 2000,2001 and 2002)}
 #'   \item{Season.Start}{this only required in areas where there are mutiple growing seasons in a year (e.g., areas with bimodal rainfall or irrigated cropping in dry seasons of a unimodal system)}
 #'   \item{Season.End}{this only required for temporally aggregated observations in areas with more than one growing season (e.g. a result that has been averaged from crop yields reported from 2000 season 1,2001 season 1 and 2002 season 1)}
-#'   \item{Plant.Start}{starting of planting period (dd.mm.yyyy)}
-#'   \item{Plant.End}{end of planting period (dd.mm.yyyy)}
-#'   \item{Harvest.Start}{starting of harvest period (dd.mm.yyyy)}
-#'   \item{Harvest.End}{end of harvest period (dd.mm.yyyy)}
 #'   \item{EU}{the experimental unit (EU) for which experiment outcomes are reported. This usually a crop or animal product. For cookstove papers it may be a cookstove. The EU for soil outcomes should be the crop(s) grown on the soil unless no crops are grown at all. Letters in the code should be lowercase. If the outcome refers to multiple experimental units (e.g. soil outcomes during an intercropping experiment) select all experimental units separated by a period (see EU2 tab)}
-#'   \item{Outcome}{the productivity, resilience, or mitigation outcome indicator that data are being reported on (see OUTCOMES2 tab)}
+#'   \item{Outcode}{the productivity, resilience, or mitigation outcome indicator that data are being reported on (see OUTCOMES2 tab)}
 #'   \item{Units}{free text description of the units of the data being reported without special characters or formatting}
 #'   \item{MeanC}{the value that corresponds to the control treatment and outcome. Please standard yields to t/ha where appropropriate, keeping as many decimal places as there is data for}
 #'   \item{MeanT}{the value that corresponds to the CSA treatment and outcome. Please standard yields to kg/ha where appropropriate, keeping as many decimal places as there is data for}
@@ -70,17 +57,72 @@
 #'   \item{DataLoc}{the location in the paper where the data can be found. This should be three letters (fig, tab, or txt) in lowercase and a number (for figures and tables) to signify figure, table or text, respectively}
 #'   \item{USD2010.C}{monetary outcomes converted to USD equivalent in 2010 using World Bank CPI figures and exchange rates (see Currency Tab). There are no reliable data for Zimbabwe}
 #'   \item{USD2010.T}{monetary outcomes converted to USD equivalent in 2010 using World Bank CPI figures and exchange rates (see Currency Tab). There are no reliable data for Zimbabwe}
-#'   \item{T.Descrip.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
-#'   \item{C.Descrip.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
-#'   \item{Variety.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
-#'   \item{Tree.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
-#'   \item{Diversity.Clean}{edited version of column where unique values were check for punctuation, spelling and overall consistency}
 #'   \item{MeanFlip}{is a negative result considered better than a positive result (i.e. MeanT/MeanC <1 = good)? This is indexed in using the Outcode field in the compednium and the `Negative Values` field in the OUTCOMES tab}
 #'   \item{T.Feed.Source}{where were livestock diets in the treatment practice(s) sourced from?}
 #'   \item{C.Feed.Source}{Where were livestock diets in the control practice(s) sourced from?}
 #'   \item{Species}{the tree species for which the experiment outcome are reported}
 #'   \item{Partial.Outcome.Name}{free text to describe the partial outcome}
 #'   \item{Partial.Outcome.Code}{ERA practice codes that correspond to the partial outcome}
+#'   \item{Analysis.Function}{Describes the logical process used to compare control to treatment (for developers)}
+#'   \item{Version}{year in which the ERA data entry took place. Either 2018 or 2020}
+#'   \item{Mulch.Code}{ERA mulch code based on the nitrogen fixing properties specified in Nfix. NA for animal products}
+#'   \item{Irrigation.C}{indicates the presence of irrigation in the control treatment}
+#'   \item{Irrigation.T}{indicates the presence of irrigation in the experimental treatment}
+#'   \item{Irrigation.Meth.C}{method of irrigation used in the control treatment. Cell will be blank if Irrigation.C is FALSE}
+#'   \item{Irrigation.Meth.T}{method of irrigation used in the experimental treatment. Cell will be blank if Irrigation.T is FALSE}
+#'   \item{C1:C13}{codes corresponding to all practices used on the control treatment described in C.Descrip. Only one code is placed in each column (see subpractices column of PRACTICES2 tab)}
+#'   \item{T1:T13}{codes corresponding to all practices used on the CSA treatment described in T.Descrip. Only one code is placed in each column (see subpractices column of PRACTICES2 tab)}
+#'   \item{ID}{study number}
+#'   \item{obs_count}{number of observations}
+#'   \item{out_count}{number of outcomes reported per study}
+#'   \item{Lat}{latitude of study location in degrees or decimal degrees, the latter recorded to same accuracy as in publication (or estimated from googlemaps where locations were found from site names/descriptions). For decimal degrees the sign is not recorded here, but in the LatH column instead (all values should be positive)}
+#'   \item{Lon}{longitude of study location in decimal degrees, recorded to same accuracy as in publication (or estimated from googlemaps where locations were found from site names or descriptions). For decimal degrees the sign is not recorded here, but in the LatH column instead. All values should be positive.}
+#'   \item{yi}{the natural log of the response ratio log(MeanT/MeanC)}
+#'   \item{pc}{pc=proportional change.It is a measure of the ratio of experimental to control outcomes}
+#'   \item{plist}{experimental ERA practices that are in the experimental, but not the control treatment }
+#'   \item{base.list}{base practices that are shared between experimental and control treatments}
+#'   \item{EUlist}{the product code OutcomeCodes$Code for the observation using a - delim for multiple products}
+#'   \item{Out.Pillar}{outcome pillar name}
+#'   \item{Out.SubPillar}{outcome subpillar name}
+#'   \item{Out.Ind}{outcome indicator name}
+#'   \item{Out.SubInd}{outcome subindicator name}
+#'   \item{Out.SubInd}{outcome subindicator name simplified}
+#'   \item{Out.Pillar.Code}{outcome pillar name code}
+#'   \item{Out.SubPillar.Code}{outcome subpillar name code}
+#'   \item{Out.Ind.Code}{outcome indicator name code}
+#'   \item{Out.SubInd.Code}{outcome subindicator name code}
+#'   \item{SubPrName}{experimental subpractice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
+#'   \item{PrName}{experimental practice name}
+#'   \item{Theme}{experimental practice theme name}
+#'   \item{SubPrName.Code}{experimental subpractice name code}
+#'   \item{PrName.Code}{experimental practice name code}
+#'   \item{Theme.Code}{experimental practice theme name code}
+#'   \item{SubPrName.Base}{base practice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
+#'   \item{PrName.Base}{base practice name}
+#'   \item{Theme.Base}{base practice theme name}
+#'   \item{SubPrName.Base.Code}{base subpractice name code}
+#'   \item{PrName.Base.Code}{base practice name code}
+#'   \item{Theme.Base.Code}{base practice theme name code}
+#'   \item{Product}{the full name of the product, including aspect of the component such as grain, meat or milk}
+#'   \item{Product.Type}{product type name}
+#'   \item{Product.Subtype}{product subtype name}
+#'   \item{Product.Simple}{simplified product name, excluding any aspects of component}
+#'   \item{Product.Type.Code}{product type name code}
+#'   \item{Product.Subtype.Code}{product subtype name code}
+#'   \item{Product.Simple.Code}{simplified product name code}
+#'   \item{Latitude}{latitude of study location in degrees or decimal degrees}
+#'   \item{Longitude}{longitude of study location in degrees or decimal degrees}
+#'   \item{Buffer}{manual estimation (e.g. from measuring on google earth) in m of the spatial uncertainty for a point location. The site should within an X m radius (the buffer.manual amount) of the point location specified. Unit is meters}
+#'   \item{Site.Key}{longitude, latitude and buffer for the site}
+#'   \item{AEZ16simple}{simplified version of AEZ16 removing the tropic/subtropic classification}
+#'   \item{AEZ16}{AEZs for Africa South of the Sahara (SSA) based on the methodology developed by FAO and IIASA, using the scheme with 16 classes}
+#'   \item{AEZ5}{AEZs Africa South of the Sahara (SSA) based on the methodology developed by FAO and IIASA, using the scheme with 5 classes}
+#'   \item{Mean.Annual.Precip}{mean annual precipitation (mm) derived from the CHIRPS 2.0 dataset API at 0.05&deg resolution}
+#'   \item{Mean.Annual.Temp}{mean annual temperature (C) derived from the NASA POWER dataset API at 0.5&deg resolution}
+#'   \item{CLY}{weight percentage of clay particles (<0.0002 mm)}
+#'   \item{SLT}{weight percentage of silt particles (0.0002-0.05 mm)}
+#'   \item{SND}{weight percentage of the sand particles (0.05-2 mm)}
+#'
 #'   ...
 #' }
 #' @source ERA Project Team (2021)
@@ -299,3 +341,182 @@
 #' }
 #' @source HarvestChoice; International Food Policy Research Institute (IFPRI), 2015, "Agro-Ecological Zones for Africa South of the Sahara", https://doi.org/10.7910/DVN/M7XIUB, Harvard Dataverse, V3
 "ERA_AEZ_MAP_MAT"
+#'
+#' SoilGrids Parameters
+#' \describe{Using ISRIC World Soil Information, soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
+#' uncertainty
+#'  \item{Latitude}{latitude of study location in decimal degrees}
+#'  \item{Longitude}{longitude of study location in decimal degrees}
+#'  \item{Buffer}{estimation in m of the spatial uncertainty for a point location}
+#'  \item{Site.Key}{longitude, latitude and buffer for the site}
+#'  \item{ACDWRB_M_ss_250m.Mean}{mean values of Acid sub-soils grade. Grade of a sub-soil being acid e.g. having a pH < 5 and low BS }
+#'  \item{ACDWRB_M_ss_250m.SD}{standard deviation of Acid sub-soils grade. Grade of a sub-soil being acid e.g. having a pH < 5 and low BS}
+#'  \item{ACDWRB_M_ss_250m.Quantiles}{quantiles of Acid sub-soils grade. Grade of a sub-soil being acid e.g. having a pH < 5 and low BS}
+#'  \item{AWCh1_M_sl1_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a dept of 0-5cm. Unit= percent}
+#'  \item{AWCh1_M_sl1_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a dept of 0-5cm. Unit= percent}
+#'  \item{AWCh1_M_sl1_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a dept of 0-5cm. Unit= percent}
+#'  \item{AWCh1_M_sl2_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCh1_M_sl2_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCh1_M_sl2_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCh1_M_sl3_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCh1_M_sl3_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCh1_M_sl3_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h1 (moisture potential in kPa, e.g. -10 (pF 2.0)) at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCh2_M_sl1_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 0-5cm. Unit= percent}
+#'  \item{AWCh2_M_sl1_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 0-5cm. Unit= percent}
+#'  \item{AWCh2_M_sl1_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 0-5cm. Unit= percent}
+#'  \item{AWCh2_M_sl2_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCh2_M_sl2_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCh2_M_sl2_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCh2_M_sl3_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCh2_M_sl3_250m.SD}{standard deviation of}{Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCh2_M_sl3_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h2 (moisture potential in kPa, e.g. -20 (pF 2.3)) at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCh3_M_sl1_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 0-5cm. Unit= percent}
+#'  \item{AWCh3_M_sl1_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 0-5cm. Unit= percent}
+#'  \item{AWCh3_M_sl1_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 0-5cm. Unit= percent}
+#'  \item{AWCh3_M_sl2_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 5-15cm. Unit= percent}
+#'  \item{AWCh3_M_sl2_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 5-15cm. Unit= percent}
+#'  \item{AWCh3_M_sl2_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 5-15cm. Unit= percent}
+#'  \item{AWCh3_M_sl3_250m.Mean}{mean value of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 15-30cm. Unit= percent}
+#'  \item{AWCh3_M_sl3_250m.SD}{standard deviation of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 15-30cm. Unit= percent}
+#'  \item{AWCh3_M_sl3_250m.Quantiles}{quantiles of Available soil water capacity (volumetric fraction) for h3 (moisture potential in kPa, e.g. -31.6  (pF 2.5)) at a dept of 15-30cm. Unit= percent}
+#'  \item{AWCtS_M_sl1_250m.Mean}{mean value of Saturated water content (volumetric fraction) for tS at a depth of 0-5cm. Unit= percent}
+#'  \item{AWCtS_M_sl1_250m.SD}{standard deviation of Saturated water content (volumetric fraction) for tS at a depth of 0-5cm. Unit= percent}
+#'  \item{AWCtS_M_sl1_250m.Quantiles}{quantiles of Saturated water content (volumetric fraction) for tS at a depth of 0-5cm. Unit= percent}
+#'  \item{AWCtS_M_sl2_250m.Mean}{mean value of Saturated water content (volumetric fraction) for tS at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCtS_M_sl2_250m.SD}{standard deviation of Saturated water content (volumetric fraction) for tS at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCtS_M_sl2_250m.Quantiles}{quantiles of Saturated water content (volumetric fraction) for tS at a depth of 5-15cm. Unit= percent}
+#'  \item{AWCtS_M_sl3_250m.Mean}{mean value of Saturated water content (volumetric fraction) for tS at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCtS_M_sl3_250m.SD}{standard deviation of Saturated water content (volumetric fraction) for tS at a depth of 15-30cm. Unit= percent}
+#'  \item{AWCtS_M_sl3_250m.Quantiles}{quantiles of Saturated water content (volumetric fraction) for tS at a depth of 15-30cm. Unit= percent}
+#'  \item{BDRICM_M_250m.Mean}{mean value of Depth to bedrock (R horizon) up to 200 cm. Unit= cm}
+#'  \item{BDRICM_M_250m.SD}{standard deviation of Depth to bedrock (R horizon) up to 200 cm. Unit= cm}
+#'  \item{BDRICM_M_250m.Quantiles}{quantiles of Depth to bedrock (R horizon) up to 200 cm. Unit= cm}
+#'  \item{BDRLOG_M_250m.Mean}{mean value of the Probability of occurrence of R horizon. Unit= percent}
+#'  \item{BDRLOG_M_250m.SD}{standard deviation of the  Probability of occurrence of R horizon. Unit= percent}
+#'  \item{BDRLOG_M_250m.Quantiles}{quantile of the Probability of occurrence of R horizon. Unit= percent}
+#'  \item{BDTICM_M_250m.Mean}{mean value of the Absolute depth to bedrock (in cm)}
+#'  \item{BDTICM_M_250m.SD}{standard deviation of the Absolute depth to bedrock (in cm)}
+#'  \item{BDTICM_M_250m.Quantiles}{quantile of the Absolute depth to bedrock (in cm)}
+#'  \item{BLDFIE_M_sl1_250m.Mean}{mean value of Bulk density (fine earth) in kg per cubic meter at a depth of 0-5cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl1_250m.SD}{standard deviation of Bulk density (fine earth) in kg per cubic meter at a depth of 0-5cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl1_250m.Quantiles}{quantiles of Bulk density (fine earth) in kg per cubic meter at a depth of 0-5cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl2_250m.Mean}{mean value of Bulk density (fine earth) in kg per cubic meter at a depth of 5-15cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl2_250m.SD}{standard deviation of Bulk density (fine earth) in kg per cubic meter at a depth of 5-15cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl2_250m.Quantiles}{quantiles of Bulk density (fine earth) in kg per cubic meter at a depth of 5-15cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl3_250m.Mean}{mean value of Bulk density (fine earth) in kg per cubic meter at a depth of 15-30cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl3_250m.SD}{standard deviation of Bulk density (fine earth) in kg per cubic meter at a depth of 15-30cm. Unit= kg / cubic-m}
+#'  \item{BLDFIE_M_sl3_250m.Quantiles}{quantiles of Bulk density (fine earth) in kg per cubic meter at a depth of 15-30cm. Unit= kg / cubic-m}
+#'  \item{CECSOL_M_sl1_250m.Mean}{mean of Cation Exchange Capacity of soil at a depth of 0-5cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl1_250m.SD}{standard deviation of Cation Exchange Capacity of soil at a depth of 0-5cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl1_250m.Quantiles}{quantiles of Cation Exchange Capacity of soil at a depth of 0-5cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl2_250m.Mean}{mean of Cation Exchange Capacity of soil at a depth of 5-15cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl2_250m.SD}{standard deviation of Cation Exchange Capacity of soil at a depth of 5-15cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl2_250m.Quantiles}{Cation Exchange Capacity of soil at a depth of 5-15cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl3_250m.Mean}{mean of Cation Exchange Capacity of soil at a depth of 15-30cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl3_250m.SD}{standard deviation of Cation Exchange Capacity of soil at a depth of 15-30cm. Unit= cmol / kg}
+#'  \item{CECSOL_M_sl3_250m.Quantiles}{standard deviation of Cation Exchange Capacity of soil at a depth of 15-30cm. Unit= cmol / kg}
+#'  \item{CLYPPT_M_sl1_250m.Mean}{mean of Weight percentage of the clay particles (<0.0002 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{CLYPPT_M_sl1_250m.SD}{standard deviation of Weight percentage of the clay particles (<0.0002 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{CLYPPT_M_sl1_250m.Quantiles}{quantiles of Weight percentage of the clay particles (<0.0002 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{CLYPPT_M_sl2_250m.Mean}{mean of Weight percentage of the clay particles (<0.0002 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{CLYPPT_M_sl2_250m.SD}{standard deviation of Weight percentage of the clay particles (<0.0002 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{CLYPPT_M_sl2_250m.Quantiles}{quantiles of Weight percentage of the clay particles (<0.0002 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{CLYPPT_M_sl3_250m.Mean}{mean of Weight percentage of the clay particles (<0.0002 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{CLYPPT_M_sl3_250m.SD}{standard deviation of Weight percentage of the clay particles (<0.0002 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{CLYPPT_M_sl3_250m.Quantiles}{quantiles of Weight percentage of the clay particles (<0.0002 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{CRFVOL_M_sl1_250m.Mean}{mean value of Volumetric percentage of coarse fragments (>2 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{CRFVOL_M_sl1_250m.SD}{standard deviation of Volumetric percentage of coarse fragments (>2 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{CRFVOL_M_sl1_250m.Quantiles}{quantiles of Volumetric percentage of coarse fragments (>2 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{CRFVOL_M_sl2_250m.Mean}{mean value of Volumetric percentage of coarse fragments (>2 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{CRFVOL_M_sl2_250m.SD}{standard deviation of Volumetric percentage of coarse fragments (>2 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{CRFVOL_M_sl2_250m.Quantiles}{quantiles of Volumetric percentage of coarse fragments (>2 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{CRFVOL_M_sl3_250m.Mean}{mean value of Volumetric percentage of coarse fragments (>2 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{CRFVOL_M_sl3_250m.SD}{standard deviation of Volumetric percentage of coarse fragments (>2 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{CRFVOL_M_sl3_250m.Quantiles}{quantiles of Volumetric percentage of coarse fragments (>2 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{gyga_af_erzd_limfactor__m_1km.Mean}{?}
+#'  \item{gyga_af_erzd_limfactor__m_1km.SD}{?}
+#'  \item{gyga_af_erzd_limfactor__m_1km.Quantiles}{?}
+#'  \item{OCSTHA_M_sd1_250m.Mean}{mean value of Soil organic carbon stock in tons per ha at a depth of 0-5cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd1_250m.SD}{standard deviation of Soil organic carbon stock in tons per ha at a depth of 0-5cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd1_250m.Quantiles}{quantiles of Soil organic carbon stock in tons per ha at a depth of 0-5cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd2_250m.Mean}{mean value of Soil organic carbon stock in tons per ha at a depth of 5-15cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd2_250m.SD}{standard deviation of Soil organic carbon stock in tons per ha at a depth of 5-15cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd2_250m.Quantiles}{quantiles of Soil organic carbon stock in tons per ha at a depth of 5-15cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd3_250m.Mean}{mean value of Soil organic carbon stock in tons per ha at a depth of 15-30cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd3_250m.SD}{standard deviation of Soil organic carbon stock in tons per ha at a depth of 15-30cm. Unit= tonnes / ha}
+#'  \item{OCSTHA_M_sd3_250m.Quantiles}{quantiles of Soil organic carbon stock in tons per ha at a depth of 15-30cm. Unit= tonnes / ha}
+#'  \item{ORCDRC_M_sl1_250m.Mean}{mean value of soil organic carbon content in permille at a depth of 0-5cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl1_250m.SD}{standard deviation of soil organic carbon content in permille at a depth of 0-5cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl1_250m.Quantiles}{quantiles of soil organic carbon content in permille at a depth of 0-5cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl2_250m.Mean}{mean value of soil organic carbon content in permille at a depth of 5-15cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl2_250m.SD}{standard deviation of soil organic carbon content in permille at a depth of 5-15cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl2_250m.Quantiles}{quantiles of soil organic carbon content in permille at a depth of 5-15cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl3_250m.Mean}{mean value of soil organic carbon content in permille at a depth of 15-30cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl3_250m.SD}{standard deviation of soil organic carbon content in permille at a depth of 15-30cm. Unit= g / kg}
+#'  \item{ORCDRC_M_sl3_250m.Quantiles}{quantiles of soil organic carbon content in permille at a depth of 15-30cm. Unit= g / kg}
+#'  \item{PHIHOX_M_sl1_250m.Mean}{mean value of pH index measured in water solution at a depth of 0-5cm. Unit= index*10}
+#'  \item{PHIHOX_M_sl1_250m.SD}{standard deviation of pH index measured in water solution at a depth of 0-5cm. Unit= index*10}
+#'  \item{PHIHOX_M_sl1_250m.Quantiles}{quantiles of pH index measured in water solution at a depth of 0-5cm. Unit= index*10}
+#'  \item{PHIHOX_M_sl2_250m.Mean}{mean value of pH index measured in water solution at a depth of 5-15cm. Unit= index*10}
+#'  \item{PHIHOX_M_sl2_250m.SD}pH index measured in water solution at a depth of 5-15cm. Unit= index*10
+#'  \item{PHIHOX_M_sl2_250m.Quantiles}{pH index measured in water solution at a depth of 5-15cm. Unit= index*10}
+#'  \item{PHIHOX_M_sl3_250m.Mean}{mean value of pH index measured in water solution at a depth of 15-30cm. Unit= index*10}
+#'  \item{PHIHOX_M_sl3_250m.SD}pH index measured in water solution at a depth of 15-30cm. Unit= index*10
+#'  \item{PHIHOX_M_sl3_250m.Quantiles}{pH index measured in water solution at a depth of 15-30cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl1_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 0-5cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl1_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 0-5cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl1_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 0-5cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl2_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 5-15cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl2_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 5-15cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl2_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 5-15cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl3_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 15-30cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl3_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 15-30cm. Unit= index*10}
+#'  \item{PHIKCL_M_sl3_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 15-30cm. Unit= index*10}
+#'  \item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH. Unit= grade}
+#'  \item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH. Unit= grade}
+#'  \item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH. Unit= grade}
+#'  \item{SLTPPT_M_sl1_250m.Mean}{mean value of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{SLTPPT_M_sl1_250m.SD}{standard deviation of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{SLTPPT_M_sl1_250m.Quantiles}{quantiles of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{SLTPPT_M_sl2_250m.Mean}{mean value of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{SLTPPT_M_sl2_250m.SD}{standard deviation of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{SLTPPT_M_sl2_250m.Quantiles}{quantiles of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{SLTPPT_M_sl3_250m.Mean}{mean value of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{SLTPPT_M_sl3_250m.SD}{standard deviation of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{SLTPPT_M_sl3_250m.Quantiles}{quantiles of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{SNDPPT_M_sl1_250m.Mean}{mean value of Weight percentage of the sand particles (0.05-2 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{SNDPPT_M_sl1_250m.SD}{standard deviation of Weight percentage of the sand particles (0.05-2 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{SNDPPT_M_sl1_250m.Quantiles}{quantiles of Weight percentage of the sand particles (0.05-2 mm) at a depth of 0-5cm. Unit= percent}
+#'  \item{SNDPPT_M_sl2_250m.Mean}{mean value of Weight percentage of the sand particles (0.05-2 mm) at a depth of 5-15cm. Unit= percen}
+#'  \item{SNDPPT_M_sl2_250m.SD}{standard deviation of Weight percentage of the sand particles (0.05-2 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{SNDPPT_M_sl2_250m.Quantiles}{quantiles of Weight percentage of the sand particles (0.05-2 mm) at a depth of 5-15cm. Unit= percent}
+#'  \item{SNDPPT_M_sl3_250m.Mean}{mean value of Weight percentage of the sand particles (0.05-2 mm) at a depth of 15-30cm. Unit= percen}
+#'  \item{SNDPPT_M_sl3_250m.SD}{standard deviation of Weight percentage of the sand particles (0.05-2 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{SNDPPT_M_sl3_250m.Quantiles}{quantiles of Weight percentage of the sand particles (0.05-2 mm) at a depth of 15-30cm. Unit= percent}
+#'  \item{TAXNWRB_250m.Mode}{mode of Predicted WRB 2006 subgroup classes (as integers). Unit= factor. Source:https://github.com/ISRICWorldSoil/SoilGrids250m/blob/master/grids/models/TAXNWRB/TAXNWRB_legend.csv}
+#'  \item{TAXOUSDA_250m.Mode}{Predicted WRB 2006 subgroup classes (as integers), Unit= factor. Source:https://github.com/ISRICWorldSoil/SoilGrids250m/blob/master/grids/models/TAXOUSDA/TAXOUSDA_legend.csv}
+#'  \item{TEXMHT_M_sl1_250m.Mean}{mean value of Texture class (USDA system) at a depth of 0-5cm. Unit= factor}
+#'  \item{TEXMHT_M_sl1_250m.SD}{standard deviation of Texture class (USDA system) at a depth of 0-5cm. Unit= factor}
+#'  \item{TEXMHT_M_sl1_250m.Quantiles}{quantiles of Texture class (USDA system) at a depth of 0-5cm. Unit= factor}
+#'  \item{TEXMHT_M_sl2_250m.Mean}{mean value of Texture class (USDA system) at a depth of 5-15cm. Unit= factor}
+#'  \item{TEXMHT_M_sl2_250m.SD}{standard deviation of Texture class (USDA system) at a depth of 5-15cm. Unit= factor}
+#'  \item{TEXMHT_M_sl2_250m.Quantiles}{quantiles of Texture class (USDA system) at a depth of 5-15cm. Unit= factor}
+#'  \item{TEXMHT_M_sl3_250m.Mean}{mean value of Texture class (USDA system) at a depth of 15-30cm. Unit= factor}
+#'  \item{TEXMHT_M_sl3_250m.SD}{standard deviation of Texture class (USDA system) at a depth of 15-30cm. Unit= factor}
+#'  \item{TEXMHT_M_sl3_250m.Quantiles}{quantiles of Texture class (USDA system) at a depth of 15-30cm. Unit= factor}
+#'  \item{WWP_M_sl1_250m.Mean}{mean value of available soil water capacity (volumetric fraction) until wilting point at a depth of 0-5cm. Unit= percent}
+#'  \item{WWP_M_sl1_250m.SD}{standard deviation of available soil water capacity (volumetric fraction) until wilting point at a depth of 0-5cm. Unit= percent}
+#'  \item{WWP_M_sl1_250m.Quantiles}{quantiles of available soil water capacity (volumetric fraction) until wilting point at a depth of 0-5cm. Unit= percent}
+#'  \item{WWP_M_sl2_250m.Mean}{mean value of available soil water capacity (volumetric fraction) until wilting point at a depth of 5-15cm. Unit= percent}
+#'  \item{WWP_M_sl2_250m.SD}{standard deviation of available soil water capacity (volumetric fraction) until wilting point at a depth of 5-15cm. Unit= percent}
+#'  \item{WWP_M_sl2_250m.Quantiles}{quantiles of available soil water capacity (volumetric fraction) until wilting point at a depth of 5-15cm. Unit= percent}
+#'  \item{WWP_M_sl3_250m.Mean}{mean value of available soil water capacity (volumetric fraction) until wilting point at a depth of 15-30cm. Unit= percent}
+#'  \item{WWP_M_sl3_250m.SD}{standard deviation of available soil water capacity (volumetric fraction) until wilting point at a depth of 15-30cm. Unit= percent}
+#'  \item{WWP_M_sl3_250m.Quantiles}{quantiles of available soil water capacity (volumetric fraction) until wilting point at a depth of 15-30cm. Unit= percent}
+#'  ...
+#' }
+#' @source https://www.isda-africa.com/isdasoil/?location=13.812%2C-21.671%2C43.677%2C-0.051
+"SoilGrids"#'
+
+
+
