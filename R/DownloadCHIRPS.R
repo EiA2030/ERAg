@@ -4,54 +4,52 @@
 #' a local directory specied by the `SaveDir` argument.
 #'
 #' @param StartYear A single integer value from 1983 onward indicating the start year for data download. Default value = `1981`.
-#' @param EndYear A single integer value from 1983 onward indicating the end year for data download. Default value = `2020`.
+#' @param EndYear A single integer value from 1983 onward indicating the end year for data download. Default value = `2021`.
+#' @param EndDay A single integer value for the last day, in julian format, of available data for `EndYear`. Default value = `365`.
 #' @param SaveDir A character vector of length one containing the path to the directory where CHIRPS data should save. Default value = `/CHIRPS`.
+#' @param quiet logical `T/F`, if `T` progress bar is suppressed
 #' @export
-DownloadCHIRPs<-function(StartYear=1983,
-                         EndYear=2020,
-                         SaveDir=paste0(getwd(),"/CHIRPS")){
+DownloadCHIRPS<-function(StartYear=1980,EndYear=2021,EndDay=365,SaveDir,quiet){
 
-  if(!is.na(SaveDir) & substr(SaveDir,nchar(SaveDir),nchar(SaveDir))!="/"){
-    SaveDir<-paste0(SaveDir,"/")
+  URLmaster<-"https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/"
+
+
+  if(!dir.exists(SaveDir)){
+    dir.create(SaveDir,recursive=T)
   }
 
 
-  numberOfDays <- function(date) {
-    m <- format(date, format="%m")
+  for(YEAR in StartYear:EndYear){ # MinYear:MaxYear (Min = 1983 Max = Present)
 
-    while (format(date, format="%m") == m) {
-      date <- date + 1
+    if(YEAR==EndYear){
+      ENDDAY<-EndDay
+    }else{
+      ENDDAY<-as.numeric(format(as.Date(paste0(YEAR,"-12-31")),"%j"))
     }
 
-    return(as.integer(format(date - 1, format="%d")))
+    for(DAY in 1:ENDDAY){
+
+
+      if(quiet){
+        # Display progress
+        cat('\r                                                                                                                                          ')
+        cat('\r',paste0("Downloading file: ",DAY,"/",YEAR))
+        flush.console()
+      }
+
+
+      DATE<-as.Date(paste0(YEAR,"-",DAY),format="%Y-%j")
+
+      DAY<-format(DATE,"%d")
+      MONTH<-format(DATE,"%m")
+
+      FILE<-paste0("chirps-v2.0.",YEAR,".",MONTH,".",DAY,".tif.gz")
+
+      URL<-paste0(URLmaster,YEAR,"/",FILE)
+      destfile<-paste0(SaveDir,"/",FILE)
+      if(!file.exists(destfile)){
+        download.file(URL, destfile,quiet=quiet)
+      }
+    }
   }
-
-
-  if(StartYear<1983){StartYear<-1983}
-
-  for(i in StartYear:EndYear){ # MinYear:MaxYear (Min = 1983 Max = Present)
-    SaveDir_i<-paste0(SaveDir,i)
-
-    if(!dir.exists(SaveDir_i)){
-      dir.create(SaveDir_i,recursive=T)
-    }
-
-
-    Site<-paste0("https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/")
-
-
-    for(j in 1:12){
-      MDays<-numberOfDays(as.Date(paste0(i,"-",j,"-01")))
-      for(k in 1:MDays){
-        kk<-if(k<10){paste0(0,k)}else{k}
-        jj<-if(j<10){paste0(0,j)}else{j}
-
-        URL<-paste0(Site,i,"/chirps-v2.0.",i,".",jj,".",kk,".tif.gz")
-        destfile<-paste0(SaveDir_i,"/chirps-v2.0.",i,".",jj,".",kk,".tif.gz")
-        if(!file.exists(destfile)){
-          download.file(URL, destfile)
-        }
-
-
-      }}}
 }

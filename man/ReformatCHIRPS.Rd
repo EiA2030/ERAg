@@ -4,10 +4,7 @@
 \alias{ReformatCHIRPS}
 \title{Reformat CHIRPS 2.0 dataset}
 \usage{
-ReformatCHIRPS(
-  CHIRPS_dir = paste0(getwd(), "/CHIRPS"),
-  Save_dir = paste0(getwd(), "/CHIRPS_Reformatted")
-)
+ReformatCHIRPS(CHIRPS_dir, Save_dir)
 }
 \arguments{
 \item{CHIRPS_dir}{A character vector of length one containing the path to the directory where CHIRPS data should save. Default value = \verb{/CHIRPS}.}
