@@ -8,6 +8,7 @@
 #' \href{https://doi.org/10.1016/S0167-8809(00)00140-7}{Yamoah2000}, \href{https://doi.org/10.3763/ijas.2010.0471}{Sirrine2010}) to estimate production risk as:
 #' 1) `Risk.Means` = the probability of the mean experimental treatment yielding lower than the control treatment; and
 #' 2) `Risk.Diff` = the probability of the mean yield difference between experimental and control treatments being less than 0.
+#'
 #' A minimum of three seasons of yield data from the same experimental treatments are required to calculate risk and this is the default threshold for the analyses presented here.
 #' The minimum number of season for a multi-year observation (MYO) to be included in analyses can be adjusted using the `MinYear` parameter.
 #'
@@ -45,6 +46,10 @@
 #' * `N.Obs`= the total number of MYOs
 #' * `Diff.p.val.se` = the standard error of `Risk$Diff.p.val`
 #' * `Mean.p.val.se` = the standard error of `Risk$Mean.p.val`
+#' * `Diff.CI95low` = lower 95% confidence interval of `Diff.p.val`
+#' * `Diff.CI95high` = upper 95% confidence interval of `Diff.p.val`
+#' * `Mean.CI95low` = lower 95% confidence interval of `Mean.p.val`
+#' * `Mean.CI95high` = upper 95% confidence interval of `Mean.p.val`
 #' @export
 #' @import data.table
 #' @importFrom data.table copy setnames
@@ -69,6 +74,7 @@ RiskCalc<-function(Data,
   Risk[,Diff.SD:=sd(MeanT-MeanC),by=UID]
   Risk[,Diff.t.stat:=Diff.Mean/(Diff.SD/N.Obs^0.5)]
   Risk[,Diff.p.val:=pt(Diff.t.stat,N.Obs-1,lower.tail = T)]
+
   # Calculate probability the mean trt being < mean control
   Risk[,Mean.C:=mean(MeanC),by=UID]
   Risk[,Mean.T:=mean(MeanT),by=UID]
@@ -77,12 +83,16 @@ RiskCalc<-function(Data,
   Risk[,Mean.p.val:=pt(Mean.t.stat,N.Obs-1,lower.tail = T)]
   Risk[,N.Obs.Study:=.N,by=list(Practice,Code,Outcome)]
 
+
   Cols<-c("Outcome","Practice","Practice.Base","Practice.Code","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")
   Cols<-c(Cols,"N.Years","N.Obs","N.Obs.Study","Diff.Mean","Diff.SD","Diff.t.stat","Diff.p.val","Mean.C","Mean.T","Mean.T.SD","Mean.t.stat","Mean.p.val")
   Risk<-unique(Risk[,..Cols])
   Risk[,Weight:=((Rep^2)/(Rep*2))/N.Obs.Study]
 
-  Risk.Means<-Risk[!is.infinite(Diff.t.stat),list(Diff.Mean=weighted.mean(Diff.Mean,Weight),
+
+
+
+  Risk.Diff<-Risk[!is.infinite(Diff.t.stat),list(Diff.Mean=weighted.mean(Diff.Mean,Weight),
                                                   Diff.SD=weighted.mean(Diff.SD,Weight),
                                                   Diff.t.stat=weighted.mean(Diff.t.stat,Weight),
                                                   Diff.p.val=weighted.mean(Diff.p.val,Weight),
@@ -93,16 +103,22 @@ RiskCalc<-function(Data,
                                                   Total.Obs=sum(N.Obs),
                                                   N.Obs=.N),by=c("Practice","Practice.Code","Outcome")]
 
-  Risk.Diff<-Risk[!is.infinite(Mean.t.stat),list(Mean.C=weighted.mean(Mean.C,Weight),
+  Risk.Diff[,Diff.CI95low:=Diff.p.val - (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Diff.p.val.se)]
+  Risk.Diff[,Diff.CI95high:=Diff.p.val + (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Diff.p.val.se)]
+
+  Risk.Means<-Risk[!is.infinite(Mean.t.stat),list(Mean.C=weighted.mean(Mean.C,Weight),
                                                  Mean.T=weighted.mean(Mean.T,Weight),
                                                  Mean.T.SD=weighted.mean(Mean.T.SD,Weight),
                                                  Mean.t.stat=weighted.mean(Mean.t.stat,Weight),
                                                  Mean.p.val=weighted.mean(Mean.p.val,Weight),
-                                                 Mean.p.val.se=diagis::weighted_se(Mean.p.val,Weight)),
+                                                 Mean.p.val.se=diagis::weighted_se(Mean.p.val,Weight),
+                                                 N.Obs=.N),
                   by=c("Practice","Practice.Code","Outcome")]
 
+  Risk.Means[,Mean.CI95low:=Mean.p.val - (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Mean.p.val.se)]
+  Risk.Means[,Mean.CI95high:=Mean.p.val + (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Mean.p.val.se)]
 
-  Risk.Averages<-cbind(Risk.Means,Risk.Diff[,!c("Practice","Outcome","Practice.Code")])
+  Risk.Averages<-cbind(Risk.Diff,Risk.Means[,!c("Practice","Outcome","Practice.Code","N.Obs")])
 
   return(list(Risk=Risk,Risk.Averages=Risk.Averages))
 }

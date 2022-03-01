@@ -43,6 +43,10 @@ A list of two data.tables \code{Risk} and \code{Risk.Averages}.
 \item \code{N.Obs}= the total number of MYOs
 \item \code{Diff.p.val.se} = the standard error of \code{Risk$Diff.p.val}
 \item \code{Mean.p.val.se} = the standard error of \code{Risk$Mean.p.val}
+\item \code{Diff.CI95low} = lower 95\% confidence interval of \code{Diff.p.val}
+\item \code{Diff.CI95high} = upper 95\% confidence interval of \code{Diff.p.val}
+\item \code{Mean.CI95low} = lower 95\% confidence interval of \code{Mean.p.val}
+\item \code{Mean.CI95high} = upper 95\% confidence interval of \code{Mean.p.val}
 }
 }
 \description{
@@ -56,9 +60,10 @@ We adapted a lower confidence limit (LCL) approach (e.g.  \href{https://onlineli
 \enumerate{
 \item \code{Risk.Means} = the probability of the mean experimental treatment yielding lower than the control treatment; and
 \item \code{Risk.Diff} = the probability of the mean yield difference between experimental and control treatments being less than 0.
+}
+
 A minimum of three seasons of yield data from the same experimental treatments are required to calculate risk and this is the default threshold for the analyses presented here.
 The minimum number of season for a multi-year observation (MYO) to be included in analyses can be adjusted using the \code{MinYear} parameter.
-}
 
 Statistics are reported aggregated to the level of practice hierarchy specified in the \code{PLevel} parameter.
 
