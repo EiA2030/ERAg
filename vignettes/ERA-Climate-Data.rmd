@@ -83,43 +83,54 @@ DownloadCHIRPs(StartYear=1983,
 The `ReformatCHIRPS` function transforms the CHIRPS data downloaded by the `DownloadCHIRPS` function to be an array object from which data can be quickly extracted. The directory containing the download CHIRPS data is specified by `CHIRPS_dir` argument.  
 
 ```{r reformat CHIRPS,echo=T,eval=FALSE}
-ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS Downloads"),
-                         Save_dir=paste0(getwd(),"/CHIRPS Reformatted")
+ReformatCHIRPS<-function(CHIRPS_dir="CHIRPS Downloads"),
+                         Save_dir="CHIRPS Reformatted")
 ```
 #### 3) Extract
 The `ExtractCHIRPS` function extracts daily climate data from a reformatted CHIRPS object created by the `ReformatCHIRPS` and located in the directory specified by the `CHIRPS_dir` argument.  The period for which data are extracted for, specified by the `YStart` and `YEnd` arguments, should not exceed the bounds of the years specified when the CHIRPS data were downloaded.  
 
 ```{r extract CHIRPS,echo=T,eval=FALSE}
-CHIRPS<-ExtractCHIRPS(DATA = ERA.Data,
-                     ID = "Site.Key",
-                     CHIRPS_dir="/CHIRPS Reformatted",
-                     Save_Dir = "/CHIRPS",
-                     YStart = 1983,
-                     YEnd = 2019,
-                     ROUND=5,
-                     M.ORIGIN=M.ORIGIN)
+  CHIRPS<-ExtractCHIRPS(
+    Data=Data,
+    ID="Site",
+    CHIRPS_dir = "CHIRPS Reformatted",
+    Save_Dir = "CHIRPS",
+    YStart=1983,
+    YEnd=2020,
+    Round = 2,
+    Origin = "1900-01-01"
+  )
 ```
 
+#### Add altitude
 ### POWER
+Before we can use `ExtractPOWER` or calculate PET we need to add altitude data to ERA. Altitude data can be added from the `ERA_Physical` object of the `ERAg` package.
+
+```{r Add Altitude,eval=F}
+ERA.Data<-merge(ERA.Data,ERA_Physical[,list(Site.Key,Altitude.mean)],by="Site.Key",all.x =T)
+```
+
 The `ExtractPOWER` function downloads agroclimatology data at 0.05&deg resolution from the [NASA POWER](https://power.larc.nasa.gov/) dataset using an AP query. As it is an API query the download process is slow and may take many hours.
 
 The code below will download chunks of data for combination of POWER parameter (specified in the `Parameters` argument) and `Site.Key` for the period 1983-07-01 to 2018-12-31. The parameters chosen allow the calculation of Penman-Montieth evapotranspiration.  
 
-Downloaded files are stored in the directory specified by the `Save_Dir` argument and once all the data have been downloaded they are combined together and saved as a `POWER.RData` object in the directory specified in the `PowerSave` argument. The `DELETE` argument removes downloaded files when set to `TRUE`.
-
+Downloaded files are stored in the directory specified by the `Save_Dir` argument and once all the data have been downloaded they are combined together and saved as a `POWER.RData` object in the directory specified in the `PowerSave` argument. The `Delete` argument removes downloaded files when set to `TRUE`.
 
 ```{r POWER,echo = T, eval = F}
-POWER<-ExtractPOWER(DATA=ERA.Data,
-                   Parameters= paste0("ALLSKY_SFC_SW_DWN,", "PRECTOT,", "PS,","QV2M,","RH2M,","T2M,","T2M_MAX,","T2M_MIN,","WS2M"),
-                   StartDate=19830701,
-                   EndDate=20181231,
-                   ID="Site.Key",
-                   Save_Dir="/POWERdownloads",
-                   PowerSave="/POWER",
-                   DELETE=FALSE,
-                   M.ORIGIN=M.ORIGIN,
-                   MaxBuffer=50000) 
-
+POWER<-ExtractPOWER(Data=ERA.Data,
+                    ID="Site",
+                    Parameters=c("ALLSKY_SFC_SW_DWN", "PRECTOT", "PS","QV2M","RH2M","T2M","T2M_MAX","T2M_MIN","WS2M"),
+                    Rename= c("Solar.Rad","Rain","Pressure","Humid","Temp.Min","Temp.Max","Temp.Mean","WindSpeed","Specific.Humid"),
+                    StartDate="1983-07-01",
+                    EndDate="2021-12-31",
+                    Save_Dir="POWER",
+                    PowerSave = "POWER/Downloads",
+                    Delete=F,
+                    MaxBuffer=240000,
+                    AddDate=T,
+                    AddDayCount=T,
+                    Origin = "1900-01-01",
+                    Quiet=T)
 ```
 
 *NASA POWER Solar parameters are derived from NASA's GEWEX/SRB release 3.0 archive (July 1, 1983 – Dec. 31, 2007) and NASA’s CERES FLASHFlux project (Jan. 1, 2008 – to within about 7-days of real time). Meteorological parameters are derived from the NASA's GMAO MERRA-2 assimilation model (Jan. 1, 1981 to within a few months of real time) plus GEOS-5.12.4 FP-IT (End of MERRA-2 to within several days of real time). The data in POWER cover the period 1983-07-01 to near present.*
@@ -127,22 +138,7 @@ POWER<-ExtractPOWER(DATA=ERA.Data,
 ### *Pending: BioClim*
 
 ### Calculating reference PET (potential evapotranspiration)
-Agroclimatology datasets such as POWER contain the variables needed to calculate reference PET, but before we can do this we need to add altitude and gap fill some missing solar radiation values.  
-
-#### Add altitude
-Altitude data can be added from the `ERA_Physical` object of the `ERAg` package.
-
-```{r add altitude, echo=T,eval=F}
-
-    funX<-function(ID){
-      ID.NAME<-ID
-      ERA_Physical[match(ID.NAME,unlist(ERA_Physical[,Site.Key])),Altitude.mean]
-    }
-    
-    POWER[,Altitude:=funX(Site.Key[1]),by=Site.Key]
-    rm(funX)
-    
-```
+Agroclimatology datasets such as POWER contain the variables needed to calculate reference PET, but before we can do this we need to gap fill some missing solar radiation values.  
 
 #### Subsitute missing solar radiation values
 
