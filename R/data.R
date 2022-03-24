@@ -1,4 +1,4 @@
-#' The compiled ERA dataset (version = Comb 2022.02.01 2022.02.04)
+#' The compiled ERA dataset (version = Comb 2022.03.22 2022.03.23)
 #' \describe{
 #'   \item{Index}{unique row identity}
 #'   \item{Code}{unique publication identity}
@@ -516,7 +516,7 @@
 #'  ...
 #' }
 #' @source https://www.isda-africa.com/isdasoil/?location=13.812%2C-21.671%2C43.677%2C-0.051
-"SoilGrids"#'
+"ERA_SoilGrids18"
 
 
 
