@@ -5,23 +5,20 @@
 \title{Extract Climate Data from reformatted CHIRPS 2.0 dataset}
 \usage{
 ExtractCHIRPS(
-  DATA,
+  Data,
   ID,
-  CHIRPS_dir = "/CHIRPS_Refomatted",
-  Save_Dir = "/CHIRPS_Extracted",
+  CHIRPS_dir,
+  Save_Dir,
   YStart,
   YEnd,
-  ROUND = 5,
-  M.ORIGIN = "1900-01-01"
+  Round = 4,
+  Origin = "1900-01-01"
 )
 }
 \arguments{
-\item{DATA}{A data.table or data.frame containing decimal degree point locations as two numeric columns \code{Latitude} \code{Longitude}, an numeric field
-\code{Buffer} that describes a radius of spatial uncertainty in meters, and a unique id field naming each location whose name is specified using the \code{ID} parameter.}
-
 \item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.}
 
-\item{CHIRPS_dir}{A character vector of length one containing the path to the directory where reformatted CHIRPS data is saved. Default value = \verb{/CHIRPS_Refomatted}.}
+\item{CHIRPS_dir}{A character vector of length one containing the path to the directory where reformatted CHIRPS data is saved.}
 
 \item{Save_Dir}{A character vector of length one containing the path to the directory where the extracted and compiled POWER data is to be saved. Set to NA if you do not want to save the returned dataset.}
 
@@ -29,10 +26,13 @@ ExtractCHIRPS(
 
 \item{YEnd}{A single integer value from 1983 onward indicating the end year for CHIRPS data extraction.}
 
-\item{ROUND}{A integer value indicating the number of decimal places to round the output \code{RAIN} field to. Default = \code{5}}
+\item{Round}{A integer value indicating the number of decimal places to round the output \code{RAIN} field to. Default = \code{5}}
 
-\item{M.ORIGIN}{A character vector of length one in the form \code{dddd-mm-dd} specifying a date of origin to which dates are mapped to as the output
+\item{Origin}{A character vector of length one in the form \code{dddd-mm-dd} specifying a date of origin to which dates are mapped to as the output
 \code{DayCount} field. Default value is \code{1900-01-01}}
+
+\item{DATA}{A data.table or data.frame containing decimal degree point locations as two numeric columns \code{Latitude} \code{Longitude}, an numeric field
+\code{Buffer} that describes a radius of spatial uncertainty in meters, and a unique id field naming each location whose name is specified using the \code{ID} parameter.}
 }
 \value{
 A data.table of daily precipitation data including the fields:

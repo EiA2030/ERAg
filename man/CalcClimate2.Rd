@@ -5,10 +5,9 @@
 \title{Calculate climate statistics}
 \usage{
 CalcClimate2(
-  DATA,
+  Data,
   CLIMATE,
   ID,
-  LoadExisting = T,
   Rain.Data.Name,
   Temp.Data.Name,
   Rain.Windows = c(6 * 7, 4 * 7, 2 * 7, 2 * 7),
@@ -28,22 +27,17 @@ CalcClimate2(
   Windows = data.table(Name = "Plant.0-30", Start = 1, End = 30),
   SaveDir = "Climate Stats/",
   ErrorDir = "Climate Stats/Errors/",
-  Exclude.EC.Diff = F,
   EC.Diff = 0.6,
   ROUND = 5,
   DebugMode = F
 )
 }
 \arguments{
-\item{DATA}{An ERA dataset (e.g. \code{ERA.Compiled}) processed by the \code{AddEcoCrop}, \code{EstPDayData}, \code{EstSLenData} and \code{EstPDayRain} functions.}
-
 \item{CLIMATE}{A daily agroclimatology dataset with fields: 1) \code{Temp.Mean} = mean daily temperature - C; 2) \code{Temp.Max} = maximum daily temperature - C;
 \code{Temp.Min} = minimum daily temperature - C; 4) \code{Rain} = daily rainfall - mm; 5) \code{ETo} = reference evapotranspiration - mm; 6) class \code{Date} field
 named \code{Date}; and 7) location identity as per \code{ID} argument and named the same as per \code{DATA}.}
 
 \item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided}
-
-\item{LoadExisting}{Logical \code{T/F}; If the analysis has already been conducted given the parameters supplied then setting this parameter to \code{T} will load the pre-existing data.}
 
 \item{Rain.Data.Name}{A character vector of length one containing the name of the rainfall dataset in \code{CLIMATE}, this must be the same has the rainfall data used when preparing \code{DATA} using
 the \code{EstPDayRain} function. This can be the same as \code{Temp.Data.Name}.}
@@ -87,14 +81,19 @@ For example \code{data.table(Name="Plant.1-30",Start=1,End=30)} is a temporal pe
 
 \item{ErrorDir}{A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.}
 
-\item{Exclude.EC.Diff}{Logical \code{T/F}; if \code{T} observations with a proportional difference of greater than \code{EC.Diff} between reported (or data estimated) and ecocrop season length are excluded.}
-
-\item{EC.Diff}{A numeric vector of length one; a value 0-1 to be used in combination with the \code{Exclude.EC.Diff} argument.
-If \code{Exclude.EC.Diff==T} and \code{abs(Reported.Season.Length-EcoCrop.Season.Length)/EcoCrop.Season.Length>EC.Diff} then observations are excluded from analysis.}
-
 \item{ROUND}{An integer vector of length one indicating the number of decimal places to round output values to.}
 
 \item{DebugMode}{Logical \code{T/F}; if \code{T} function progress is shown line by line in the consule, if \code{F} progress is kept to a single line and continously overwritten.}
+
+\item{DATA}{An dataset with fields: \code{Site.Key} = character field containing a unique code for each location in the dataset,
+\code{EU} character field containing an ERA product code, \code{Product} character field containing the product name,
+\code{M.Year} an integer field for the planting year, \code{M.Season} a integer field of planting season (\verb{1, 2, or NA}) for locations with more than one growing season,
+if only one growing season is prsent at location use \code{NA}, \code{PlantingDate} class \code{Date} field for date of planting,
+\code{SeasonLength.Data} integer field for length of growing season/cycle in days (observed),  \code{SeasonLength.EcoCrop} integer field for length of growing
+season/cycle in days (EcoCrop value), and  \code{Topt.low}, \code{Topt.high}, \code{Tlow}, and \code{Thigh} are numeric fields containing the absolute and optimal thermal
+limits for the product (can be supplied from EcoCrop).}
+
+\item{LoadExisting}{Logical \code{T/F}; If the analysis has already been conducted given the parameters supplied then setting this parameter to \code{T} will load the pre-existing data.}
 }
 \value{
 A list is output containing following data.tables:

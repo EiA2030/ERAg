@@ -5,47 +5,64 @@
 \title{Extract Climate Data from NASA POWER agriclimatology dataset}
 \usage{
 ExtractPOWER(
-  DATA,
+  Data,
   ID,
-  Parameters = paste0("ALLSKY_SFC_SW_DWN,", "PRECTOT,", "PS,", "QV2M,", "RH2M,",
-    "T2M,", "T2M_MAX,", "T2M_MIN,", "WS2M"),
-  StartDate = 19830701,
-  EndDate = 20181231,
-  Save_Dir = "POWER/",
-  PowerSave = "POWER Downloads/",
-  DELETE = F,
-  M.ORIGIN = "1900-01-01",
-  MaxBuffer = 240000
+  Parameters = c("ALLSKY_SFC_SW_DWN", "PRECTOT", "PS", "QV2M", "RH2M", "T2M",
+    "T2M_MAX", "T2M_MIN", "WS2M"),
+  Rename = c("Solar.Rad", "Rain", "Pressure", "Humid", "Temp.Min", "Temp.Max",
+    "Temp.Mean", "WindSpeed", "Specific.Humid"),
+  StartDate = "1983-07-01",
+  EndDate = "2021-12-31",
+  Save_Dir = "POWER",
+  PowerSave = "POWER/Downloads",
+  Delete = F,
+  MaxBuffer = 240000,
+  AddDate = T,
+  AddDayCount = T,
+  Origin = "1900-01-01",
+  Round = 2,
+  Quiet = T
 )
 }
 \arguments{
-\item{DATA}{A data.table or data.frame containing decimal degree point locations as two numeric columns \code{Latitude} \code{Longitude}, an numeric field
-\code{Buffer} that describes a radius of spatial uncertainty in meters, and a unique id field naming each location whose name is specified using the \code{ID} parameter.}
+\item{Data}{A data.table or data.frame containing numeric fields for  \code{Latitude} and \code{Longitude} (decimal degrees), \code{Altitude} (m), and \code{Buffer}  (m). Buffer describes a radius of spatial uncertainty.
+A character field naming each location is also required, the name of this column must be specified using the \code{ID} parameter.}
 
-\item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.}
+\item{ID}{A character vector of length one containing the column name for location name field in \code{Data}.}
 
-\item{Parameters}{A character vector of length one contain the names of POWER variable to be downloaded. Excellent documentation for the POWER API using html web query can be found ref{https://power.larc.nasa.gov/docs/v1/}{here} or
-ref{https://power.larc.nasa.gov/new/files/POWER_Data_v8_methodology.pdf}{here}. Default value = \code{paste0("ALLSKY_SFC_SW_DWN,", "PRECTOT,", "PS,","QV2M,","RH2M,","T2M,","T2M_MAX,","T2M_MIN,","WS2M")}}
+\item{Parameters}{A character vector containing the names of POWER variables to be downloaded.}
 
-\item{StartDate}{A numeric vector of length one containing the start date for POWER data extraction in the form \code{yyyymmdd}. The default value = \code{19830701} and this is the earliest date for which POWER data is available}
+\item{Rename}{A character vector of new variable matching the length of \code{Parameters}. Set to \code{NA} to retain orginal parameter names.}
 
-\item{EndDate}{A numeric vector of length one containing the start date for POWER data extraction in the form \code{yyyymmdd}. Default value = 20181231.}
+\item{StartDate}{A numeric vector of length one containing the start date for POWER data extraction in the form \code{yyyy-mm-dd}. Default value = \code{1983-07-01} and this is the earliest date for which POWER data is available}
+
+\item{EndDate}{A numeric vector of length one containing the start date for POWER data extraction in the form \code{yyyy-mm-dd}.}
 
 \item{Save_Dir}{A character vector of length one containing the path to the directory where the extracted and compiled POWER data is to be saved. Set to NA if you do not want to save the returned dataset.}
 
 \item{PowerSave}{A character vector of length one containing the path to a directory where download POWER data is saved.}
 
-\item{DELETE}{Logical T/F. Delete downloaded site files once all sites are downloaded and the data has been processed and combined (default = FALSE)}
-
-\item{M.ORIGIN}{A character vector of length one in the form \code{dddd-mm-dd} specifying a date of origin to which dates are mapped to as the output \code{DayCount} field. Default value is \code{1900-01-01}}
+\item{Delete}{Logical \code{T/F}. Delete downloaded site files once all sites are downloaded and the data has been processed and combined (default = FALSE)}
 
 \item{MaxBuffer}{Maximum allowed buffer radius in m. Default and maximum value = \code{240000}.}
+
+\item{AddDate}{Logical \code{T/F}.If \code{T} then a date field is added to the output data.table.}
+
+\item{AddDayCount}{Logical T/F. If \code{T} then an integer julian day field is added to the output data.table.}
+
+\item{Origin}{A character vector of length one in the form \code{yyyy-mm-dd} specifying a date of origin to which dates are mapped to as the output \code{DayCount} field. Default value is \code{1900-01-01}}
+
+\item{Round}{An integer value specifying the number of decimal places to round variable values to.}
+
+\item{Quiet}{Logical T/F. Sets the \code{quiet} argument of the \code{download.file} function, if \code{T} a progress bar is displayed.}
 }
 \value{
-A data.table of daily climate data including the fields:
+A data.table of daily climate data, if default paramters are supplied then output fields are:
 \itemize{
 \item \code{Year} = Year of observation (integer)
 \item \code{Day}= julian day of observation (integer)
+\item \code{(ID)} = location name (character)
+\item \code{Altitude} = altitude of site - m (numeric)
 \item \code{Solar.Rad} = insolation incident on a horizontal surface - MJ/m^2/day (numeric)
 \item \code{Pressure} = surface pressure - kPa = (numeric)
 \item \code{Specific.Humid.} = specific humidity at 2 meters - \% (numeric)
@@ -54,9 +71,10 @@ A data.table of daily climate data including the fields:
 \item \code{Temp.Min} = minimum temperature - C (numeric)
 \item \code{Temp.Max} = maximum temperature - C (numeric)
 \item \code{WindSpeed} = wind speed at 2 m -  m/s (numeric)
+\item \code{Pressure.Adjusted}= surface pressure adjusted to  - kPa = (numeric)
 \item \code{Rain} = precipitation - mm day-1 (numeric)
 \item \code{Date} = date of observation (Date)
-\item \code{DayCount} = days since date specified in \code{M.ORIGIN} parameter
+\item \code{DayCount} = days since date specified in \code{Origin} parameter
 }
 }
 \description{
@@ -70,6 +88,9 @@ MERRA-2 assimilation model (Jan. 1, 1981 to within a few months of real time) pl
 real time).
 
 Values are extracted and averaged for bounding boxes created from each unique point location and buffer in the data supplied.
+
+Parameter descriptions are \href{here}{https://power.larc.nasa.gov/#resources}, details on API query formulation are \href{here}{https://power.larc.nasa.gov/docs/services/api/temporal/daily/} or
+\href{here}{https://power.larc.nasa.gov/api/pages/?urls.primaryName=Daily}
 
 Note older POWER Solar.Rad values are occasionally missing, these can be substituted using AgMERRA data and the \code{ReplaceSRAD} function.
 }
