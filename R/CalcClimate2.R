@@ -76,7 +76,13 @@
 #'   planting and/or harvest dates) you can exclude observations (`Exclude.EC.Diff`) where the absolute difference between reported and EcoCrop estimated season lengths
 #'   is greater than a specified proportion (`EC.Diff`).
 #'
-#' @param DATA An ERA dataset (e.g. `ERA.Compiled`) processed by the `AddEcoCrop`, `EstPDayData`, `EstSLenData` and `EstPDayRain` functions.
+#' @param DATA An dataset with fields: `Site.Key` = character field containing a unique code for each location in the dataset,
+#' `EU` character field containing an ERA product code, `Product` character field containing the product name,
+#' `M.Year` an integer field for the planting year, `M.Season` a integer field of planting season (`1, 2, or NA`) for locations with more than one growing season,
+#' if only one growing season is prsent at location use `NA`, `PlantingDate` class `Date` field for date of planting,
+#' `SeasonLength.Data` integer field for length of growing season/cycle in days (observed),  `SeasonLength.EcoCrop` integer field for length of growing
+#' season/cycle in days (EcoCrop value), and  `Topt.low`, `Topt.high`, `Tlow`, and `Thigh` are numeric fields containing the absolute and optimal thermal
+#' limits for the product (can be supplied from EcoCrop).
 #' @param CLIMATE A daily agroclimatology dataset with fields: 1) `Temp.Mean` = mean daily temperature - C; 2) `Temp.Max` = maximum daily temperature - C;
 #' `Temp.Min` = minimum daily temperature - C; 4) `Rain` = daily rainfall - mm; 5) `ETo` = reference evapotranspiration - mm; 6) class `Date` field
 #'  named `Date`; and 7) location identity as per `ID` argument and named the same as per `DATA`.
@@ -107,9 +113,6 @@
 #' For example `data.table(Name="Plant.1-30",Start=1,End=30)` is a temporal period from the day after planting to 30 days after planting. Set to NA if no additional windows are required.
 #' @param SaveDir A character vector of length one containing the path to the directory where the output is saved. Set to NA if you do not want to save the returned datasets.
 #' @param ErrorDir A character vector of length one containing the path to the directory where information on potential analysis errors is to be saved. Set to NA if you do not want to save the returned dataset.
-#' @param Exclude.EC.Diff Logical `T/F`; if `T` observations with a proportional difference of greater than `EC.Diff` between reported (or data estimated) and ecocrop season length are excluded.
-#' @param EC.Diff A numeric vector of length one; a value 0-1 to be used in combination with the `Exclude.EC.Diff` argument.
-#' If `Exclude.EC.Diff==T` and `abs(Reported.Season.Length-EcoCrop.Season.Length)/EcoCrop.Season.Length>EC.Diff` then observations are excluded from analysis.
 #' @param ROUND An integer vector of length one indicating the number of decimal places to round output values to.
 #' @param DebugMode Logical `T/F`; if `T` function progress is shown line by line in the consule, if `F` progress is kept to a single line and continously overwritten.
 #' @return A list is output containing following data.tables:
@@ -208,10 +211,9 @@
 #' @importFrom circular circular
 #' @importFrom zoo rollapply as.zoo as.Date
 #' @import data.table
-CalcClimate2<-function(DATA,
+CalcClimate2<-function(Data,
                        CLIMATE,
                        ID,
-                       LoadExisting=T,
                        Rain.Data.Name,
                        Temp.Data.Name,
                        Rain.Windows = c(6*7,4*7,2*7,2*7),
@@ -229,7 +231,6 @@ CalcClimate2<-function(DATA,
                        Windows=data.table(Name="Plant.0-30",Start=1,End=30),
                        SaveDir="Climate Stats/",
                        ErrorDir="Climate Stats/Errors/",
-                       Exclude.EC.Diff=F,
                        EC.Diff=0.6,
                        ROUND=5,
                        DebugMode=F){
@@ -248,933 +249,768 @@ CalcClimate2<-function(DATA,
                  Win.Start,
                  substr(Temp.Data.Name,1,3),
                  substr(Rain.Data.Name,1,3),
-                 EC.Diff,
-                 if(Exclude.EC.Diff){"T"}else{"F"},
                  if(Do.LT.Avg){"T"}else{"F"},
                  if(Do.BioClim){"T"}else{"F"})
 
 
   if(!is.na(SaveDir)){
-    SaveDir1<-paste0(SaveDir,"Analysis/",Params)
-  }
-
-  # Load prexisting data?
-  if(dir.exists(SaveDir1) & LoadExisting){
-    Seasonal<-miceadds::load.Rdata2(file="ClimStatsA.RData",path=SaveDir1)
-
-    Seasonal$DATA<-miceadds::load.Rdata2(file="Data.RData",path=SaveDir1)
-
-    if(Do.BioClim){
-      Seasonal$BioClim<-miceadds::load.Rdata2(file="ClimStatsB.RData",path=SaveDir1)
-    }
-
-  }else{
-
     # Create Save Directory if required
-    if(!dir.exists(SaveDir1)){
-      dir.create(SaveDir1,recursive = T)
+    if(!dir.exists(SaveDir)){
+      dir.create(SaveDir,recursive = T)
     }
 
-
-    if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
-      ErrorDir<-paste0(ErrorDir,"/")
-    }
-
-    if(!is.na(SaveDir) & substr(SaveDir,nchar(SaveDir),nchar(SaveDir))!="/"){
+    if(substr(SaveDir,nchar(SaveDir),nchar(SaveDir))!="/"){
       SaveDir<-paste0(SaveDir,"/")
     }
 
-    Est.Rain<-function(Rain,Date,Widths,Rain.Window.Threshold,Rain.Windows){
+  }
 
-      Rain<-unlist(Rain)
-      Date<-unlist(Date)
-      PD.N<-Date[1]
 
-      # Make sure the rainfall dataset is complete
-      if(!sum(is.na(Rain))>0){
+  if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
+    ErrorDir<-paste0(ErrorDir,"/")
+  }
 
-        R<-which(zoo::rollapply(zoo::as.zoo(Rain[1:Rain.Windows[1]]),width=Rain.Window.Widths[1],sum)>Rain.Window.Threshold[1])
 
+
+  Est.Rain<-function(Rain,Date,Widths,Rain.Window.Threshold,Rain.Windows){
+
+    Rain<-unlist(Rain)
+    Date<-unlist(Date)
+    PD.N<-Date[1]
+
+    # Make sure the rainfall dataset is complete
+    if(!sum(is.na(Rain))>0){
+
+      R<-which(zoo::rollapply(zoo::as.zoo(Rain[1:Rain.Windows[1]]),width=Rain.Window.Widths[1],sum)>Rain.Window.Threshold[1])
+
+      if(length(R)>0){
+        PD.N+R[1]
+      }else{
+        R<-which(zoo::rollapply(zoo::as.zoo(Rain[(Rain.Windows[1]+1):sum(Rain.Windows[1:2])]),width=Rain.Window.Widths[2],sum)>Rain.Window.Threshold[2])
         if(length(R)>0){
           PD.N+R[1]
         }else{
-          R<-which(zoo::rollapply(zoo::as.zoo(Rain[(Rain.Windows[1]+1):sum(Rain.Windows[1:2])]),width=Rain.Window.Widths[2],sum)>Rain.Window.Threshold[2])
+          R<-which(zoo::rollapply(zoo::as.zoo(Rain[(sum(Rain.Windows[1:2])+1):sum(Rain.Windows[1:3])]),width=Rain.Window.Widths[3],sum)>Rain.Window.Threshold[3])
           if(length(R)>0){
             PD.N+R[1]
           }else{
-            R<-which(zoo::rollapply(zoo::as.zoo(Rain[(sum(Rain.Windows[1:2])+1):sum(Rain.Windows[1:3])]),width=Rain.Window.Widths[3],sum)>Rain.Window.Threshold[3])
+            R<-which(zoo::rollapply(zoo::as.zoo(Rain[(sum(Rain.Windows[1:3])+1):sum(Rain.Windows[1:4])]),width=Rain.Window.Widths[4],sum)>Rain.Window.Threshold[4])
             if(length(R)>0){
               PD.N+R[1]
             }else{
-              R<-which(zoo::rollapply(zoo::as.zoo(Rain[(sum(Rain.Windows[1:3])+1):sum(Rain.Windows[1:4])]),width=Rain.Window.Widths[4],sum)>Rain.Window.Threshold[4])
-              if(length(R)>0){
-                PD.N+R[1]
-              }else{
-                as.numeric(NA)
-              }}}}
+              as.numeric(NA)
+            }}}}
+    }else{
+      as.numeric(NA)
+    }
+  }
+
+  GDD<-function(Tmax,Tmin,Tlow,Topt.low,Thigh,Topt.high,ROUND){
+
+    # Create a sin curve with 24 x-axis intervals
+    SIN<-sin(seq(1.5*pi,3.5*pi,(2*pi)/23))
+    # Make a new data frame with Tmax, TMin and 24 columns to record hourly interpolated temperatures
+    G<-data.frame(cbind(Tmax=Tmax,Tmin=Tmin,matrix(rep(SIN,each=length(Tmin)),ncol=24,nrow=length(Tmin))))
+
+    FUN<-function(X,Tbase,Topt){
+      X[X<Tbase]<-0
+      X[X>=Tbase & X<=Topt]<- X[X>=Tbase & X<=Topt]-Tbase
+      X[X>Topt]<-Topt-Tbase
+      return(X)
+    }
+
+    GDDcalc<-function(GDDX,SIN,Tmax,Tmin,Tbase,Topt,ROUND){
+
+      # Interpolate Tmax and Tmin using the sin curve
+      G[3:26]<-G[3:26]*(G$Tmax-G$Tmin)/(max(SIN)-min(SIN))
+      G[3:26]<-G[3:26]+(G$Tmax-apply(G[3:26], 1, max))
+
+      G[3:26]<-sapply(G[3:26],FUN,Tbase,Topt)
+
+      # Average hourly values for each day and add to climate dataset
+      G<-round(apply(G[3:26], 1, mean),2)
+      return(G)
+    }
+
+    # Calculate low GDD ####
+    GDDlow<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Tlow,Topt=Topt.low,ROUND=2)
+
+    # Calculate optimum GDD ####
+    GDDopt<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Topt.low,Topt=Topt.high,ROUND=2)
+
+    # Calculate GDD above optimum, but less than max ####
+    GDDhigh<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Topt.high,Topt=Thigh,ROUND=2)
+
+    # Calculate GDD above max temp ####
+    GDDmax<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Thigh,Topt=999999,ROUND=2)
+
+    # Combine GDD calculations and return
+    return(data.table(GDDlow,GDDopt,GDDhigh,GDDmax))
+
+  }
+
+  RAIN.Calc<-function(Rain,ETo,Thresholds,RSeqLen){
+
+    ZDays<-function(Data,Threshold=0,FUN=max,Direction="lower"){
+      # Direction = lower or higher than the threshold specified
+      if(Direction=="lower"){
+        Data[Data<Threshold]<-9999
       }else{
-        as.numeric(NA)
+        Data[Data>Threshold]<-9999
       }
-    }
-
-    GDD<-function(Tmax,Tmin,Tlow,Topt.low,Thigh,Topt.high,ROUND){
-
-      # Create a sin curve with 24 x-axis intervals
-      SIN<-sin(seq(1.5*pi,3.5*pi,(2*pi)/23))
-      # Make a new data frame with Tmax, TMin and 24 columns to record hourly interpolated temperatures
-      G<-data.frame(cbind(Tmax=Tmax,Tmin=Tmin,matrix(rep(SIN,each=length(Tmin)),ncol=24,nrow=length(Tmin))))
-
-      FUN<-function(X,Tbase,Topt){
-        X[X<Tbase]<-0
-        X[X>=Tbase & X<=Topt]<- X[X>=Tbase & X<=Topt]-Tbase
-        X[X>Topt]<-Topt-Tbase
-        return(X)
-      }
-
-      GDDcalc<-function(GDDX,SIN,Tmax,Tmin,Tbase,Topt,ROUND){
-
-        # Interpolate Tmax and Tmin using the sin curve
-        G[3:26]<-G[3:26]*(G$Tmax-G$Tmin)/(max(SIN)-min(SIN))
-        G[3:26]<-G[3:26]+(G$Tmax-apply(G[3:26], 1, max))
-
-        G[3:26]<-sapply(G[3:26],FUN,Tbase,Topt)
-
-        # Average hourly values for each day and add to climate dataset
-        G<-round(apply(G[3:26], 1, mean),2)
-        return(G)
-      }
-
-      # Calculate low GDD ####
-      GDDlow<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Tlow,Topt=Topt.low,ROUND=2)
-
-      # Calculate optimum GDD ####
-      GDDopt<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Topt.low,Topt=Topt.high,ROUND=2)
-
-      # Calculate GDD above optimum, but less than max ####
-      GDDhigh<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Topt.high,Topt=Thigh,ROUND=2)
-
-      # Calculate GDD above max temp ####
-      GDDmax<-GDDcalc(SIN,G,Tmax,Tmin,Tbase=Thigh,Topt=999999,ROUND=2)
-
-      # Combine GDD calculations and return
-      return(data.table(GDDlow,GDDopt,GDDhigh,GDDmax))
-
-    }
-
-    RAIN.Calc<-function(Rain,ETo,Thresholds,RSeqLen){
-
-      ZDays<-function(Data,Threshold=0,FUN=max,Direction="lower"){
-        # Direction = lower or higher than the threshold specified
-        if(Direction=="lower"){
-          Data[Data<Threshold]<-9999
-        }else{
-          Data[Data>Threshold]<-9999
-        }
-        X<-rle(as.character(Data))
-        X<-X$lengths[X$values==9999]
-        if(length(X)>0){
-          return(FUN(X))
-        }else{
-          return(0)
-        }
-      }
-
-      Y<-do.call("cbind",lapply(1:nrow(Thresholds),FUN=function(i){
-        Threshold<-Thresholds[i,Threshold]
-
-        if(Thresholds[i,Direction]=="higher"){
-          ColName<-paste0("Rain.G",Threshold)
-
-          Z<-do.call("cbind",lapply(RSeqLen,FUN=function(j){
-            ZDays(Rain,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="higher")
-          }))
-
-          colnames(Z)<-paste0("N.Seq.D",RSeqLen)
-
-          X<-data.table(
-            Days=round(sum(Rain>Threshold),2),
-            Days.Pr=round(sum(Rain>Threshold)/length(Rain),2),
-            Max.Seq=ZDays(Rain,Threshold=Threshold,FUN=max,Direction="higher"),
-            Z
-          )
-
-        }else{
-          ColName<-paste0("Rain.L",Thresholds[i,Threshold])
-
-          Z<-do.call("cbind",lapply(RSeqLen,FUN=function(j){
-            ZDays(Rain,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="lower")
-          }))
-
-          colnames(Z)<-paste0("N.Seq.D",RSeqLen)
-
-          X<-data.table(
-            Days=round(sum(Rain<Threshold),2),
-            Days.Pr=round(sum(Rain<Threshold)/length(Rain),2),
-            Max.Seq=ZDays(Rain,Threshold=Threshold,FUN=max,Direction="lower"),
-            Z
-          )
-        }
-
-        colnames(X)<-paste0(ColName,".",colnames(X))
-        X
-
-      }))
-
-      X<-data.table(
-        Rain.sum=sum(Rain),
-        ETo.sum=sum(ETo),
-        ETo.NA=sum(is.na(ETo)),
-        WBalance=sum(Rain)-sum(ETo),
-        WBalance.NegDays=sum((Rain-ETo)<0),
-        Y
-      )[is.na(ETo.sum),WBalance:=as.numeric(NA)]
-
-      return(X[,lapply(.SD,as.numeric)])
-
-    }
-
-    TEMP.Calc<-function(Tmax,Tmin,Tmean,Thresholds,TSeqLen){
-
-      ZDays<-function(Data,Threshold=0,FUN=max,Direction="lower"){
-        # Direction = lower or higher than the threshold specified
-        if(Direction=="lower"){
-          Data[Data<Threshold]<-9999
-        }else{
-          Data[Data>Threshold]<-9999
-        }
-        X<-rle(as.character(Data))
-        X<-X$lengths[X$values==9999]
-        if(length(X)>0){
-          return(FUN(X))
-        }else{
-          return(0)
-        }
-      }
-
-      Y<-do.call("cbind",lapply(1:nrow(Thresholds),FUN=function(i){
-        Threshold<-Thresholds[i,Threshold]
-
-        if(Thresholds[i,Direction]=="higher"){
-          ColName<-paste0("Tmax.TG",Threshold)
-
-          Z<-do.call("cbind",lapply(TSeqLen,FUN=function(j){
-            ZDays(Tmax,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="higher")
-          }))
-
-          colnames(Z)<-paste0("N.Seq.D",TSeqLen)
-
-          X<-data.table(
-            Days=round(sum(Tmax>Threshold),2),
-            Days.Pr=round(sum(Tmax>Threshold)/length(Tmax),2),
-            Max.RSeq=ZDays(Tmax,Threshold=Threshold,FUN=max,Direction="higher"),
-            Z
-          )
-
-        }else{
-          ColName<-paste0("Tmin.TL",Thresholds[i,Threshold])
-
-          Z<-do.call("cbind",lapply(TSeqLen,FUN=function(j){
-            ZDays(Tmin,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="lower")
-          }))
-
-          colnames(Z)<-paste0("N.Seq.D",TSeqLen)
-
-          X<-data.table(
-            Days=round(sum(Tmin<Threshold)/length(Tmin),2),
-            Max.RSeq=ZDays(Tmin,Threshold=Threshold,FUN=max,Direction="lower"),
-            Z
-          )
-        }
-
-        colnames(X)<-paste0(ColName,".",colnames(X))
-        X
-
-      }))
-
-      X<-data.table(
-        Y,
-        Tmin.min=min(Tmin),
-        Tmin.mean=mean(Tmin),
-        Tmin.var=var(Tmin),
-        Tmin.sd=sd(Tmin),
-        Tmin.range=diff(range(Tmin)),
-
-        Tmax.max=max(Tmax),
-        Tmax.mean=mean(Tmax),
-        Tmax.var=var(Tmax),
-        Tmax.sd=sd(Tmax),
-        Tmax.range=diff(range(Tmax)),
-
-        Tmean.max=max(Tmean),
-        Tmean.min=min(Tmean),
-        Tmean.mean=mean(Tmean),
-        Tmean.var=var(Tmean),
-        Tmean.sd=sd(Tmean),
-        Tmean.range=diff(range(Tmean))
-      )
-
-
-      return(X[,lapply(.SD,as.numeric)])
-
-
-    }
-
-    C.Med<-function(X,FUN){
-
-      C.Val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(X), 5, 10))),"%j"))*360/365*pi/180)[[1]]
-      N<-round(as.numeric(FUN(C.Val)*180/pi*365/360),0)
-
-      if(length(X)>1){
-        if(N<=0){
-          sprintf("%03d",365+N)
-        }else{
-          sprintf("%03d",N)
-        }
+      X<-rle(as.character(Data))
+      X<-X$lengths[X$values==9999]
+      if(length(X)>0){
+        return(FUN(X))
       }else{
-        sprintf("%03s",format(X,"%j"))
+        return(0)
       }
     }
 
-    SLen<-function(RName,DATA,ErrorDir,EC.Diff,Exclude.EC.Diff){
-      RName<-paste0("UnC.",RName,".P.Date")
+    Y<-do.call("cbind",lapply(1:nrow(Thresholds),FUN=function(i){
+      Threshold<-Thresholds[i,Threshold]
 
-      DATA$Focus<-DATA[,..RName]
+      if(Thresholds[i,Direction]=="higher"){
+        ColName<-paste0("Rain.G",Threshold)
 
-      DATA[PDiff>=20 & !is.na(Focus), SLen:=Harvest.End-UnC.CHIRPS.P.Date]
-      DATA[,Focus:=NULL]
-
-
-      DATA[PDiff<20 & H.Diff>=20, SLen:=Harvest.End-(Plant.Start+(Plant.End-Plant.Start)/2)]
-
-      # Logic for merging data sources for planting date and season length
-      DATA[,P.Date.Merge:=Plant.Start+(Plant.End-Plant.Start)/2
-      ][is.na(P.Date.Merge) & !is.na(Data.PS.Date),P.Date.Merge:=Data.PS.Date+(Data.PE.Date-Data.PS.Date)/2
-      ][,SLen.Merge:=as.numeric(as.character(SLen))
-      ][is.na(SLen.Merge),SLen.Merge:=as.numeric(as.character(Data.SLen))
-      ][,SLen.EcoCrop:=(cycle_min+cycle_max)/2]
-
-      SS<-unique(DATA[!(is.na(SLen.Merge) & is.na(SLen.EcoCrop)) & !is.na(P.Date.Merge),c(..ID,"Code","Latitude","Longitude","EU","Product","M.Year","M.Year.Code","P.Date.Merge","SLen.Merge","SLen.EcoCrop",
-                                                                                          "Plant.Start","Plant.End","Harvest.Start","Harvest.End","SLen","Data.SLen","Data.PS.Date","Data.PE.Date",
-                                                                                          "Topt.low", "Topt.high","Tlow", "Thigh")])
-
-      # Create Error Save Directory if  Required
-      if(!is.na(ErrorDir)){
-        if(!dir.exists(ErrorDir)){
-          dir.create(ErrorDir,recursive = T)
-        }
-
-        Errors<-unique(SS[(abs(SLen.Merge-SLen.EcoCrop)/SLen.EcoCrop)>0.6 & !is.na(Harvest.Start),])
-
-        if(nrow(Errors)>0){
-          fwrite(Errors,paste0(ErrorDir,"Suspected Date Error - Season Length Over 60 Perc Diff to EcoCrop Mean - ",RName,".csv"))
-        }
-      }
-
-      # Fix below this doesn't work when one SLen value is NA
-
-      SS<-SS[,c(..ID,"Latitude","Longitude","EU","Product","M.Year","M.Year.Code","P.Date.Merge","SLen.Merge","SLen.EcoCrop","Topt.low", "Topt.high","Tlow", "Thigh")]
-
-      if(Exclude.EC.Diff){
-        SS<-SS[!(
-          (abs(SLen.Merge-SLen.EcoCrop)/SLen.EcoCrop)>EC.Diff &
-            !((is.na( SLen.Merge) & !is.na(SLen.EcoCrop))) |
-            (!is.na( SLen.Merge) & is.na(SLen.EcoCrop))
-        ),][!(is.na(SLen.Merge) & is.na(SLen.EcoCrop)),]
-      }
-
-      return(list(SS=SS,DATA=DATA))
-    }
-
-    # Create a text file detailing parameters used in analysis
-    if(!is.na(SaveDir)){
-      ParamSave<-list(Rain.Windows=c("Rain.Windows:",Rain.Windows),
-                      Widths=c("Rain.Window.Widths:",Rain.Window.Widths),
-                      Rain.Window.Threshold=c("Rain.Window.Threshold:",Rain.Window.Threshold),
-                      Rain.Threshold=c("Rain.Threshold:",unlist(Rain.Threshold)),
-                      RSeqLen = c("RSeqLen:",RSeqLen),
-                      Temp.Threshold=c("Temp.Threshold:",unlist(Temp.Threshold)),
-                      TSeqLen = c("TSeqLen:",TSeqLen),
-                      Max.LT.Avg=c("Max.LT.Avg:",Max.LT.Avg),
-                      PrePlantWindow=PrePlantWindow,
-                      Windows=c("Windows:",unlist(Windows)),
-                      Win.Start=Win.Start,
-                      Rain.Data.Name=c("Rain.Data.Name:",Rain.Data.Name),
-                      Temp.Data.Name=c("Temp.Data.Name:",Temp.Data.Name),
-                      Exclude.EC.Diff=Exclude.EC.Diff,
-                      EC.Diff=EC.Diff,
-                      Do.LT.Avg=Do.LT.Avg,
-                      Do.BioClim=Do.BioClim
-      )
-
-      if(file.exists(paste0(SaveDir1,"/parameters.txt"))){
-        unlink(paste0(SaveDir1,"/parameters.txt"))
-      }
-
-      lapply(ParamSave, cat, "\n", file=paste0(SaveDir1,"/parameters.txt"), append=TRUE)
-    }
-
-    # Remove any rows with blank products
-    DATA<-DATA[Product!=""]
-
-    CLIMATE<-data.table(CLIMATE)
-
-    DATA<-data.table(DATA)
-
-    DATA[Season.Start==1 & Season.End==1,M.Year.Code:="1"
-    ][Season.Start==2 & Season.End==2,M.Year.Code:="2"
-    ][Season.Start==1 & Season.End==2,M.Year.Code:="1&2"
-    ][M.Year=="",M.Year:=NA]
-
-    DATA[,Plant.Start:=if(class(Plant.Start)=="Date"){Plant.Start}else{as.Date(Plant.Start,"%d.%m.%Y")}
-    ][,Plant.End:=if(class(Plant.End)=="Date"){Plant.End}else{as.Date(Plant.End,"%d.%m.%Y")}
-    ][,Harvest.Start:=if(class(Harvest.Start)=="Date"){Harvest.Start}else{as.Date(Harvest.Start,"%d.%m.%Y")}
-    ][,Harvest.End:=if(class(Harvest.End)=="Date"){Harvest.End}else{as.Date(Harvest.Start,"%d.%m.%Y")}]
-
-    # Refine Season Length where uncertainty in the timing of planting or harvest exists
-    DATA[,PDiff:=Plant.End-Plant.Start][,H.Diff:=Harvest.End-Harvest.Start]
-
-    # Create unique Site x EU x Date combinations
-    SS<-SLen(RName=Rain.Data.Name,DATA,ErrorDir,EC.Diff,Exclude.EC.Diff)
-    DATA<-SS$DATA
-
-    # Check that SLen.Merge is not negative
-    SLenError<-DATA[SLen.Merge<=10]
-    SS<-SS$SS
-
-    if(nrow(SLenError)>0){
-      print(paste0("ERROR: ",DATA[SLen.Merge<=10,paste(unique(Code),collapse = ", ")]," contains season lengths <10 days"))
-      DATA<-DATA[!(SLen.Merge<=10 & !is.na(SLen.Merge))]
-      SS<-SS[!(SLen.Merge<=10 & !is.na(SLen.Merge))]
-    }
-
-    SaveName<-paste0(SaveDir1,"/ClimStatsA.RData")
-
-    # Cross-reference to exisiting data
-    #Missing<-NULL
-    MissingLines<-NULL
-    S.existing<-NULL
-
-
-    if(nrow(SS)>0){
-
-      CLIMATE<-CLIMATE[,!c("Latitude","Longitude","Buffer","DayCount")]
-
-      if(CLIMATE[,class(Year)]!="integer"){
-        CLIMATE[,Year:=as.integer(as.character(Year))]
-      }
-
-      if(Do.BioClim){
-        CLIMATE1<-data.table::copy(CLIMATE)
-      }
-
-      # Set range of years represented in climate data
-      Year.Range<-CLIMATE[,min(Year)]:CLIMATE[,max(Year)]
-
-      # Split rainfall data into a list
-      CLIMATE<-split(CLIMATE,by=ID)
-
-      # Remove Locations in Climate list not in SS
-      N<-match(unlist(SS[,..ID]),names(CLIMATE))
-      CLIMATE<-CLIMATE[N[!is.na(N)]]
-
-      # Check for any climate data with missing CHIRPS rainfall data
-      MissingRain<-names(CLIMATE)[unlist(lapply(CLIMATE,FUN=function(X){X[,all(is.na(Rain))]}))]
-
-      if(length(MissingRain>0)){
-        print("Sites with no rainfall data:")
-        print(DATA[Site.Key %in% MissingRain,unique(paste0(Site.Key,"-",Country))])
-
-        DATA<-DATA[!Site.Key %in% MissingRain]
-        SS<-SS[!Site.Key %in% MissingRain]
-      }
-
-      # Create vector sites in dataset
-      Sites<-as.vector(unlist(unique(SS[,..ID])))
-
-      MCode.SS<-apply(SS[,c(..ID,"EU","P.Date.Merge","M.Year")],1,paste,collapse="_")
-
-      # Determine years for which complete data is available (only to be used for annual calcs., e.g. BIOCLIM)
-      Years<-table(CLIMATE[[1]]$Year)
-      Years<-names(Years[Years>=365])
-
-      # Could this be speeded up by running a parallel lapply on CLIMATE? The main issue is CLIMATE being loaded into RAM for each core.
-      B<-lapply(Sites,FUN=function(Site){
-
-
-        Message<-paste0(Temp.Data.Name," x ",Rain.Data.Name,": Estimating seasonal climate for  site: ",match(Site,Sites),"/",length(Sites))
-
-        if(DebugMode){
-          cat(paste(Message,"\n"))
-        }else{
-          cat('\r                                                                                                                                          ')
-          cat('\r',Message)
-          flush.console()
-        }
-
-        SS.N<-SS[which(SS[,..ID]==Site)][is.na(M.Year.Code),M.Year.Code:=""]
-
-        Climate<-CLIMATE[[Site]]
-
-        if(is.null(Climate)){
-          "No site match in Climate Dataset"
-        }else{
-
-          A<-rbindlist(lapply(1:nrow(SS.N),FUN=function(i){
-
-            WINS<-rbind(data.table(
-              Name=c("Data","EcoCrop"),
-              Start=rep(Win.Start,2),
-              End=c(SS.N[i,SLen.Merge], SS.N[i,SLen.EcoCrop])),
-              Windows
-            )
-
-            Z<-lapply(1:nrow(WINS),FUN=function(j){
-              if(!is.na(WINS[j,End])){
-                C<-Climate[Climate$Date>=(SS.N[i,P.Date.Merge]+ WINS[j,Start])& Climate$Date<=(SS.N[i,P.Date.Merge] + WINS[j,End])]
-
-                D<-Climate[Climate$Date>=(SS.N[i,P.Date.Merge]-PrePlantWindow) & Climate$Date<SS.N[i,P.Date.Merge]]
-
-                # Make sure the climate dataset is complete
-                if(!(nrow(C)<(WINS[j,End]-WINS[j,Start]) | sum(is.na(C$Rain)>0))){ # Technically should have a +1 on the left, here we are giving -1 day leeway
-
-                  C<-c(sapply(GDD(Tmax=C$Temp.Max,Tmin=C$Temp.Min,Tlow=SS.N[i,Tlow],Thigh=SS.N[i,Thigh],Topt.low = SS.N[i,Topt.low],Topt.high = SS.N[i,Topt.high],ROUND=2),sum),
-                       unlist(RAIN.Calc(C$Rain,C$ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen)),
-                       unlist(TEMP.Calc(Tmax=C$Temp.Max, Tmin=C$Temp.Min, Tmean=C$Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen)))
-                  suppressWarnings(C[[paste0("Rain.sum.PrePlant",PrePlantWindow)]]<-D[,sum(Rain)])
-                  suppressWarnings(C[[paste0("ETo.sum.PrePlant",PrePlantWindow)]]<-D[,sum(ETo)])
-                  suppressWarnings(C$EU<-SS.N$EU[i])
-                  C$PD.Used<-SS.N$P.Date.Merge[i]
-                  C$W.Start<-WINS$Start[j]
-                  C$W.End<-WINS$End[j]
-                  C$W.Name<-WINS$Name[j]
-                  C$ID<-Site
-                  C$M.Year<-SS.N$M.Year[i]
-                  C$Season<-SS.N$M.Year.Code[i]
-                  as.data.frame(C)
-
-                }else{
-                }
-              }else{
-
-              }
-
-            })
-
-            rbindlist(Z[unlist(lapply(Z,FUN=function(X){!is.null(X)}))])
-
-
-          }))
-
-          if(Do.LT.Avg){
-
-            EU.N.S<-unique(SS.N[,c("EU","M.Year.Code")])
-
-            LT.A<-lapply(1:nrow(EU.N.S),FUN=function(i){
-
-
-              Message<-paste0(Temp.Data.Name," x ",Rain.Data.Name,": Estimating Long-term averages for  site: ",match(Site,Sites),"/",length(Sites)," | Season: ",EU.N.S$M.Year.Code[i]," | EU: ",EU.N.S$EU[i])
-
-              if(DebugMode){
-                cat(paste(Message,"\n"))
-              }else{
-                cat('\r                                                                                                                                          ')
-                cat('\r',Message)
-                flush.console()
-              }
-
-              PDates<-as.Date(paste0(Year.Range,"-",SS.N[EU==EU.N.S$EU[i] & M.Year.Code==EU.N.S$M.Year.Code[i],C.Med(P.Date.Merge,FUN=stats::median)]),format="%Y-%j")
-
-              # Excise temporal windows from climate data
-              C1<-data.table(Start=which(Climate$Date %in% PDates)-Rain.Windows[1])[,End:=Start+sum(Rain.Windows)][!Start<=0][!End>nrow(Climate)]
-              C<-Climate[unlist(lapply(1:nrow(C1),FUN=function(l){unlist(C1[l,1]):unlist(C1[l,2])})),][!is.na(Year)]
-
-              C[,Sequence:=C1[,Nrow:=1:nrow(C1)][,rep(Nrow,length(Start:End)),by=Nrow][,V1]]
-
-              # Remove incomplete sequences by cross referencing the width the window should be
-              C<-C[Sequence %in%  C[,.N == sum(Rain.Windows)+1,by=Sequence][,Sequence]]
-
-              # Add "data" year
-              C[,YearX:=Year[1],by=Sequence]
-
-              # Work out planting date for each sequence
-              XX<-C[,Est.Rain(Rain,Date,..Rain.Window.Widths,..Rain.Window.Threshold,..Rain.Windows),by=list(YearX,Sequence)]
-
-              Annual.Plant<-zoo::as.Date(unlist(XX[,3]))
-              names(Annual.Plant)<-XX[,YearX]
-
-
-              # Record the planting year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
-              P.Years<-unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1)+Rain.Windows[1],"Year"][!is.na(Year)])
-
-              N<-!is.na(Annual.Plant)
-              N1<-!is.na(Annual.Plant) &  as.integer(format(Annual.Plant,"%Y"))<=Max.LT.Avg
-
-              No.PDate.Flag<-""
-
-              if(sum(N1)==0){
-                Annual.Plant<-rep(as.Date(NA),length(P.Years))
-                names(Annual.Plant)<-P.Years
-                PD.Date.Pub<-SS.N[EU==EU.N.S[i,EU] &  M.Year.Code==EU.N.S[i,M.Year.Code] & P.Date.Merge>="1983-07-01",P.Date.Merge]
-                Annual.Plant[match(format(PD.Date.Pub,"%Y"),P.Years)]<-PD.Date.Pub
-
-                No.PDate.Flag<-"No seasons met rainfall threshold, mid-point of published planting period used."
-                C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[!is.na(Annual.Plant)]), 5, 10))),"%j"))*360/365*pi/180)
-              }else{
-                C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
-              }
-
-              LT.Mean<-as.numeric(round(mean(C.val,na.rm=T)*180/pi*365/360,ROUND))
-              LT.Median<-as.numeric(round(median(C.val,na.rm=T)*180/pi*365/360,ROUND))
-
-              if(LT.Mean<=0){
-                LT.Mean<-365+LT.Mean
-              }
-
-              if(LT.Median<=0){
-                LT.Median<-365+LT.Median
-              }
-
-              # Calculate LT.Avg Planting date standard deviation
-              LT.SD<-round(sd(C.val,na.rm = T)*180/pi*365/360,ROUND)
-
-              # Calculate Annual Deviation of Planting Date From LT.Avg
-              # Annual Estimate - Long Term Average
-              if(sum(N1)==0){
-                Annual.Dev.Mean<-NA
-                Annual.Dev.Median<-NA
-              }else{
-                Annual.Dev.Mean<-as.numeric(circular::circular(as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)-circular::circular(as.numeric(LT.Mean)*360/365*pi/180))*365/360*180/pi
-
-                Annual.Dev.Median<-as.numeric(circular::circular (as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)- # Annual Estimate
-                                                circular::circular(as.numeric(LT.Median)*360/365*pi/180)[[1]]        # Long Term Average
-                )*365/360*180/pi
-              }
-
-              NYear.LT.Avg<-sum(N1)
-
-              LT.PlantDates<-list(Annual.Estimates=data.table(P.Year=P.Years,
-                                                              P.Date=Annual.Plant,
-                                                              Dev.Mean=Annual.Dev.Mean,
-                                                              Dev.Med=Annual.Dev.Median,
-                                                              EU=EU.N.S$EU[i],
-                                                              Season=EU.N.S$M.Year.Code[i],
-                                                              ID=Site,
-                                                              P.Data.Flag=No.PDate.Flag),
-                                  LT.Averages=data.table(Mean=LT.Mean,
-                                                         Median=LT.Median,
-                                                         SD=LT.SD,N=NYear.LT.Avg,
-                                                         EU=EU.N.S$EU[i],
-                                                         Season=EU.N.S$M.Year.Code[i],
-                                                         ID=Site,
-                                                         P.Data.Flag=No.PDate.Flag))
-
-              # Now Estimate Temperature and Rainfall LTAvgs using the average season lengths and pre-set windows
-              WINS<-rbind(data.table(
-                Name=c("Data","EcoCrop"),
-                Start=rep(Win.Start,2),
-                End=c(SS.N[i,SLen.Merge][1], SS.N[i,SLen.EcoCrop][1])),
-                Windows
-              )[,End:=round(End,0)][,Start:=round(Start,0)]
-
-              WINS<-WINS[!is.na(End),]
-
-              if(nrow(WINS)>0){
-
-                # For seasons that do not meet planting thresholds then substitute median planting date from LT data
-                Annual.Plant[is.na(Annual.Plant)]<- zoo::as.Date(paste0(names(Annual.Plant[is.na(Annual.Plant)]),"-",round(LT.Median)),"%Y-%j")
-
-                LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){
-
-                  A.Harvest<-Annual.Plant+round(WINS[k,End])
-                  A.Plant<-Annual.Plant+WINS[k,Start]
-
-                  A.P.H<-A.Plant %in% Climate$Date & A.Harvest %in% Climate$Date
-                  A.Harvest<-A.Harvest[A.P.H]
-                  A.Plant<-A.Plant[A.P.H]
-
-                  N1<-which(Climate$Date %in% A.Plant)
-                  N2<-which(Climate$Date %in% A.Harvest)
-
-                  C<-rbindlist(lapply(1:length(N1),FUN=function(i){
-                    X<-Climate[N1[i]:N2[i]]
-                    X[,P.Year:=X[1,Year]]
-                    X[,H.Year:=X[nrow(X),Year]]
-
-                    # Check that climate dataset is complete
-                    if(nrow(X)>=floor(WINS[k,End])){
-                      X
-                    }else{
-                      NULL
-                    }
-                  }))
-
-                  # Calculate climate stats
-                  C<-cbind(
-                    C[,GDD(Tmax=Temp.Max,Tmin=Temp.Min,Tlow=SS.N[i,mean(Tlow)],Thigh=SS.N[i,mean(Thigh)],Topt.low = SS.N[i,mean(Topt.low)],Topt.high = SS.N[i,mean(Topt.high)],ROUND=2),by=c("P.Year","H.Year")
-                    ][,lapply(.SD,sum),.SDcol=3:6,by=c("P.Year","H.Year")],
-                    C[,RAIN.Calc(Rain,ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen),by=c("P.Year","H.Year")][,-c(1:2)],
-                    C[,TEMP.Calc(Tmax=Temp.Max, Tmin=Temp.Min, Tmean=Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen),by=c("P.Year","H.Year")][,-c(1:2)]
-                  )
-
-                  LT.Avg<-C[H.Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){c(round(mean(X,na.rm=T),ROUND),
-                                                                            round(median(X,na.rm=T),ROUND),
-                                                                            round(sd(X,na.rm=T),ROUND),
-                                                                            min(X,na.rm=T),
-                                                                            max(X,na.rm=T))}),.SDcols=3:ncol(C)
-                  ][,Variable:=c("Mean","Median","SD","Min","Max")
-                  ][,N:=nrow(C[H.Year<=Max.LT.Avg,1])]
-
-                  suppressWarnings(Annual.Estimates<-as.data.table(rbind(
-                    (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Mean",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Mean"],
-                    (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Median",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Med"],
-                    C[,Variable:="Annual Value"]
-                  ))[,!"ETo.NA"])
-
-                  LT.Avg$EU<-EU.N.S$EU[i]
-                  LT.Avg$Season<-EU.N.S$M.Year.Code[i]
-                  LT.Avg$ID<-Site
-                  LT.Avg$W.Start<-WINS[k,Start]
-                  LT.Avg$W.End<-WINS[k,End]
-                  LT.Avg$W.Name<-WINS[k,Name]
-                  LT.Avg$P.Data.Flag<-No.PDate.Flag
-
-                  Annual.Estimates$EU<-EU.N.S$EU[i]
-                  Annual.Estimates$Season<-EU.N.S$M.Year.Code[i]
-                  Annual.Estimates$ID<-Site
-                  Annual.Estimates$W.Start<-WINS[k,Start]
-                  Annual.Estimates$W.End<-WINS[k,End]
-                  Annual.Estimates$W.Name<-WINS[k,Name]
-                  Annual.Estimates$P.Data.Flag<-No.PDate.Flag
-
-                  list(Annual.Estimates=Annual.Estimates,LT.Averages=LT.Avg)
-
-                })
-                names(LT.Climate)<-WINS[,Name]
-              }else{
-                LT.Climate<-NA
-              }
-
-              list(LT.PlantDates=LT.PlantDates,LT.Climate=LT.Climate)
-
-
-
-            })
-
-            names(LT.A)<-apply(unique(SS.N[,c("EU","Product","M.Year.Code")]),1,paste,collapse="-")
-
-            A<-list(A,LT.A)
-            names(A)<-c("Seasonal Stats","LT Avg & Dev")
-
-          }else{
-            A<-list(A)
-            names(A)<-"Seasonal Stats"
-          }
-          A
-        }
-      })
-
-      names(B)<-Sites
-
-      B<-B[unlist(lapply(B,length)>1)]
-
-
-      # Bind lists together
-      Seasonal.Clim<-rbindlist(lapply(B,"[[","Seasonal Stats"))
-
-      # Add in existing data
-      if(!is.null(S.existing)){
-        if(nrow(S.existing[["Observed"]])>0){
-          Seasonal.Clim<-rbind(S.existing[["Observed"]],Seasonal.Clim)
-        }
-      }
-
-      MCode<-unique(apply(Seasonal.Clim[,c("ID","EU","PD.Used","M.Year")],1,paste,collapse="_"))
-      MCode<-MCode.SS[!MCode.SS %in% MCode]
-
-      if(length(MCode)>0){
-        if(!is.null(MissingLines)){
-          fwrite(data.table(Missing=unique(c(MissingLines,MCode))),paste0(SaveDir1,"/MissingLines.csv"))
-        }else{
-          fwrite(data.table(Missing=unique(MCode)),paste0(SaveDir1,"/MissingLines.csv"))
-        }
-      }
-
-      if(Do.LT.Avg){
-
-        # Deal with NA values in LT climate data
-        for(i in 1:length(B)){
-          X<-B[[i]][["LT Avg & Dev"]]
-          X<-X[!unlist(lapply(X,FUN=function(Z){is.na(Z)[1]}))]
-          B[[i]][["LT Avg & Dev"]]<-X
-        }
-
-        # Rbind LT climate data stats together from lists
-
-        LT.PD.Years<-rbindlist(lapply(1:length(B),FUN=function(i){
-          X<-B[[i]][["LT Avg & Dev"]]
-          X<-rbindlist(lapply(X,"[[",c("LT.PlantDates","Annual.Estimates")))
-          X
-
+        Z<-do.call("cbind",lapply(RSeqLen,FUN=function(j){
+          ZDays(Rain,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="higher")
         }))
 
-        LT.PD.Avg<-rbindlist(lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(Y){rbindlist(lapply(Y,"[[",c("LT.PlantDates","LT.Averages")))}))
+        colnames(Z)<-paste0("N.Seq.D",RSeqLen)
 
-        LT.Clim.Years<-rbindlist(lapply(lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(Y){lapply(Y,"[[","LT.Climate")}),FUN=function(Y){rbindlist(lapply(Y,FUN=function(Z){
-          rbindlist(lapply(Z,"[[","Annual.Estimates"))}))}))
-
-        LT.Clim.Avg<-rbindlist(lapply(lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(Y){lapply(Y,"[[","LT.Climate")}),FUN=function(Y){rbindlist(lapply(Y,FUN=function(Z){
-          rbindlist(lapply(Z,"[[","LT.Averages"))}))}))
-
-        if(!is.null(S.existing)){
-          if(nrow(S.existing[["LongTerm"]][["LT.PD.Years"]])>0){
-            LT.PD.Years<-rbind(S.existing[["LongTerm"]][["LT.PD.Years"]],LT.PD.Years)
-            LT.PD.Avg<-rbind(S.existing[["LongTerm"]][["LT.PD.Avg"]],LT.PD.Avg)
-            LT.Clim.Years<-rbind(S.existing[["LongTerm"]][["LT.Clim.Years"]],LT.Clim.Years)
-            LT.Clim.Avg<-rbind(S.existing[["LongTerm"]][["LT.Clim.Avg"]],LT.Clim.Avg)
-          }
-        }
-
-        Seasonal<-list(Observed=Seasonal.Clim,LongTerm=list(LT.PD.Years=LT.PD.Years,LT.PD.Avg=LT.PD.Avg,LT.Clim.Years=LT.Clim.Years,LT.Clim.Avg=LT.Clim.Avg))
+        X<-data.table(
+          Days=round(sum(Rain>Threshold),2),
+          Days.Pr=round(sum(Rain>Threshold)/length(Rain),2),
+          Max.Seq=ZDays(Rain,Threshold=Threshold,FUN=max,Direction="higher"),
+          Z
+        )
 
       }else{
-        Seasonal<-list(Observed=Seasonal.Clim)
+        ColName<-paste0("Rain.L",Thresholds[i,Threshold])
+
+        Z<-do.call("cbind",lapply(RSeqLen,FUN=function(j){
+          ZDays(Rain,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="lower")
+        }))
+
+        colnames(Z)<-paste0("N.Seq.D",RSeqLen)
+
+        X<-data.table(
+          Days=round(sum(Rain<Threshold),2),
+          Days.Pr=round(sum(Rain<Threshold)/length(Rain),2),
+          Max.Seq=ZDays(Rain,Threshold=Threshold,FUN=max,Direction="lower"),
+          Z
+        )
       }
 
+      colnames(X)<-paste0(ColName,".",colnames(X))
+      X
 
-      if(!is.na(SaveDir1)){
-        save(Seasonal,file=SaveName)
+    }))
+
+    X<-data.table(
+      Rain.sum=sum(Rain),
+      ETo.sum=sum(ETo),
+      ETo.NA=sum(is.na(ETo)),
+      WBalance=sum(Rain)-sum(ETo),
+      WBalance.NegDays=sum((Rain-ETo)<0),
+      Y
+    )[is.na(ETo.sum),WBalance:=as.numeric(NA)]
+
+    return(X[,lapply(.SD,as.numeric)])
+
+  }
+
+  TEMP.Calc<-function(Tmax,Tmin,Tmean,Thresholds,TSeqLen){
+
+    ZDays<-function(Data,Threshold=0,FUN=max,Direction="lower"){
+      # Direction = lower or higher than the threshold specified
+      if(Direction=="lower"){
+        Data[Data<Threshold]<-9999
+      }else{
+        Data[Data>Threshold]<-9999
+      }
+      X<-rle(as.character(Data))
+      X<-X$lengths[X$values==9999]
+      if(length(X)>0){
+        return(FUN(X))
+      }else{
+        return(0)
+      }
+    }
+
+    Y<-do.call("cbind",lapply(1:nrow(Thresholds),FUN=function(i){
+      Threshold<-Thresholds[i,Threshold]
+
+      if(Thresholds[i,Direction]=="higher"){
+        ColName<-paste0("Tmax.TG",Threshold)
+
+        Z<-do.call("cbind",lapply(TSeqLen,FUN=function(j){
+          ZDays(Tmax,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="higher")
+        }))
+
+        colnames(Z)<-paste0("N.Seq.D",TSeqLen)
+
+        X<-data.table(
+          Days=round(sum(Tmax>Threshold),2),
+          Days.Pr=round(sum(Tmax>Threshold)/length(Tmax),2),
+          Max.RSeq=ZDays(Tmax,Threshold=Threshold,FUN=max,Direction="higher"),
+          Z
+        )
+
+      }else{
+        ColName<-paste0("Tmin.TL",Thresholds[i,Threshold])
+
+        Z<-do.call("cbind",lapply(TSeqLen,FUN=function(j){
+          ZDays(Tmin,Threshold=Threshold,FUN=function(x)sum(x>j),Direction="lower")
+        }))
+
+        colnames(Z)<-paste0("N.Seq.D",TSeqLen)
+
+        X<-data.table(
+          Days=round(sum(Tmin<Threshold)/length(Tmin),2),
+          Max.RSeq=ZDays(Tmin,Threshold=Threshold,FUN=max,Direction="lower"),
+          Z
+        )
       }
 
+      colnames(X)<-paste0(ColName,".",colnames(X))
+      X
 
+    }))
+
+    X<-data.table(
+      Y,
+      Tmin.min=min(Tmin),
+      Tmin.mean=mean(Tmin),
+      Tmin.var=var(Tmin),
+      Tmin.sd=sd(Tmin),
+      Tmin.range=diff(range(Tmin)),
+
+      Tmax.max=max(Tmax),
+      Tmax.mean=mean(Tmax),
+      Tmax.var=var(Tmax),
+      Tmax.sd=sd(Tmax),
+      Tmax.range=diff(range(Tmax)),
+
+      Tmean.max=max(Tmean),
+      Tmean.min=min(Tmean),
+      Tmean.mean=mean(Tmean),
+      Tmean.var=var(Tmean),
+      Tmean.sd=sd(Tmean),
+      Tmean.range=diff(range(Tmean))
+    )
+
+
+    return(X[,lapply(.SD,as.numeric)])
+
+
+  }
+
+  C.Med<-function(X,FUN){
+
+    C.Val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(X), 5, 10))),"%j"))*360/365*pi/180)[[1]]
+    N<-round(as.numeric(FUN(C.Val)*180/pi*365/360),0)
+
+    if(length(X)>1){
+      if(N<=0){
+        sprintf("%03d",365+N)
+      }else{
+        sprintf("%03d",N)
+      }
     }else{
-      Seasonal<-S.existing
+      sprintf("%03s",format(X,"%j"))
+    }
+  }
+
+  # Create a text file detailing parameters used in analysis
+  if(!is.na(SaveDir)){
+    ParamSave<-list(Rain.Windows=c("Rain.Windows:",Rain.Windows),
+                    Widths=c("Rain.Window.Widths:",Rain.Window.Widths),
+                    Rain.Window.Threshold=c("Rain.Window.Threshold:",Rain.Window.Threshold),
+                    Rain.Threshold=c("Rain.Threshold:",unlist(Rain.Threshold)),
+                    RSeqLen = c("RSeqLen:",RSeqLen),
+                    Temp.Threshold=c("Temp.Threshold:",unlist(Temp.Threshold)),
+                    TSeqLen = c("TSeqLen:",TSeqLen),
+                    Max.LT.Avg=c("Max.LT.Avg:",Max.LT.Avg),
+                    PrePlantWindow=PrePlantWindow,
+                    Windows=c("Windows:",unlist(Windows)),
+                    Win.Start=Win.Start,
+                    Rain.Data.Name=c("Rain.Data.Name:",Rain.Data.Name),
+                    Temp.Data.Name=c("Temp.Data.Name:",Temp.Data.Name),
+                    Do.LT.Avg=Do.LT.Avg,
+                    Do.BioClim=Do.BioClim
+    )
+
+    if(file.exists(paste0(SaveDir,"/parameters.txt"))){
+      unlink(paste0(SaveDir,"/parameters.txt"))
+    }
+
+    lapply(ParamSave, cat, "\n", file=paste0(SaveDir,"/parameters.txt"), append=TRUE)
+  }
+
+  CLIMATE<-data.table(CLIMATE)
+
+  # Create unique Site x EU x Date combinations
+  SS<-Data[Product!=""]
+
+  # Check that SeasonLength.Data is not <10 days
+  SLenError<-SS[SeasonLength.Data<=10]
+
+  if(nrow(SLenError)>0){
+    print(paste0("ERROR: ",SS[SeasonLength.Data<=10,paste(unique(Code),collapse = ", ")]," contains season lengths <10 days"))
+    SS<-SS[!(SeasonLength.Data<=10 & !is.na(SeasonLength.Data))]
+  }
+
+  SaveName<-paste0(SaveDir,"/ClimStats.RData")
+
+
+  if(nrow(SS)>0){
+
+    CLIMATE<-CLIMATE[,!c("Latitude","Longitude","Buffer","DayCount")]
+
+    if(CLIMATE[,class(Year)]!="integer"){
+      CLIMATE[,Year:=as.integer(as.character(Year))]
     }
 
     if(Do.BioClim){
+      CLIMATE1<-data.table::copy(CLIMATE)
+    }
 
-      SaveName<-paste0(SaveDir1,"/ClimStatsB.RData")
+    # Set range of years represented in climate data
+    Year.Range<-CLIMATE[,min(Year)]:CLIMATE[,max(Year)]
 
-      # Cross-reference to exisiting data
-      S.existing1<-NULL
-      MCode1<-NULL
-      MissingSites<-NULL
-      MCode.D<-NULL
+    # Split rainfall data into a list
+    CLIMATE<-split(CLIMATE,by=ID)
 
-      if(!(!is.null(MCode1) & length(MCode1)==0)){
+    # Remove Locations in Climate list not in SS
+    N<-match(unlist(SS[,..ID]),names(CLIMATE))
+    CLIMATE<-CLIMATE[N[!is.na(N)]]
 
-        if(nrow(SS)==0){
+    # Check for any climate data with missing CHIRPS rainfall data
+    MissingRain<-names(CLIMATE)[unlist(lapply(CLIMATE,FUN=function(X){X[,all(is.na(Rain))]}))]
 
-          if(!is.null(MCode1)){
-            CCode<-unlist(CLIMATE1[,..ID])
-            MCode<-CCode %in% MCode1
-          }else{
-            CCode<-unlist(CLIMATE1[,..ID])
-            MCode<-CCode %in% unlist(unique(DATA[,..ID]))
-          }
+    if(length(MissingRain>0)){
+      print("Sites with no rainfall data:")
+      print(Data[Site.Key %in% MissingRain,unique(Site.Key)])
 
+      SS<-SS[!Site.Key %in% MissingRain]
+    }
 
-          # Subset to a single site
-          N<-unlist(CLIMATE1[,..ID]) %in% unlist(CLIMATE1[,..ID])[1]
-          # Count days in years
-          Years<-CLIMATE1[N,"Year"] %>% table
+    # Create vector sites in dataset
+    Sites<-as.vector(unlist(unique(SS[,..ID])))
 
-          # Determine years for which complete data is available
-          Years<-names(Years[Years>=365])
+    MCode.SS<-apply(SS[,c(..ID,"EU","PlantingDate","M.Year")],1,paste,collapse="_")
 
-          CLIMATE1<-CLIMATE1[MCode]
+    # Determine years for which complete data is available (only to be used for annual calcs., e.g. BIOCLIM)
+    Years<-table(CLIMATE[[1]]$Year)
+    Years<-names(Years[Years>=365])
 
-        }
-
-        Message<-paste0(Temp.Data.Name," x ",Rain.Data.Name,": Calculating BioClim Annual Variables")
-
-        if(DebugMode){
-          cat(paste(Message,"\n"))
-        }else{
-          cat('\r                                                                                                                                          ')
-          cat('\r',Message)
-          flush.console()
-        }
-
-        CLIMATE1<-CLIMATE1[Year %in% Years,]
-        colnames(CLIMATE1)[colnames(CLIMATE1)==ID]<-"ID"
-
-        BIOV<-CLIMATE1[,round(dismo::biovars(Rain,Temp.Min,Temp.Max),2),by=c("Year","ID")][,Variable:= rep(paste("BIO",1:19),.N/19)]
-        BIOV<-dcast(BIOV,Year+ID ~ Variable,value.var="V1")
-
-        # Record data deficient sites
-        if(is.null(MCode.D)){
-          MCode.D<-unlist(unique(DATA[,..ID]))
-        }
-
-        MCode.D<-MCode.D[!MCode.D %in% BIOV$ID]
-
-        if(length(MCode.D)>0){
-          if(!is.null(MissingSites)){
-            fwrite(data.table(Missing=c(MissingSites,MCode.D)),paste0(SaveDir1,"MissingSites-BIOC-",Params,substr(TName,1,3),substr(RName,1,3),".csv"))
-          }else{
-            fwrite(data.table(Missing=MCode.D),paste0(SaveDir1,"MissingSites-BIOC-",Params,substr(TName,1,3),substr(RName,1,3),".csv"))
-          }
-        }
-
-        BIOV.LT<-BIOV[Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){round(c(mean(X),median(X),sd(X)),2)}),by="ID",.SDcol=3:ncol(BIOV)
-        ][,Variable:=rep(c("Mean","Median","SD"),.N/3)][,N:=sum(Years<=Max.LT.Avg)]
-
-        Annual.Estimates<-rbind(
-          cbind(BIOV[,1:2],(BIOV[,3:21]-BIOV.LT[Variable=="Mean",][match(BIOV[,ID],BIOV.LT[Variable=="Mean",ID]),-c(1,21,22)])[,Variable:="Dev.Mean"]),
-          cbind(BIOV[,1:2],(BIOV[,3:21]-BIOV.LT[Variable=="Median",][match(BIOV[,ID],BIOV.LT[Variable=="Median",ID]),-c(1,21,22)])[,Variable:="Dev.Mean"]),
-          BIOV[,Variable:="Annual Value"]
-        )
-
-        if(!is.null(S.existing1)){
-          if(nrow(S.existing1[["Annual.Estimates"]])>0){
-            BIOV.LT<-rbind(S.existing1[["LT.Averages"]],BIOV.LT)
-            Annual.Estimates<-rbind(S.existing1[["Annual.Estimates"]],Annual.Estimates)
-          }
-        }
+    # Could this be speeded up by running a parallel lapply on CLIMATE? The main issue is CLIMATE being loaded into RAM for each core.
+    B<-lapply(Sites,FUN=function(Site){
 
 
-        BIOV<-list(Annual.Estimates=Annual.Estimates,LT.Averages = BIOV.LT)
+      Message<-paste0(Temp.Data.Name," x ",Rain.Data.Name,": Estimating seasonal climate for  site: ",match(Site,Sites),"/",length(Sites))
 
-        if(!is.na(SaveDir1)){
-          save(BIOV,file=SaveName)
-        }
-
-        Seasonal$BioClim<-BIOV
+      if(DebugMode){
+        cat(paste(Message,"\n"))
       }else{
-        Seasonal$BioClim<-S.existing1
+        cat('\r                                                                                                                                          ')
+        cat('\r',Message)
+        flush.console()
       }
+
+      SS.N<-SS[which(SS[,..ID]==Site)][is.na(M.Season),M.Season:=""]
+
+      Climate<-CLIMATE[[Site]]
+
+      if(is.null(Climate)){
+        "No site match in Climate Dataset"
+      }else{
+
+        A<-rbindlist(lapply(1:nrow(SS.N),FUN=function(i){
+
+          WINS<-rbind(data.table(
+            Name=c("Data","EcoCrop"),
+            Start=rep(Win.Start,2),
+            End=c(SS.N[i,SeasonLength.Data], SS.N[i,SeasonLength.EcoCrop])),
+            Windows
+          )
+
+          Z<-lapply(1:nrow(WINS),FUN=function(j){
+            if(!is.na(WINS[j,End])){
+              C<-Climate[Climate$Date>=(SS.N[i,PlantingDate]+ WINS[j,Start])& Climate$Date<=(SS.N[i,PlantingDate] + WINS[j,End])]
+
+              D<-Climate[Climate$Date>=(SS.N[i,PlantingDate]-PrePlantWindow) & Climate$Date<SS.N[i,PlantingDate]]
+
+              # Make sure the climate dataset is complete
+              if(!(nrow(C)<(WINS[j,End]-WINS[j,Start]) | sum(is.na(C$Rain)>0))){ # Technically should have a +1 on the left, here we are giving -1 day leeway
+
+                C<-c(sapply(GDD(Tmax=C$Temp.Max,Tmin=C$Temp.Min,Tlow=SS.N[i,Tlow],Thigh=SS.N[i,Thigh],Topt.low = SS.N[i,Topt.low],Topt.high = SS.N[i,Topt.high],ROUND=2),sum),
+                     unlist(RAIN.Calc(C$Rain,C$ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen)),
+                     unlist(TEMP.Calc(Tmax=C$Temp.Max, Tmin=C$Temp.Min, Tmean=C$Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen)))
+                suppressWarnings(C[[paste0("Rain.sum.PrePlant",PrePlantWindow)]]<-D[,sum(Rain)])
+                suppressWarnings(C[[paste0("ETo.sum.PrePlant",PrePlantWindow)]]<-D[,sum(ETo)])
+                suppressWarnings(C$EU<-SS.N$EU[i])
+                C$PD.Used<-SS.N$PlantingDate[i]
+                C$W.Start<-WINS$Start[j]
+                C$W.End<-WINS$End[j]
+                C$W.Name<-WINS$Name[j]
+                C$ID<-Site
+                C$M.Year<-SS.N$M.Year[i]
+                C$Season<-SS.N$M.Season[i]
+                as.data.frame(C)
+
+              }else{
+              }
+            }else{
+
+            }
+
+          })
+
+          rbindlist(Z[unlist(lapply(Z,FUN=function(X){!is.null(X)}))])
+
+
+        }))
+
+        if(Do.LT.Avg){
+
+          EU.N.S<-unique(SS.N[,c("EU","M.Season")])
+
+          LT.A<-lapply(1:nrow(EU.N.S),FUN=function(i){
+
+
+            Message<-paste0(Temp.Data.Name," x ",Rain.Data.Name,": Estimating Long-term averages for  site: ",match(Site,Sites),"/",length(Sites)," | Season: ",EU.N.S$M.Season[i]," | EU: ",EU.N.S$EU[i])
+
+            if(DebugMode){
+              cat(paste(Message,"\n"))
+            }else{
+              cat('\r                                                                                                                                          ')
+              cat('\r',Message)
+              flush.console()
+            }
+
+            PDates<-as.Date(paste0(Year.Range,"-",SS.N[EU==EU.N.S$EU[i] & M.Season==EU.N.S$M.Season[i],C.Med(PlantingDate,FUN=stats::median)]),format="%Y-%j")
+
+            # Excise temporal windows from climate data
+            C1<-data.table(Start=which(Climate$Date %in% PDates)-Rain.Windows[1])[,End:=Start+sum(Rain.Windows)][!Start<=0][!End>nrow(Climate)]
+            C<-Climate[unlist(lapply(1:nrow(C1),FUN=function(l){unlist(C1[l,1]):unlist(C1[l,2])})),][!is.na(Year)]
+
+            C[,Sequence:=C1[,Nrow:=1:nrow(C1)][,rep(Nrow,length(Start:End)),by=Nrow][,V1]]
+
+            # Remove incomplete sequences by cross referencing the width the window should be
+            C<-C[Sequence %in%  C[,.N == sum(Rain.Windows)+1,by=Sequence][,Sequence]]
+
+            # Add "data" year
+            C[,YearX:=Year[1],by=Sequence]
+
+            # Work out planting date for each sequence
+            XX<-C[,Est.Rain(Rain,Date,..Rain.Window.Widths,..Rain.Window.Threshold,..Rain.Windows),by=list(YearX,Sequence)]
+
+            Annual.Plant<-zoo::as.Date(unlist(XX[,3]))
+            names(Annual.Plant)<-XX[,YearX]
+
+
+            # Record the planting year of each sequence (the planting date used as the starting point to search from, i.e. PDates)
+            P.Years<-unlist(C[c(1, cumsum(rle(C$Sequence)$lengths) + 1)+Rain.Windows[1],"Year"][!is.na(Year)])
+
+            N<-!is.na(Annual.Plant)
+            N1<-!is.na(Annual.Plant) &  as.integer(format(Annual.Plant,"%Y"))<=Max.LT.Avg
+
+            No.PDate.Flag<-""
+
+            if(sum(N1)==0){
+              Annual.Plant<-rep(as.Date(NA),length(P.Years))
+              names(Annual.Plant)<-P.Years
+              PD.Date.Pub<-SS.N[EU==EU.N.S[i,EU] &  M.Season==EU.N.S[i,M.Season] & PlantingDate>="1983-07-01",PlantingDate]
+              Annual.Plant[match(format(PD.Date.Pub,"%Y"),P.Years)]<-PD.Date.Pub
+
+              No.PDate.Flag<-"No seasons met rainfall threshold, mid-point of published planting period used."
+              C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[!is.na(Annual.Plant)]), 5, 10))),"%j"))*360/365*pi/180)
+            }else{
+              C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[N1]), 5, 10))),"%j"))*360/365*pi/180)
+            }
+
+            LT.Mean<-as.numeric(round(mean(C.val,na.rm=T)*180/pi*365/360,ROUND))
+            LT.Median<-as.numeric(round(median(C.val,na.rm=T)*180/pi*365/360,ROUND))
+
+            if(LT.Mean<=0){
+              LT.Mean<-365+LT.Mean
+            }
+
+            if(LT.Median<=0){
+              LT.Median<-365+LT.Median
+            }
+
+            # Calculate LT.Avg Planting date standard deviation
+            LT.SD<-round(sd(C.val,na.rm = T)*180/pi*365/360,ROUND)
+
+            # Calculate Annual Deviation of Planting Date From LT.Avg
+            # Annual Estimate - Long Term Average
+            if(sum(N1)==0){
+              Annual.Dev.Mean<-NA
+              Annual.Dev.Median<-NA
+            }else{
+              Annual.Dev.Mean<-as.numeric(circular::circular(as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)-circular::circular(as.numeric(LT.Mean)*360/365*pi/180))*365/360*180/pi
+
+              Annual.Dev.Median<-as.numeric(circular::circular (as.numeric(format(Annual.Plant,"%j"))*360/365*pi/180)- # Annual Estimate
+                                              circular::circular(as.numeric(LT.Median)*360/365*pi/180)[[1]]        # Long Term Average
+              )*365/360*180/pi
+            }
+
+            NYear.LT.Avg<-sum(N1)
+
+            LT.PlantDates<-list(Annual.Estimates=data.table(P.Year=P.Years,
+                                                            P.Date=Annual.Plant,
+                                                            Dev.Mean=Annual.Dev.Mean,
+                                                            Dev.Med=Annual.Dev.Median,
+                                                            EU=EU.N.S$EU[i],
+                                                            Season=EU.N.S$M.Season[i],
+                                                            ID=Site,
+                                                            P.Data.Flag=No.PDate.Flag),
+                                LT.Averages=data.table(Mean=LT.Mean,
+                                                       Median=LT.Median,
+                                                       SD=LT.SD,N=NYear.LT.Avg,
+                                                       EU=EU.N.S$EU[i],
+                                                       Season=EU.N.S$M.Season[i],
+                                                       ID=Site,
+                                                       P.Data.Flag=No.PDate.Flag))
+
+            # Now Estimate Temperature and Rainfall LTAvgs using the average season lengths and pre-set windows
+            WINS<-rbind(data.table(
+              Name=c("Data","EcoCrop"),
+              Start=rep(Win.Start,2),
+              End=c(SS.N[i,SeasonLength.Data][1], SS.N[i,SeasonLength.EcoCrop][1])),
+              Windows
+            )[,End:=round(End,0)][,Start:=round(Start,0)]
+
+            WINS<-WINS[!is.na(End),]
+
+            if(nrow(WINS)>0){
+
+              # For seasons that do not meet planting thresholds then substitute median planting date from LT data
+              Annual.Plant[is.na(Annual.Plant)]<- zoo::as.Date(paste0(names(Annual.Plant[is.na(Annual.Plant)]),"-",round(LT.Median)),"%Y-%j")
+
+              LT.Climate<-lapply(1:nrow(WINS),FUN=function(k){
+
+                A.Harvest<-Annual.Plant+round(WINS[k,End])
+                A.Plant<-Annual.Plant+WINS[k,Start]
+
+                A.P.H<-A.Plant %in% Climate$Date & A.Harvest %in% Climate$Date
+                A.Harvest<-A.Harvest[A.P.H]
+                A.Plant<-A.Plant[A.P.H]
+
+                N1<-which(Climate$Date %in% A.Plant)
+                N2<-which(Climate$Date %in% A.Harvest)
+
+                C<-rbindlist(lapply(1:length(N1),FUN=function(i){
+                  X<-Climate[N1[i]:N2[i]]
+                  X[,P.Year:=X[1,Year]]
+                  X[,H.Year:=X[nrow(X),Year]]
+
+                  # Check that climate dataset is complete
+                  if(nrow(X)>=floor(WINS[k,End])){
+                    X
+                  }else{
+                    NULL
+                  }
+                }))
+
+                # Calculate climate stats
+                C<-cbind(
+                  C[,GDD(Tmax=Temp.Max,Tmin=Temp.Min,Tlow=SS.N[i,mean(Tlow)],Thigh=SS.N[i,mean(Thigh)],Topt.low = SS.N[i,mean(Topt.low)],Topt.high = SS.N[i,mean(Topt.high)],ROUND=2),by=c("P.Year","H.Year")
+                  ][,lapply(.SD,sum),.SDcol=3:6,by=c("P.Year","H.Year")],
+                  C[,RAIN.Calc(Rain,ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen),by=c("P.Year","H.Year")][,-c(1:2)],
+                  C[,TEMP.Calc(Tmax=Temp.Max, Tmin=Temp.Min, Tmean=Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen),by=c("P.Year","H.Year")][,-c(1:2)]
+                )
+
+                LT.Avg<-C[H.Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){c(round(mean(X,na.rm=T),ROUND),
+                                                                          round(median(X,na.rm=T),ROUND),
+                                                                          round(sd(X,na.rm=T),ROUND),
+                                                                          min(X,na.rm=T),
+                                                                          max(X,na.rm=T))}),.SDcols=3:ncol(C)
+                ][,Variable:=c("Mean","Median","SD","Min","Max")
+                ][,N:=nrow(C[H.Year<=Max.LT.Avg,1])]
+
+                suppressWarnings(Annual.Estimates<-as.data.table(rbind(
+                  (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Mean",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Mean"],
+                  (C[,!c("H.Year","Variable","P.Year")]-LT.Avg[Variable=="Median",1:(ncol(LT.Avg)-2)][rep(1,nrow(C)),])[,P.Year:=C[,P.Year]][,H.Year:=C[,H.Year]][,Variable:="Dev.Med"],
+                  C[,Variable:="Annual Value"]
+                ))[,!"ETo.NA"])
+
+                LT.Avg$EU<-EU.N.S$EU[i]
+                LT.Avg$Season<-EU.N.S$M.Season[i]
+                LT.Avg$ID<-Site
+                LT.Avg$W.Start<-WINS[k,Start]
+                LT.Avg$W.End<-WINS[k,End]
+                LT.Avg$W.Name<-WINS[k,Name]
+                LT.Avg$P.Data.Flag<-No.PDate.Flag
+
+                Annual.Estimates$EU<-EU.N.S$EU[i]
+                Annual.Estimates$Season<-EU.N.S$M.Season[i]
+                Annual.Estimates$ID<-Site
+                Annual.Estimates$W.Start<-WINS[k,Start]
+                Annual.Estimates$W.End<-WINS[k,End]
+                Annual.Estimates$W.Name<-WINS[k,Name]
+                Annual.Estimates$P.Data.Flag<-No.PDate.Flag
+
+                list(Annual.Estimates=Annual.Estimates,LT.Averages=LT.Avg)
+
+              })
+              names(LT.Climate)<-WINS[,Name]
+            }else{
+              LT.Climate<-NA
+            }
+
+            list(LT.PlantDates=LT.PlantDates,LT.Climate=LT.Climate)
+
+
+
+          })
+
+          names(LT.A)<-apply(unique(SS.N[,c("EU","Product","M.Season")]),1,paste,collapse="-")
+
+          A<-list(A,LT.A)
+          names(A)<-c("Seasonal Stats","LT Avg & Dev")
+
+        }else{
+          A<-list(A)
+          names(A)<-"Seasonal Stats"
+        }
+        A
+      }
+    })
+
+    names(B)<-Sites
+
+    B<-B[unlist(lapply(B,length)>1)]
+
+
+    # Bind lists together
+    Seasonal.Clim<-rbindlist(lapply(B,"[[","Seasonal Stats"))
+
+    MCode<-unique(apply(Seasonal.Clim[,c("ID","EU","PD.Used","M.Year")],1,paste,collapse="_"))
+    MCode<-MCode.SS[!MCode.SS %in% MCode]
+
+    if(length(MCode)>0){
+      fwrite(data.table(Missing=unique(MCode)),paste0(SaveDir,"/MissingLines.csv"))
     }
 
-    # Save Parameters
-    ParamSave<-list(Rain.Windows=Rain.Windows,
-                    Widths=Rain.Window.Widths,
-                    Rain.Window.Threshold=Rain.Window.Threshold,
-                    Rain.Threshold=Rain.Threshold,
-                    RSeqLen=RSeqLen,
-                    Temp.Threshold=Temp.Threshold,
-                    TSeqLen=TSeqLen,
-                    Max.LT.Avg=Max.LT.Avg,
-                    PrePlantWindow=PrePlantWindow,
-                    Windows=Windows,
-                    Win.Start=Win.Start,
-                    Rain.Data.Name=Rain.Data.Name,
-                    Temp.Data.Name=Temp.Data.Name,
-                    Exclude.EC.Diff=Exclude.EC.Diff,
-                    EC.Diff=EC.Diff)
+    if(Do.LT.Avg){
+
+      # Deal with NA values in LT climate data
+      for(i in 1:length(B)){
+        X<-B[[i]][["LT Avg & Dev"]]
+        X<-X[!unlist(lapply(X,FUN=function(Z){is.na(Z)[1]}))]
+        B[[i]][["LT Avg & Dev"]]<-X
+      }
+
+      # Rbind LT climate data stats together from lists
+
+      LT.PD.Years<-rbindlist(lapply(1:length(B),FUN=function(i){
+        X<-B[[i]][["LT Avg & Dev"]]
+        X<-rbindlist(lapply(X,"[[",c("LT.PlantDates","Annual.Estimates")))
+        X
+
+      }))
+
+      LT.PD.Avg<-rbindlist(lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(Y){rbindlist(lapply(Y,"[[",c("LT.PlantDates","LT.Averages")))}))
+
+      LT.Clim.Years<-rbindlist(lapply(lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(Y){lapply(Y,"[[","LT.Climate")}),FUN=function(Y){rbindlist(lapply(Y,FUN=function(Z){
+        rbindlist(lapply(Z,"[[","Annual.Estimates"))}))}))
+
+      LT.Clim.Avg<-rbindlist(lapply(lapply(lapply(B,"[[",c("LT Avg & Dev")),FUN=function(Y){lapply(Y,"[[","LT.Climate")}),FUN=function(Y){rbindlist(lapply(Y,FUN=function(Z){
+        rbindlist(lapply(Z,"[[","LT.Averages"))}))}))
+
+      Seasonal<-list(Observed=Seasonal.Clim,LongTerm=list(LT.PD.Years=LT.PD.Years,LT.PD.Avg=LT.PD.Avg,LT.Clim.Years=LT.Clim.Years,LT.Clim.Avg=LT.Clim.Avg))
+
+    }else{
+      Seasonal<-list(Observed=Seasonal.Clim)
+    }
+
 
     if(!is.na(SaveDir)){
-      save(ParamSave,file=paste0(SaveDir1,"/parameters.RData"))
-    }
-    Seasonal$Parameters<-ParamSave
-
-    # Save Dataset Used
-    if(!is.na(SaveDir)){
-      save(DATA,file=paste0(SaveDir1,"/Data.RData"))
+      save(Seasonal,file=SaveName)
     }
 
-    Seasonal$DATA<-DATA
+
+  }else{
+    Seasonal<-S.existing
   }
+
+  if(Do.BioClim){
+
+    SaveName<-paste0(SaveDir,"/BioClim.RData")
+
+
+
+    Message<-paste0(Temp.Data.Name," x ",Rain.Data.Name,": Calculating BioClim Annual Variables")
+
+    if(DebugMode){
+      cat(paste(Message,"\n"))
+    }else{
+      cat('\r                                                                                                                                          ')
+      cat('\r',Message)
+      flush.console()
+    }
+
+    CLIMATE1<-CLIMATE1[Year %in% Years,]
+    colnames(CLIMATE1)[colnames(CLIMATE1)==ID]<-"ID"
+
+    BIOV<-CLIMATE1[,round(dismo::biovars(Rain,Temp.Min,Temp.Max),2),by=c("Year","ID")][,Variable:= rep(paste("BIO",1:19),.N/19)]
+    BIOV<-dcast(BIOV,Year+ID ~ Variable,value.var="V1")
+
+    BIOV.LT<-BIOV[Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){round(c(mean(X),median(X),sd(X)),2)}),by="ID",.SDcol=3:ncol(BIOV)
+    ][,Variable:=rep(c("Mean","Median","SD"),.N/3)][,N:=sum(Years<=Max.LT.Avg)]
+
+    Annual.Estimates<-rbind(
+      cbind(BIOV[,1:2],(BIOV[,3:21]-BIOV.LT[Variable=="Mean",][match(BIOV[,ID],BIOV.LT[Variable=="Mean",ID]),-c(1,21,22)])[,Variable:="Dev.Mean"]),
+      cbind(BIOV[,1:2],(BIOV[,3:21]-BIOV.LT[Variable=="Median",][match(BIOV[,ID],BIOV.LT[Variable=="Median",ID]),-c(1,21,22)])[,Variable:="Dev.Mean"]),
+      BIOV[,Variable:="Annual Value"]
+    )
+
+
+    BIOV<-list(Annual.Estimates=Annual.Estimates,LT.Averages = BIOV.LT)
+
+    if(!is.na(SaveDir)){
+      save(BIOV,file=SaveName)
+    }
+
+    Seasonal$BioClim<-BIOV
+
+  }
+
+  # Save Parameters
+  ParamSave<-list(Rain.Windows=Rain.Windows,
+                  Widths=Rain.Window.Widths,
+                  Rain.Window.Threshold=Rain.Window.Threshold,
+                  Rain.Threshold=Rain.Threshold,
+                  RSeqLen=RSeqLen,
+                  Temp.Threshold=Temp.Threshold,
+                  TSeqLen=TSeqLen,
+                  Max.LT.Avg=Max.LT.Avg,
+                  PrePlantWindow=PrePlantWindow,
+                  Windows=Windows,
+                  Win.Start=Win.Start,
+                  Rain.Data.Name=Rain.Data.Name,
+                  Temp.Data.Name=Temp.Data.Name)
+
+  if(!is.na(SaveDir)){
+    save(ParamSave,file=paste0(SaveDir,"/parameters.RData"))
+  }
+  Seasonal$Parameters<-ParamSave
+
+  # Save Dataset Used
+  if(!is.na(SaveDir)){
+    save(Data,file=paste0(SaveDir,"/Data.RData"))
+  }
+
+  Seasonal$Data<-Data
+
 
   return(Seasonal)
 
 }
+
+
