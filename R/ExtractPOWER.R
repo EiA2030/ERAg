@@ -82,7 +82,6 @@ ExtractPOWER<-function(Data,
 
   # Create POWER averaging function:
   P.Avg<-function(POWER,SS,i){
-    POWER<-miceadds::loadRData2(Save_Dir,"POWER.RData")
     POWER<-POWER[,lapply(.SD,mean),by="YEAR,DOY"]
     POWER$Buffer<-SS$Buffer[i]
     POWER[,ID]<-SS[i,ID]
@@ -102,9 +101,9 @@ ExtractPOWER<-function(Data,
   SS<-unique(Data[!(is.na(Data$Longitude)|is.na(Data$Latitude)|is.na(Data$Buffer)|is.na(Data$Altitude)),c("Latitude","Longitude",ID,"Buffer","Altitude")])
   SS$Buffer[SS$Buffer>MaxBuffer]<-MaxBuffer
 
-  if(file.exists(paste0(Save_Dir,"POWER.RData"))){
+  if(file.exists(paste0(Save_Dir,"/POWER.RData"))){
     POWER<-miceadds::load.Rdata2(path=Save_Dir,file="POWER.RData")
-    POWER.LIST<-split(POWER, f = POWER[,ID] )
+    POWER.LIST<-split(POWER, f = POWER[,..ID] )
     Sites<-names(POWER.LIST)
     POWER.LIST<-POWER.LIST[match(Sites,SS[,ID])]
     SS<-SS[!SS[,ID] %in% Sites,]
@@ -126,7 +125,70 @@ ExtractPOWER<-function(Data,
   # Create ERROR holder
   ERRORS<-as.character("")
 
+  StartDate<-as.Date("2017-11-01")
+  EndDate<-as.Date("2020-12-31")
 
+  options(warn=-1)
+  # Download files
+  for(i in 1:nrow(SS)){
+    # Specify bounding box
+    lonmax<-round(max(pbuf[[i]][1,]),5)
+    lonmin<-round(min(pbuf[[i]][1,]),5)
+    latmax<-round(max(pbuf[[i]][2,]),5)
+    latmin<-round(min(pbuf[[i]][2,]),5)
+
+    # POWER IS 1/2 lat by 5/8 lon grid
+    LatVals<-seq(-89.75,89.75,0.5)
+    LonVals<-seq(-179.75,179.75,5/8)
+
+    lonmax<-LonVals[which.min(abs(LonVals-lonmax))]
+    lonmin<-LonVals[which.min(abs(LonVals-lonmin))]
+    latmax<-LatVals[which.min(abs(LatVals-latmax))]
+    latmin<-LatVals[which.min(abs(LatVals-latmin))]
+
+    Cells<-expand.grid(lat=unique(c(latmin,latmax)),lon=unique(c(lonmin,lonmax)))
+
+    for(j in 1:nrow(Cells)){
+
+      # Create save name
+      PName<-paste0(PowerSave,"POWER ",SS[i,ID],"-",j,".csv")
+
+      # Check to see if file has already been downloaded
+      if(!file.exists(PName)){
+
+        # Concatenate API query to POWER server
+        URL<-paste0(
+          BaseURL,
+          "point?start=",format(StartDate,"%Y%m%d"),
+          "&end=",format(EndDate,"%Y%m%d"),
+          "&latitude=",Cells[j,"lat"],
+          "&longitude=",Cells[j,"lon"],
+          "&community=ag",
+          "&parameters=",paste(Parameters,collapse="%2C"),
+          "&format=csv",
+          "&user=ICRAF2",
+          "&header=true&time-standard=lst",
+          "&site-elevation=",SS[i,"Altitude"])
+
+
+        # Query POWER server and read in response - GET method (URL can be substituted for URLLine below as they are indentical, but this method allows errors to be skipped)
+
+
+        # Display progress report
+        cat('\r                                                                                                                                          ')
+        cat('\r',paste("Step 1: Downloading Site",i,"Cell",j,"/",nrow(SS),"Sites"))
+        flush.console()
+
+        tryCatch(download.file(URL, PName, method="libcurl", quiet = Quiet, mode = "w",cacheOK = TRUE),
+                 error = function(e) print(paste(PName, 'did not work out')))
+
+
+      }
+    }}
+
+  options(warn=0)
+
+  # Load files
   POWER.NEW<-lapply(1:nrow(SS),FUN=function(i){
 
     # Display progress report
@@ -151,11 +213,6 @@ ExtractPOWER<-function(Data,
 
     Cells<-expand.grid(lat=unique(c(latmin,latmax)),lon=unique(c(lonmin,lonmax)))
 
-
-    StartDate<-as.Date("2017-11-01")
-    EndDate<-as.Date("2020-12-31")
-
-
     POWER<-rbindlist(lapply(1:nrow(Cells),FUN=function(j){
 
       # Create save name
@@ -172,57 +229,16 @@ ExtractPOWER<-function(Data,
         POWER<-fread(PName)
         setnames(POWER,"PRECTOTCORR","PRECTOT")
 
-      }else{
-
-        # Concatenate API query to POWER server
-        URL<-paste0(
-          BaseURL,
-          "point?start=",format(StartDate,"%Y%m%d"),
-          "&end=",format(EndDate,"%Y%m%d"),
-          "&latitude=",Cells[j,"lat"],
-          "&longitude=",Cells[j,"lon"],
-          "&community=ag",
-          "&parameters=",paste(Parameters,collapse="%2C"),
-          "&format=csv",
-          "&user=ICRAF2",
-          "&header=true&time-standard=lst",
-          "&site-elevation=",SS[i,"Altitude"])
-
-
-        # Query POWER server and read in response - GET method (URL can be substituted for URLLine below as they are indentical, but this method allows errors to be skipped)
-
-        YY<-httr::GET(URL)
-        URLLine<-YY$url
-
-        if(length(URLLine)>0){
-          # Display progress report
-          cat('\r                                                                                                                                          ')
-          cat('\r',paste("Step 1: Downloading Site",i,"Cell",j,"/",nrow(SS),"Sites"))
-          flush.console()
-
-          download.file(URLLine, PName, method="libcurl", quiet = Quiet, mode = "w",cacheOK = TRUE)
-
-          POWER<-fread(PName)
-          setnames(POWER,"PRECTOTCORR","PRECTOT")
-
-          POWER
-
-        }else{
-          print(paste("Download failed: Site" ,i,"Cell",j))
-        }
-
       }
 
-    }),use.names=T)
-
-    POWER<-P.Avg(POWER,SS,i)
-    POWER[,NCells:=nrow(Cells)]
-
-    POWER
-
-
-
+    }),use.names = T)
   })
+
+  POWER<-P.Avg(POWER,SS,i)
+  POWER[,NCells:=nrow(Cells)]
+  POWER
+
+
 
   # Name list levels
   names(POWER.NEW)<-SS[,ID]
