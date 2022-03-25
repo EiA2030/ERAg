@@ -52,6 +52,7 @@
 #' @import data.table
 #' @importFrom data.table fread fwrite
 #' @importFrom sp bbox
+#' @importFrom miceadds load.Rdata2
 ExtractPOWER<-function(Data,
                        ID,
                        Parameters= c("ALLSKY_SFC_SW_DWN", "PRECTOT", "PS","QV2M","RH2M","T2M","T2M_MAX","T2M_MIN","WS2M"),
@@ -81,6 +82,7 @@ ExtractPOWER<-function(Data,
 
   # Create POWER averaging function:
   P.Avg<-function(POWER,SS,i){
+    POWER<-miceadds::loadRData2(Save_Dir,"POWER.RData")
     POWER<-POWER[,lapply(.SD,mean),by="YEAR,DOY"]
     POWER$Buffer<-SS$Buffer[i]
     POWER[,ID]<-SS[i,ID]
@@ -101,6 +103,7 @@ ExtractPOWER<-function(Data,
   SS$Buffer[SS$Buffer>MaxBuffer]<-MaxBuffer
 
   if(file.exists(paste0(Save_Dir,"POWER.RData"))){
+    POWER<-miceadds::load.Rdata2(path=Save_Dir,file="POWER.RData")
     POWER.LIST<-split(POWER, f = POWER[,ID] )
     Sites<-names(POWER.LIST)
     POWER.LIST<-POWER.LIST[match(Sites,SS[,ID])]
@@ -156,7 +159,7 @@ ExtractPOWER<-function(Data,
     POWER<-rbindlist(lapply(1:nrow(Cells),FUN=function(j){
 
       # Create save name
-      PName<-paste0(PowerSave,"POWER ",SS[i,ID],"-",i,".csv")
+      PName<-paste0(PowerSave,"POWER ",SS[i,ID],"-",j,".csv")
 
       # Check to see if file has already been downloaded
       if(file.exists(PName)){
@@ -210,7 +213,7 @@ ExtractPOWER<-function(Data,
 
       }
 
-    }))
+    }),use.names=T)
 
     POWER<-P.Avg(POWER,SS,i)
     POWER[,NCells:=nrow(Cells)]
