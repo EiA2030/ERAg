@@ -125,8 +125,8 @@ ExtractPOWER<-function(Data,
   # Create ERROR holder
   ERRORS<-as.character("")
 
-  StartDate<-as.Date("2017-11-01")
-  EndDate<-as.Date("2020-12-31")
+  StartDate<-as.Date(StartDate)
+  EndDate<-as.Date(EndDate)
 
   options(warn=-1)
   # Download files
@@ -315,4 +315,3 @@ ExtractPOWER<-function(Data,
 
   return(POWER)
 }
-
