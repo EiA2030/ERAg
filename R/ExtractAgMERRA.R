@@ -103,7 +103,7 @@ if(file.exists(paste0(Save_Dir,"AgMERRA.RData"))){
 # Buffer Sites
 pbufX<-Pbuffer(Data=DATA,ID,Projected=F)
 # Get bounding boxes
-pbuf<-lapply(pbuf@polygons,bbox)
+pbuf<-lapply(pbufX@polygons,bbox)
 
 # Set temporary save directory for AgMERRA processing
 temp_dir<-paste0(TempDir,"AgMERRA/",Sys.Date(),"/")
