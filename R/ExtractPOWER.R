@@ -74,6 +74,10 @@ ExtractPOWER<-function(Data,
     PowerSave<-paste0(PowerSave,"/")
   }
 
+  # Create Save Directory
+  if(!dir.exists(PowerSave)){
+    dir.create(PowerSave, recursive=T)
+  }
   if(!is.na(Save_Dir) & substr(Save_Dir,nchar(Save_Dir),nchar(Save_Dir))!="/"){
     Save_Dir<-paste0(Save_Dir,"/")
   }
@@ -89,11 +93,6 @@ ExtractPOWER<-function(Data,
     POWER$LON<-SS$Longitude[i]
     POWER$Altitude<-SS$Altitude[i]
     return(POWER)
-  }
-
-  # Create Save Directory
-  if(!dir.exists(PowerSave)){
-    dir.create(PowerSave, recursive=T)
   }
 
   # Create data.frame of unique sites and make vectors
@@ -229,14 +228,16 @@ ExtractPOWER<-function(Data,
         POWER<-fread(PName)
         setnames(POWER,"PRECTOTCORR","PRECTOT")
 
+        POWER<-P.Avg(POWER,SS,i)
+        POWER[,NCells:=nrow(Cells)]
+        POWER
+
+
       }
 
     }),use.names = T)
   })
 
-  POWER<-P.Avg(POWER,SS,i)
-  POWER[,NCells:=nrow(Cells)]
-  POWER
 
 
 
@@ -258,7 +259,7 @@ ExtractPOWER<-function(Data,
     }
   }
 
-  POWER<-rbindlist(POWER.NEW[!is.na(POWER.NEW)])
+  POWER<-rbindlist(POWER.NEW[!is.na(POWER.NEW)],use.names = T)
 
 
   # Set -99 SRad values to NA

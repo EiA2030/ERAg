@@ -147,7 +147,7 @@ ExtractCHIRPS<-function(Data,
           R.Cells_0=0,
           R.Cells_1=0,
           R.Cells_5=0,
-          DAY=1:length(RAIN)
+          Day=1:length(RAIN)
         )
         Y$R.Cells_0[Y$RAIN==0]<-1
         Y$R.Cells_1[Y$RAIN<=1]<-1
@@ -160,7 +160,7 @@ ExtractCHIRPS<-function(Data,
             R.Cells_0=apply(RAIN,2,FUN=function(x){length(which(x==0))}),
             R.Cells_1=apply(RAIN,2,FUN=function(x){length(which(x<=1))}),
             R.Cells_5=apply(RAIN,2,FUN=function(x){length(which(x<=5))}),
-            DAY=1:dim(RAIN)[2]
+            Day=1:dim(RAIN)[2]
           )
         }else{
           Y<-data.table(
@@ -193,7 +193,7 @@ ExtractCHIRPS<-function(Data,
 
   Y<-rbindlist(Y)
 
-  setnames(Y,c("RAIN","ID","DAY"),c("Rain",ID,"Day"))
+  setnames(Y,c("RAIN","ID"),c("Rain",ID))
 
   Y[,Date:=as.Date(Day - 1, origin = paste0(Year,"-01-01")),by=c("Day","Year")]
   Y[,DayCount:=as.integer(floor(unclass(Date-as.Date(Origin)))),by=Date]
