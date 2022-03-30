@@ -146,7 +146,7 @@ PETcalc<-function(Tmin,Tmax,SRad,Wind,Pressure,Humid,Rain,YearDay,Latitude,Altit
   #Final Reference Evapotranspiration Value (ETo)
   ETo <- round(ETwind + ETrad,2)
 
-  if(!is.na(Rain)){
+  if(!all(is.na(Rain))){
   #Precipitation-PET
   WBalance<-round(Rain-ETo,2)
   # To check that values are sensible, see Table 2 http://www.fao.org/docrep/x0490e/x0490e04.htm
