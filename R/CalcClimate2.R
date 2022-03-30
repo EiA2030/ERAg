@@ -36,19 +36,22 @@
 #'  `Start` and `End` fields define the additional temporal period as days after`P.Date.Merge`.For example `Window=data.table(Name="Plant.1-30",Start=1,End=30)`
 #'  is a temporal period from planting to 30 days after planting.
 #'
-#' 4) For each temporal period specified in 3) climate statistics are calculated:
+#' 4) For each temporal period specified in multiple climate statistics are calculated:
 #'  i) **growing degrees days (GDD)** are calculated using the `GDDcalc` function which requires daily `Tmax` and `Tmin` fields from `CLIMATE` and the EcoCrop
 #'   optimal and absolute temperate thresholds (fields `Tlow`, `Topt.low`, `Topt.high`, and `Thigh`) added to `DATA` using the `AddEcoCrop` function.
 #'   The `GDDcalc` function outputs four fields `GDDlow`, `GDDopt`, `GDDhigh` and `GDDmax` and the values of these are summed for the temporal period;
 #'  ii) **precipitation and reference evapotranspiration (ETo)** statistics are estimated using the `RAIN.Calc` function which outputs a number of variables
 #'   described in the documentation for this function;
 #'  iii) **min, max and mean daily temperatures and rainfall plus variance**
-#'  iv) Using the `Rain.Threhold` and `Temp.Threshold` parameters thresholds and their direction (greater or lower) can be specified for rainfall and
+#'  iv) Using the `Rain.Threshold` and `Temp.Threshold` parameters thresholds and their direction (greater or lower) can be specified for rainfall and
 #'  minimum and maximum temperatures. Within a temporal period the total number of threshold exceedance days are calculated. The `RSeqLen` and `TSeqLen`
 #'  parameters define sequence lengths (e.g. 5 days), for each value of these parameters the number of sequences of consecutive days in exceedance of rainfall or
 #'  temperature thresholds equal to higher than the specified sequence length are summed. If the rainfall threshold is `1` with direction `lower` and `RSeqLen`
 #'  is 5, then the number of sequences of consecutive days with less than 1mm rainfall of sequence length 5 days or more are counted. Note in the previous
 #'  scenario a sequence of length 30 days would only count as one sequence.
+#'  v) Similar to iv), the number of days and sequences of days (`ERSeqLen`) with `Eratio` less than the thresholds set in `ER.Threshold` are calculated. Mean, median and minimum `ERatio` values are also calculated
+#'  vi) Similar to iv), the number of days and sequences of days (`LSeqLen`) where `Logging` exceeds `0`, `0.5*ssat` or `ssat` are calculated. Summed, mean, median and maximum `Logging` values are also calculated
+#'
 #'
 #' 5) If argument `Do.LT.Avg==T` annual and long-term climate statistics an planting dates are calculated  for each combination of location and product. Note
 #' that each season in the data is treated separately. The process logic is as follows:
@@ -76,13 +79,24 @@
 #'   planting and/or harvest dates) you can exclude observations (`Exclude.EC.Diff`) where the absolute difference between reported and EcoCrop estimated season lengths
 #'   is greater than a specified proportion (`EC.Diff`).
 #'
-#' @param DATA An dataset with fields: `Site.Key` = character field containing a unique code for each location in the dataset,
-#' `EU` character field containing an ERA product code, `Product` character field containing the product name,
-#' `M.Year` an integer field for the planting year, `M.Season` a integer field of planting season (`1, 2, or NA`) for locations with more than one growing season,
-#' if only one growing season is prsent at location use `NA`, `PlantingDate` class `Date` field for date of planting,
-#' `SeasonLength.Data` integer field for length of growing season/cycle in days (observed),  `SeasonLength.EcoCrop` integer field for length of growing
-#' season/cycle in days (EcoCrop value), and  `Topt.low`, `Topt.high`, `Tlow`, and `Thigh` are numeric fields containing the absolute and optimal thermal
-#' limits for the product (can be supplied from EcoCrop).
+#' @param
+#' \enumerate{
+#' \item **`[[Data]]`** = An dataset with fields:
+#' \itemize{
+#' \item`Site.Key` = character field containing a unique code for each location in the dataset, this field is key that links to information in the `CLIMATE` dataset
+#' \item`EU` character field containing an ERA product code
+#' \item`Product` character field containing the product name
+#' \item`M.Year` an integer field for the planting year
+#' \item`M.Season` a integer field of planting season (`1, 2, or NA`) for locations with more than one growing season, if only one growing season is prsent at location use `NA`,
+#' \item`PlantingDate` class `Date` field for date of planting,
+#' \item`SeasonLength.Data` integer field for length of growing season/cycle in days (observed),
+#' \item`SeasonLength.EcoCrop` integer field for length of growing season/cycle in days (EcoCrop value)
+#' \item`Topt.low` a numeric field containing lower absolute thermal limit for product (crop)
+#' \item`Topt.high` a numeric field containing upper absolute thermal limit for product (crop)
+#' \item`Tlow` a numeric field containing lower absolute thermal limit for product (crop)
+#' \item`Thigh` a numeric field containingupper absolute thermal limit for product (crop)
+#' }
+#' }
 #' @param CLIMATE A daily agroclimatology dataset with fields: 1) `Temp.Mean` = mean daily temperature - C; 2) `Temp.Max` = maximum daily temperature - C;
 #' `Temp.Min` = minimum daily temperature - C; 4) `Rain` = daily rainfall - mm; 5) `ETo` = reference evapotranspiration - mm; 6) class `Date` field
 #'  named `Date`; and 7) location identity as per `ID` argument and named the same as per `DATA`.
@@ -102,8 +116,11 @@
 #' @param TSeqLen A integer vector of sequence lengths (days). For each row of `Temp.Threshold` (`i`) and each value of `TSeqLen` (`j`) the number of consecutive day sequences where `Temp.Threshold[i]` is exceeded for `TSeqLen[j]` days or more is calculated.
 #' @param Rain.Threshold A data.table with two fields. The `Threshold` field must contain integer values of rainfall, for a given day in a climate window if these thresholds are exceeded then
 #' the day is counted towards the relevant climate statistics. The `Direction` field should be of class character and contain only the values `higher` or `lower` corresponding to the direction of exceedance for the thresholds provided in in the `Thresholds` field. For example,
-#' if row 1 is `1` and `ower` then days where rainfall is <1 will be counted.
+#' if row 1 is `1` and `lower` then days where rainfall is <1 will be counted.
 #' @param RSeqLen A integer vector of sequence lengths (days). For each row of `Rain.Threshold` (`i`) and each value of `RSeqLen` (`j`) the number of consecutive day sequences where `Rain.Threshold[i]` is exceeded for `TSeqLen[j]` days or more is calculated.
+#' @param ER.Threshold An numeric vector of thresholds between 0 and 1. The function will look for days with `ERatio` below these thresholds.
+#' @param ERSeqLen A integer vector of sequence lengths (days). For each value of `ER.Threshold` (`i`) and each value of `ERSeqLen` (`j`) the number of consecutive day sequences where `ER.Threshold[i]` is exceeded for `ERSeqLen[j]` days or more is calculated.
+#' @param LSeqLen A integer vector of sequence lengths (days). For preset waterlogging thresholds (`i`) vs each value of `LSeqLen` (`j`) the number of consecutive day sequences where waterlogging thresholds are exceeded for `LSeqLen[j]` days or more is calculated.
 #' @param PrePlantWindow A integer vector; defines a period before planting in days for which rainfall and Penman-Monteith reference evapotranspiration are summed.
 #' @param Win.Start Integer value of length one; when should the window for climate calculations begin relative to the planting date (estimated or reported) in days? for example: 0 = day of planting, -1 = one day before planting, +1 = one day after planting.
 #' @param Do.LT.Avg Logical `T/F`; if `T` long term averages and deviances are calculated.
@@ -128,6 +145,11 @@
 #' \item`Rain.L#.Max.RSeq` or `Rain.G#.Max.RSeq` longest continuous period of days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per parameters specified in `Rain.Threshold` (d)
 #' \item`Rain.L#.N.RSeq.D#` or `Rain.G#.N.RSeq.D#` number of continuous periods of `RSeq.D#` days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per parameters specified in `Rain.Threshold` (d)
 #' \item`Rain.sum` total rainfall (mm)
+#' \item`ERatio.mean`
+#' \item`ERatio.median`
+#' \item`ERatio.min`
+#' \item`ERatio.L#.Days`  total number of days with less than `ERatio.L#` as per parameters specified in `ER.Threshold` (d)
+#' \item
 #' \item`ETo.sum` summed Penman-Monteith reference evapotranspiration (mm)
 #' \item`ETo.NA` number of NA values in Penman-Monteith reference evapotranspiration
 #' \item`WBalance` `Rain.sum-ETo.sum` difference between rainfall and reference evapotranspiration (mm)
@@ -141,7 +163,7 @@
 #' \item`Tmin.var` min temp variance (C)
 #' \item`Tmin.sd` min temp standard deviation (C)
 #' \item`Tmin.range` min temp range(C)
-#' \item`Tmax.max` max temp maxiumum (C)
+#' \item`Tmax.max` max temp maximum (C)
 #' \item`Tmax.mean` max temp mean (C)
 #' \item`Tmax.var` max temp variance (C
 #' \item`Tmax.sd` max temp standard deviation (C))
@@ -220,9 +242,12 @@ CalcClimate2<-function(Data,
                        Rain.Window.Widths = c(3,3,2,2),
                        Rain.Window.Threshold = c(30,30,20,15),
                        Temp.Threshold = data.table(Threshold=c(20,30,35),Direction=c("lower","higher","higher")),
-                       TSeqLen = c(5,10,20),
+                       TSeqLen = c(5,10,15),
                        Rain.Threshold = data.table(Threshold=c(0.1,1,5),Direction=c("lower","lower","lower")),
-                       RSeqLen = c(5,10,20),
+                       RSeqLen = c(5,10,15),
+                       ER.Threshold=c(0.5,0.25,0.1),
+                       ERSeqLen=c(5,10,15),
+                       LSeqLen=c(5,10,15),
                        PrePlantWindow=10,
                        Win.Start = 1,
                        Do.LT.Avg=T,
@@ -269,7 +294,6 @@ CalcClimate2<-function(Data,
   if(!is.na(ErrorDir) & substr(ErrorDir,nchar(ErrorDir),nchar(ErrorDir))!="/"){
     ErrorDir<-paste0(ErrorDir,"/")
   }
-
 
 
   Est.Rain<-function(Rain,Date,Widths,Rain.Window.Threshold,Rain.Windows){
@@ -416,6 +440,108 @@ CalcClimate2<-function(Data,
       WBalance.NegDays=sum((Rain-ETo)<0),
       Y
     )[is.na(ETo.sum),WBalance:=as.numeric(NA)]
+
+    return(X[,lapply(.SD,as.numeric)])
+
+  }
+
+  ERatio.Calc<-function(ERatio,Thresholds,RSeqLen){
+
+    ZDays<-function(Data,Threshold=0,FUN=max){
+      # Direction = lower or higher than the threshold specified
+      Data[Data<Threshold]<-9999
+
+      X<-rle(as.character(Data))
+      X<-X$lengths[X$values==9999]
+      if(length(X)>0){
+        return(FUN(X))
+      }else{
+        return(0)
+      }
+    }
+
+    Y<-do.call("cbind",lapply(1:length(Thresholds),FUN=function(i){
+      Threshold<-Thresholds[i]
+
+      ColName<-paste0("ERatio.L",Thresholds[i])
+
+      Z<-do.call("cbind",lapply(RSeqLen,FUN=function(j){
+        ZDays(ERatio,Threshold=Threshold,FUN=function(x)sum(x>j))
+      }))
+
+      colnames(Z)<-paste0("N.Seq.D",RSeqLen)
+
+      X<-data.table(
+        Days=round(sum(ERatio<Threshold),2),
+        Days.Pr=round(sum(ERatio<Threshold)/length(ERatio),2),
+        Max.Seq=ZDays(ERatio,Threshold=Threshold,FUN=max),
+        Z
+      )
+
+
+      colnames(X)<-paste0(ColName,".",colnames(X))
+      X
+
+    }))
+
+    X<-data.table(
+      ERatio.mean=mean(ERatio),
+      ERatio.median=as.numeric(median(ERatio)),
+      ERatio.min=min(ERatio),
+      Y
+    )
+
+    return(X[,lapply(.SD,as.numeric)])
+
+  }
+
+  Logging.Calc<-function(Logging,ssat,RSeqLen){
+
+    Thresholds<-c(0,ssat*0.5,ssat)
+    TNames<-c(0,"ssat0.5","ssat")
+
+    ZDays<-function(Data,Threshold=0,FUN=max){
+      # Direction = lower or higher than the threshold specified
+      Data[Data>Threshold]<-9999
+
+      X<-rle(as.character(Data))
+      X<-X$lengths[X$values==9999]
+      if(length(X)>0){
+        return(FUN(X))
+      }else{
+        return(0)
+      }
+    }
+
+    Y<-do.call("cbind",lapply(1:length(Thresholds),FUN=function(i){
+      Threshold<-Thresholds[i]
+
+      ColName<-paste0("Logging.G",TNames[i])
+
+      Z<-do.call("cbind",lapply(RSeqLen,FUN=function(j){
+        ZDays(Logging,Threshold=Threshold,FUN=function(x)sum(x>j))
+      }))
+
+      colnames(Z)<-paste0("N.Seq.D",RSeqLen)
+
+      X<-data.table(
+        Days=round(sum(Logging>Threshold),2),
+        Days.Pr=round(sum(Logging>Threshold)/length(Logging),2),
+        Max.Seq=ZDays(Logging,Threshold=Threshold,FUN=max),
+        Z
+      )
+
+      colnames(X)<-paste0(ColName,".",colnames(X))
+      X
+
+    }))
+
+    X<-data.table(
+      Logging.sum=sum(Logging),
+      Logging.mean=if(length(Logging[Logging>0])>0){mean(Logging[Logging>0])}else{NA},
+      Logging.median=if(length(Logging[Logging>0])>0){as.numeric(median(Logging[Logging>0]))}else{NA},
+      Y
+    )
 
     return(X[,lapply(.SD,as.numeric)])
 
@@ -648,7 +774,9 @@ CalcClimate2<-function(Data,
 
                 C<-c(sapply(GDD(Tmax=C$Temp.Max,Tmin=C$Temp.Min,Tlow=SS.N[i,Tlow],Thigh=SS.N[i,Thigh],Topt.low = SS.N[i,Topt.low],Topt.high = SS.N[i,Topt.high],ROUND=2),sum),
                      unlist(RAIN.Calc(C$Rain,C$ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen)),
-                     unlist(TEMP.Calc(Tmax=C$Temp.Max, Tmin=C$Temp.Min, Tmean=C$Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen)))
+                     unlist(TEMP.Calc(Tmax=C$Temp.Max, Tmin=C$Temp.Min, Tmean=C$Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen)),
+                     unlist(ERatio.Calc(C$ERATIO,Thresholds=ER.Threshold,RSeqLen=ERSeqLen)),
+                     unlist(Logging.Calc(C$LOGGING,ssat=ssat[1],RSeqLen=LSeqLen)))
                 suppressWarnings(C[[paste0("Rain.sum.PrePlant",PrePlantWindow)]]<-D[,sum(Rain)])
                 suppressWarnings(C[[paste0("ETo.sum.PrePlant",PrePlantWindow)]]<-D[,sum(ETo)])
                 suppressWarnings(C$EU<-SS.N$EU[i])
@@ -822,7 +950,9 @@ CalcClimate2<-function(Data,
                   C[,GDD(Tmax=Temp.Max,Tmin=Temp.Min,Tlow=SS.N[i,mean(Tlow)],Thigh=SS.N[i,mean(Thigh)],Topt.low = SS.N[i,mean(Topt.low)],Topt.high = SS.N[i,mean(Topt.high)],ROUND=2),by=c("P.Year","H.Year")
                   ][,lapply(.SD,sum),.SDcol=3:6,by=c("P.Year","H.Year")],
                   C[,RAIN.Calc(Rain,ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen),by=c("P.Year","H.Year")][,-c(1:2)],
-                  C[,TEMP.Calc(Tmax=Temp.Max, Tmin=Temp.Min, Tmean=Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen),by=c("P.Year","H.Year")][,-c(1:2)]
+                  C[,TEMP.Calc(Tmax=Temp.Max, Tmin=Temp.Min, Tmean=Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen),by=c("P.Year","H.Year")][,-c(1:2)],
+                  C[,ERatio.Calc(ERATIO,Thresholds=ER.Threshold,RSeqLen=ERSeqLen),by=c("P.Year","H.Year")][,-c(1:2)],
+                  C[,Logging.Calc(LOGGING,ssat=ssat[1],RSeqLen=LSeqLen),by=c("P.Year","H.Year")][,-c(1:2)]
                 )
 
                 LT.Avg<-C[H.Year<=Max.LT.Avg,lapply(.SD,FUN=function(X){c(round(mean(X,na.rm=T),ROUND),
