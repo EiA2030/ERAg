@@ -43,7 +43,7 @@ ExtractRasters<-function(DATA,
   }
 
   DATA<-as.data.frame(DATA)
-  SS<-unique(DATA[!(is.na(DATA$Latitude)|is.na(DATA$Latitude)|is.na(DATA$Buffer)),c(ID,"Latitude","Longitude","Buffer")])
+  SS<-data.table(unique(DATA[!(is.na(DATA$Latitude)|is.na(DATA$Latitude)|is.na(DATA$Buffer)),c(ID,"Latitude","Longitude","Buffer")]))
   SS[,Buffer:=as.numeric(Buffer)
      ][,Latitude:=as.numeric(Latitude)
        ][,Longitude:=as.numeric(Longitude)]
