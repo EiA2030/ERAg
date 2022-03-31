@@ -139,18 +139,18 @@ A list is output containing following data.tables:
 \item\code{ERatio.mean} mean ratio of actual to potential evapotranspiration (\code{ERATIO}) for the growing season
 \item\code{ERatio.median} median ratio of actual to potential evapotranspiration (\code{ERATIO}) for the growing season
 \item\code{ERatio.min} minimum ratio of actual to potential evapotranspiration (\code{ERATIO}) for the growing season
-\item\code{ERatio.L#.Days} total number of days with less than \code{ERatio.L#} as per thresholds specified in \code{ER.Threshold} (d)
+\item\code{ERatio.L#.Days} total number of days \code{ERATIO} less than \code{ERatio.L#} as per thresholds specified in \code{ER.Threshold} (d)
 \item\code{ERatio.L#.Days.Pr} as above (\code{ERatio.L#.Days}), but divided by total length of climate window
-\item\code{ERatio.L#.Max.Seq} longest continuous period of days with less than \code{ERatio.L#} threshold as specified in \code{ER.Threshold} (d)
-\item\code{ERatio.L#.N.Seq.D#} number of continuous periods of \code{Seq.D#} days lower less than \code{ERatio.L#} threshold as specified in \code{ER.Threshold} (d)
+\item\code{ERatio.L#.Max.Seq} longest continuous period of days with \code{ERATIO} less than \code{ERatio.L#} threshold as specified in \code{ER.Threshold} (d)
+\item\code{ERatio.L#.N.Seq.D#} number of continuous periods of \code{Seq.D#} days with \code{ERATIO} less than \code{ERatio.L#} threshold as specified in \code{ER.Threshold} (d)
 \item\code{Logging.sum} sum of waterlogging (\code{LOGGING}) for the growing season (mm)
 \item\code{Logging.mean} mean of waterlogging (\code{LOGGING}) for the growing season (mm)
 \item\code{Logging.median} median of waterlogging (\code{LOGGING}) for the growing season (mm)
 \item\code{Logging.max} maximum of waterlogging (\code{LOGGING}) for the growing season (mm)
-\item\code{Logging.Gssat#Days} total number of days with more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
+\item\code{Logging.Gssat#Days} total number of days with \code{LOGGING} more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
 \item\code{Logging.Gssat#Days.Pr} as above (\code{Logging.Gssat#Days}), but divided by total length of climate window
-\item\code{Logging.Gssat#.Max.Seq} longest continuous period of days with more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
-\item\code{Logging.Gssat#.N.Seq.D#}  number of continuous periods of \code{Seq.D#} days with more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
+\item\code{Logging.Gssat#.Max.Seq} longest continuous period of days with \code{LOGGING} more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
+\item\code{Logging.Gssat#.N.Seq.D#}  number of continuous periods of \code{Seq.D#} days with \code{LOGGING} more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
 \item\code{Logging.G0Days} as per \code{Logging.Gssat#Days} but with threshold >0 (d)
 \item\code{Logging.G0Days.Pr}  as per \code{Logging.Gssat#Days.Pr} but with threshold >0
 \item\code{Logging.G0.Max.Seq}  as per \code{Logging.Gssat#.Max.Seq} but with threshold >0 (d)

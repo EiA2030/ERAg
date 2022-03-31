@@ -119,10 +119,10 @@ uncertainty
 \item{PHIHOX_M_sl1_250m.SD}{standard deviation of pH index measured in water solution at a depth of 0-5cm. Unit= index}10}
 \item{PHIHOX_M_sl1_250m.Quantiles}{quantiles of pH index measured in water solution at a depth of 0-5cm. Unit= index\emph{10}
 \item{PHIHOX_M_sl2_250m.Mean}{mean value of pH index measured in water solution at a depth of 5-15cm. Unit= index}10}
-\item{PHIHOX_M_sl2_250m.SD}pH index measured in water solution at a depth of 5-15cm. Unit= index\emph{10
+\item{PHIHOX_M_sl2_250m.SD}pH index measured in water solution at a depth of 5-15cm. Unit= index\emph{10}
 \item{PHIHOX_M_sl2_250m.Quantiles}{pH index measured in water solution at a depth of 5-15cm. Unit= index}10}
 \item{PHIHOX_M_sl3_250m.Mean}{mean value of pH index measured in water solution at a depth of 15-30cm. Unit= index\emph{10}
-\item{PHIHOX_M_sl3_250m.SD}pH index measured in water solution at a depth of 15-30cm. Unit= index}10
+\item{PHIHOX_M_sl3_250m.SD}pH index measured in water solution at a depth of 15-30cm. Unit= index}10}
 \item{PHIHOX_M_sl3_250m.Quantiles}{pH index measured in water solution at a depth of 15-30cm. Unit= index\emph{10}
 \item{PHIKCL_M_sl1_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 0-5cm. Unit= index}10}
 \item{PHIKCL_M_sl1_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 0-5cm. Unit= index\emph{10}
@@ -302,10 +302,10 @@ uncertainty
 \item{PHIHOX_M_sl1_250m.SD}{standard deviation of pH index measured in water solution at a depth of 0-5cm. Unit= index}10}
 \item{PHIHOX_M_sl1_250m.Quantiles}{quantiles of pH index measured in water solution at a depth of 0-5cm. Unit= index\emph{10}
 \item{PHIHOX_M_sl2_250m.Mean}{mean value of pH index measured in water solution at a depth of 5-15cm. Unit= index}10}
-\item{PHIHOX_M_sl2_250m.SD}pH index measured in water solution at a depth of 5-15cm. Unit= index\emph{10
+\item{PHIHOX_M_sl2_250m.SD}pH index measured in water solution at a depth of 5-15cm. Unit= index\emph{10}
 \item{PHIHOX_M_sl2_250m.Quantiles}{pH index measured in water solution at a depth of 5-15cm. Unit= index}10}
 \item{PHIHOX_M_sl3_250m.Mean}{mean value of pH index measured in water solution at a depth of 15-30cm. Unit= index\emph{10}
-\item{PHIHOX_M_sl3_250m.SD}pH index measured in water solution at a depth of 15-30cm. Unit= index}10
+\item{PHIHOX_M_sl3_250m.SD}pH index measured in water solution at a depth of 15-30cm. Unit= index}10}
 \item{PHIHOX_M_sl3_250m.Quantiles}{pH index measured in water solution at a depth of 15-30cm. Unit= index\emph{10}
 \item{PHIKCL_M_sl1_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 0-5cm. Unit= index}10}
 \item{PHIKCL_M_sl1_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 0-5cm. Unit= index\emph{10}
