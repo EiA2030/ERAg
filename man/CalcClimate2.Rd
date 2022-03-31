@@ -15,10 +15,13 @@ CalcClimate2(
   Rain.Window.Threshold = c(30, 30, 20, 15),
   Temp.Threshold = data.table(Threshold = c(20, 30, 35), Direction = c("lower",
     "higher", "higher")),
-  TSeqLen = c(5, 10, 20),
+  TSeqLen = c(5, 10, 15),
   Rain.Threshold = data.table(Threshold = c(0.1, 1, 5), Direction = c("lower", "lower",
     "lower")),
-  RSeqLen = c(5, 10, 20),
+  RSeqLen = c(5, 10, 15),
+  ER.Threshold = c(0.5, 0.25, 0.1),
+  ERSeqLen = c(5, 10, 15),
+  LSeqLen = c(5, 10, 15),
   PrePlantWindow = 10,
   Win.Start = 1,
   Do.LT.Avg = T,
@@ -33,9 +36,35 @@ CalcClimate2(
 )
 }
 \arguments{
-\item{CLIMATE}{A daily agroclimatology dataset with fields: 1) \code{Temp.Mean} = mean daily temperature - C; 2) \code{Temp.Max} = maximum daily temperature - C;
-\code{Temp.Min} = minimum daily temperature - C; 4) \code{Rain} = daily rainfall - mm; 5) \code{ETo} = reference evapotranspiration - mm; 6) class \code{Date} field
-named \code{Date}; and 7) location identity as per \code{ID} argument and named the same as per \code{DATA}.}
+\item{Data}{a data.frame or data.table of sites x products (crops) with fields for planting, season length and thermal optima:
+\itemize{
+\item{\code{ID}}{a character field containing a unique code for each location in the dataset, this field is key that links to information in the \code{CLIMATE} dataset, the field name is given by the \code{ID} parameter}
+\item{\code{EU}}{a character field containing an ERA product code}
+\item{\code{Product}}{a character field containing the product name}
+\item{\code{M.Year}}{an integer field for the planting year (Y)}
+\item{\code{M.Season}}{an integer field of planting season,\verb{1, 2, or NA}, for locations with more than one growing season, if only one growing season is present at location use \code{NA}}
+\item{\code{PlantingDate}}{a class \code{Date} field for date of planting (yyyy-mm-dd)}
+\item{\code{SeasonLength.Data}}{an integer field for observed length of growing season/cycle (d)}
+\item{\code{SeasonLength.EcoCrop}}{na integer field for EcoCrop growing season/cycle (d)}
+\item{\code{Topt.low}}{a numeric field containing the lower absolute thermal limit for product}
+\item{\code{Topt.high}}{a numeric field containing the upper absolute thermal limit for product}
+\item{\code{Tlow}}{a numeric field containing the lower absolute thermal limit for product}
+\item{\code{Thigh}}{a numeric field containing the upper absolute thermal limit for product}
+}}
+
+\item{CLIMATE}{A daily agroclimatology dataset with fields:
+\itemize{
+\item{\code{ID}}{a character field containing a unique code for each location in the dataset, this field is key that links to information in the \code{Data} dataset, the field name is given by the \code{ID} parameter}
+\item{\code{Temp.Mean}}{a numeric field containing mean daily temperature (C)}
+\item{\code{Temp.Max}}{a numeric field containing maximum daily temperature (C)}
+\item{\code{Temp.Min}}{a numeric field containing minimum daily temperature (C)}
+\item{\code{Rain}}{a numeric field containing daily rainfall (mm)}
+\item{\code{ETo}}{a numeric field containing reference evapotranspiration (mm)}
+\item{\code{Date}}{a class \code{Date} field containing the date of observation (yyyy-mm-dd)}
+\item{\code{ERATIO}}{a numeric field containing the ratio of actual to potential evapotranspiration. See \href{https://github.com/fabiolexcastro/Gates-smallholder-adaptation/tree/master/watbal}{this github} for details on how this is calculated}
+\item{\code{LOGGING}}{a numeric field containing an estimate of waterlogging (mm). See \href{https://github.com/fabiolexcastro/Gates-smallholder-adaptation/tree/master/watbal}{this github} for details on how this is calculated}
+\item{\code{ssat}}{a numeric field containing the soil saturation value (mm). See \href{https://github.com/fabiolexcastro/Gates-smallholder-adaptation/tree/master/watbal}{this github} for details on how this is calculated}
+}}
 
 \item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided}
 
@@ -60,9 +89,15 @@ if row 1 is \code{30} and \code{higher} then days where the max temperature is >
 
 \item{Rain.Threshold}{A data.table with two fields. The \code{Threshold} field must contain integer values of rainfall, for a given day in a climate window if these thresholds are exceeded then
 the day is counted towards the relevant climate statistics. The \code{Direction} field should be of class character and contain only the values \code{higher} or \code{lower} corresponding to the direction of exceedance for the thresholds provided in in the \code{Thresholds} field. For example,
-if row 1 is \code{1} and \code{ower} then days where rainfall is <1 will be counted.}
+if row 1 is \code{1} and \code{lower} then days where rainfall is <1 will be counted.}
 
 \item{RSeqLen}{A integer vector of sequence lengths (days). For each row of \code{Rain.Threshold} (\code{i}) and each value of \code{RSeqLen} (\code{j}) the number of consecutive day sequences where \code{Rain.Threshold[i]} is exceeded for \code{TSeqLen[j]} days or more is calculated.}
+
+\item{ER.Threshold}{An numeric vector of thresholds between 0 and 1. The function will look for days with \code{ERatio} below these thresholds.}
+
+\item{ERSeqLen}{A integer vector of sequence lengths (days). For each value of \code{ER.Threshold} (\code{i}) and each value of \code{ERSeqLen} (\code{j}) the number of consecutive day sequences where \code{ER.Threshold[i]} is exceeded for \code{ERSeqLen[j]} days or more is calculated.}
+
+\item{LSeqLen}{A integer vector of sequence lengths (days). For preset waterlogging thresholds (\code{i}) vs each value of \code{LSeqLen} (\code{j}) the number of consecutive day sequences where waterlogging thresholds are exceeded for \code{LSeqLen[j]} days or more is calculated.}
 
 \item{PrePlantWindow}{A integer vector; defines a period before planting in days for which rainfall and Penman-Monteith reference evapotranspiration are summed.}
 
@@ -85,14 +120,6 @@ For example \code{data.table(Name="Plant.1-30",Start=1,End=30)} is a temporal pe
 
 \item{DebugMode}{Logical \code{T/F}; if \code{T} function progress is shown line by line in the consule, if \code{F} progress is kept to a single line and continously overwritten.}
 
-\item{DATA}{An dataset with fields: \code{Site.Key} = character field containing a unique code for each location in the dataset,
-\code{EU} character field containing an ERA product code, \code{Product} character field containing the product name,
-\code{M.Year} an integer field for the planting year, \code{M.Season} a integer field of planting season (\verb{1, 2, or NA}) for locations with more than one growing season,
-if only one growing season is prsent at location use \code{NA}, \code{PlantingDate} class \code{Date} field for date of planting,
-\code{SeasonLength.Data} integer field for length of growing season/cycle in days (observed),  \code{SeasonLength.EcoCrop} integer field for length of growing
-season/cycle in days (EcoCrop value), and  \code{Topt.low}, \code{Topt.high}, \code{Tlow}, and \code{Thigh} are numeric fields containing the absolute and optimal thermal
-limits for the product (can be supplied from EcoCrop).}
-
 \item{LoadExisting}{Logical \code{T/F}; If the analysis has already been conducted given the parameters supplied then setting this parameter to \code{T} will load the pre-existing data.}
 }
 \value{
@@ -104,11 +131,30 @@ A list is output containing following data.tables:
 \item\code{GDDopt} growing degree hours within optimal EcoCrop temperature thresholds (h)
 \item\code{GDDhigh} growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)
 \item\code{GDDmax} growing degree hours above EcoCrop maximum temperature threshold (h)
-\item\code{Rain.L#.Days} or \code{Rain.G#.Days} total number of days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per parameters specified in \code{Rain.Threshold} (d)
-\item\code{Rain.L#.Days.Pr} or \code{Rain.G#.Days.Pr} as per above, but divided by total length of climate window (d)
-\item\code{Rain.L#.Max.RSeq} or \code{Rain.G#.Max.RSeq} longest continuous period of days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per parameters specified in \code{Rain.Threshold} (d)
-\item\code{Rain.L#.N.RSeq.D#} or \code{Rain.G#.N.RSeq.D#} number of continuous periods of \code{RSeq.D#} days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per parameters specified in \code{Rain.Threshold} (d)
+\item\code{Rain.L#.Days} or \code{Rain.G#.Days} total number of days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per thresholds specified in \code{Rain.Threshold} (d)
+\item\code{Rain.L#.Days.Pr} or \code{Rain.G#.Days.Pr} as per above (\code{Rain.G#.Days}), but divided by total length of climate window
+\item\code{Rain.L#.Max.RSeq} or \code{Rain.G#.Max.RSeq} longest continuous period of days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per thresholds specified in \code{Rain.Threshold} (d)
+\item\code{Rain.L#.N.RSeq.D#} or \code{Rain.G#.N.RSeq.D#} number of continuous periods of \code{RSeq.D#} days with less than \code{Rain.L#} or greater than \code{Rain.G#} mm rainfall as per thresholds specified in \code{Rain.Threshold} (d)
 \item\code{Rain.sum} total rainfall (mm)
+\item\code{ERatio.mean} mean ratio of actual to potential evapotranspiration (\code{ERATIO}) for the growing season
+\item\code{ERatio.median} median ratio of actual to potential evapotranspiration (\code{ERATIO}) for the growing season
+\item\code{ERatio.min} minimum ratio of actual to potential evapotranspiration (\code{ERATIO}) for the growing season
+\item\code{ERatio.L#.Days} total number of days with less than \code{ERatio.L#} as per thresholds specified in \code{ER.Threshold} (d)
+\item\code{ERatio.L#.Days.Pr} as above (\code{ERatio.L#.Days}), but divided by total length of climate window
+\item\code{ERatio.L#.Max.Seq} longest continuous period of days with less than \code{ERatio.L#} threshold as specified in \code{ER.Threshold} (d)
+\item\code{ERatio.L#.N.Seq.D#} number of continuous periods of \code{Seq.D#} days lower less than \code{ERatio.L#} threshold as specified in \code{ER.Threshold} (d)
+\item\code{Logging.sum} sum of waterlogging (\code{LOGGING}) for the growing season (mm)
+\item\code{Logging.mean} mean of waterlogging (\code{LOGGING}) for the growing season (mm)
+\item\code{Logging.median} median of waterlogging (\code{LOGGING}) for the growing season (mm)
+\item\code{Logging.max} maximum of waterlogging (\code{LOGGING}) for the growing season (mm)
+\item\code{Logging.Gssat#Days} total number of days with more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
+\item\code{Logging.Gssat#Days.Pr} as above (\code{Logging.Gssat#Days}), but divided by total length of climate window
+\item\code{Logging.Gssat#.Max.Seq} longest continuous period of days with more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
+\item\code{Logging.Gssat#.N.Seq.D#}  number of continuous periods of \code{Seq.D#} days with more than or equal to 50\% \code{ssat0.5} or 100\% waterlogging \code{ssat} (d)
+\item\code{Logging.G0Days} as per \code{Logging.Gssat#Days} but with threshold >0 (d)
+\item\code{Logging.G0Days.Pr}  as per \code{Logging.Gssat#Days.Pr} but with threshold >0
+\item\code{Logging.G0.Max.Seq}  as per \code{Logging.Gssat#.Max.Seq} but with threshold >0 (d)
+\item\code{Logging.G0.N.Seq.D#}  as per \code{Logging.Gssat#.N.Seq.D#} but with threshold >0 (d)
 \item\code{ETo.sum} summed Penman-Monteith reference evapotranspiration (mm)
 \item\code{ETo.NA} number of NA values in Penman-Monteith reference evapotranspiration
 \item\code{WBalance} \code{Rain.sum-ETo.sum} difference between rainfall and reference evapotranspiration (mm)
@@ -122,7 +168,7 @@ A list is output containing following data.tables:
 \item\code{Tmin.var} min temp variance (C)
 \item\code{Tmin.sd} min temp standard deviation (C)
 \item\code{Tmin.range} min temp range(C)
-\item\code{Tmax.max} max temp maxiumum (C)
+\item\code{Tmax.max} max temp maximum (C)
 \item\code{Tmax.mean} max temp mean (C)
 \item\code{Tmax.var} max temp variance (C
 \item\code{Tmax.sd} max temp standard deviation (C))
@@ -190,9 +236,10 @@ A list is output containing following data.tables:
 }
 }
 \description{
-The \code{CalcClimate} function applies a complex sequence of calculations to ERA and climate data (e.g. \code{POwER.CHIRPS}) processed as per the \code{ERA-Climate-Data} vignette.
-\code{CalcClimate} calculates seasonal and long-term average climate variables the deviance of the seasonal values from  long-term averages. \code{CalcClimate} can also
-provide bioclimatic variables annually with long-term averages and annual deviances (argument \code{Do.BioClim=T}). The \code{Observed} data.table returned in the output list shows calculates
+The \code{CalcClimate} function applies a complex sequence of calculations to site level climate data extracted for ERA observations.
+The \code{ERA-Climate-Data} vignette describes how to construct the datasets that need to be supplied to  \code{CalcClimate}, at this time the vignette is outdated but revision is planned.
+\code{CalcClimate} calculates seasonal and long-term average climate variables. The deviance of seasonal values from  long-term averages is also calculated. \code{CalcClimate} can also
+provide bioclimatic variables annually with long-term averages and annual deviance (argument \code{Do.BioClim=T}). The \code{Observed} data.table returned in the output list shows calculated
 climate variables (such as growing degree days, total rainfall and dry-spells) using the ERA dataset provided and temporal windows of calculation defined using the
 \code{Win.Start} and \code{Windows} arguments. Two calculations windows are defined by default: \code{Data} which uses the planting and harvest dates reported/estimated and \code{EcoCrop}
 which uses the planting dates reported/estimated and EcoCrop estimates of season length. Additional windows of analysis (e.g. post planting 1-30 days after planting) can
@@ -225,19 +272,21 @@ or \code{SLen.Ecocrop}, note one day is added to \code{P.Date.Merge} so the temp
 be specified using data.table supplied to the \code{Windows} argument, the data.table requires three fields: 1) \code{Name}; 2) \code{Start} and 3) \code{End}. The
 \code{Start} and \code{End} fields define the additional temporal period as days after\code{P.Date.Merge}.For example \code{Window=data.table(Name="Plant.1-30",Start=1,End=30)}
 is a temporal period from planting to 30 days after planting.
-\item For each temporal period specified in 3) climate statistics are calculated:
+\item For each temporal period specified in multiple climate statistics are calculated:
 i) \strong{growing degrees days (GDD)} are calculated using the \code{GDDcalc} function which requires daily \code{Tmax} and \code{Tmin} fields from \code{CLIMATE} and the EcoCrop
 optimal and absolute temperate thresholds (fields \code{Tlow}, \code{Topt.low}, \code{Topt.high}, and \code{Thigh}) added to \code{DATA} using the \code{AddEcoCrop} function.
 The \code{GDDcalc} function outputs four fields \code{GDDlow}, \code{GDDopt}, \code{GDDhigh} and \code{GDDmax} and the values of these are summed for the temporal period;
 ii) \strong{precipitation and reference evapotranspiration (ETo)} statistics are estimated using the \code{RAIN.Calc} function which outputs a number of variables
 described in the documentation for this function;
-iii) \strong{min, max and mean daily temperatures and rainfall plus variance}
-iv) Using the \code{Rain.Threhold} and \code{Temp.Threshold} parameters thresholds and their direction (greater or lower) can be specified for rainfall and
+iii) \strong{min, max and mean daily temperatures and rainfall plus variance};
+iv) Using the \code{Rain.Threshold} and \code{Temp.Threshold} parameters thresholds and their direction (greater or lower) can be specified for rainfall and
 minimum and maximum temperatures. Within a temporal period the total number of threshold exceedance days are calculated. The \code{RSeqLen} and \code{TSeqLen}
 parameters define sequence lengths (e.g. 5 days), for each value of these parameters the number of sequences of consecutive days in exceedance of rainfall or
 temperature thresholds equal to higher than the specified sequence length are summed. If the rainfall threshold is \code{1} with direction \code{lower} and \code{RSeqLen}
 is 5, then the number of sequences of consecutive days with less than 1mm rainfall of sequence length 5 days or more are counted. Note in the previous
-scenario a sequence of length 30 days would only count as one sequence.
+scenario a sequence of length 30 days would only count as one sequence;
+v) Similar to iv), the number of days and sequences of days (\code{ERSeqLen}) with \code{Eratio} less than the thresholds set in \code{ER.Threshold} are calculated. Mean, median and minimum \code{ERatio} values are also calculated; and
+vi) Similar to iv), the number of days and sequences of days (\code{LSeqLen}) where \code{Logging} exceeds \code{0}, \code{0.5*ssat} or \code{ssat} are calculated. Summed, mean, median and maximum \code{Logging} values are also calculated
 \item If argument \code{Do.LT.Avg==T} annual and long-term climate statistics an planting dates are calculated  for each combination of location and product. Note
 that each season in the data is treated separately. The process logic is as follows:
 i) The median planting julian day of the year is taken for the location x product combination;
@@ -251,11 +300,11 @@ v) Annual climate statistics are calculated for each year x site x product combi
 3 & 4. Data are return as \verb{[[LongTerm]][[LT.Clim.Years]]}. Where insufficient rainfall fell to meet the thresholds specified in ii) then the a median
 planting date is substituted from those years that did have sufficient rainfall in ii);
 vi) Long-term climate statistics from v) are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are
-returned \verb{[[LongTerm]][[LT.Clim.Avg]]};
+returned \verb{[[LongTerm]][[LT.Clim.Avg]]}; and
 vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v).
 \item If argument \code{Do.BioClim==T} then:
 i) Annual bioclimatic values are calculated using the \link[dismo]{biovars} function for each complete year of
-data in \code{CLIMATE} per unique locationas (\code{ID} field) in \code{DATA}. The output data is return as [\link{Annual.BioClim}][\link{Annual.Estimates}]\verb{;   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]};
+data in \code{CLIMATE} per unique locationas (\code{ID} field) in \code{DATA}. The output data is return as [\link{Annual.BioClim}][\link{Annual.Estimates}]\verb{;   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]}; and
 iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 }
 
