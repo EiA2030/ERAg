@@ -1,8 +1,9 @@
 #' Calculate climate statistics
 #'
-#' The `CalcClimate` function applies a complex sequence of calculations to ERA and climate data (e.g. `POwER.CHIRPS`) processed as per the `ERA-Climate-Data` vignette.
-#' `CalcClimate` calculates seasonal and long-term average climate variables the deviance of the seasonal values from  long-term averages. `CalcClimate` can also
-#'  provide bioclimatic variables annually with long-term averages and annual deviances (argument `Do.BioClim=T`). The `Observed` data.table returned in the output list shows calculates
+#' The `CalcClimate` function applies a complex sequence of calculations to site level climate data extracted for ERA observations.
+#' The `ERA-Climate-Data` vignette describes how to construct the datasets that need to be supplied to  `CalcClimate`, at this time the vignette is outdated but revision is planned.
+#' `CalcClimate` calculates seasonal and long-term average climate variables. The deviance of seasonal values from  long-term averages is also calculated. `CalcClimate` can also
+#'  provide bioclimatic variables annually with long-term averages and annual deviance (argument `Do.BioClim=T`). The `Observed` data.table returned in the output list shows calculated
 #'  climate variables (such as growing degree days, total rainfall and dry-spells) using the ERA dataset provided and temporal windows of calculation defined using the
 #'  `Win.Start` and `Windows` arguments. Two calculations windows are defined by default: `Data` which uses the planting and harvest dates reported/estimated and `EcoCrop`
 #'  which uses the planting dates reported/estimated and EcoCrop estimates of season length. Additional windows of analysis (e.g. post planting 1-30 days after planting) can
@@ -42,14 +43,14 @@
 #'   The `GDDcalc` function outputs four fields `GDDlow`, `GDDopt`, `GDDhigh` and `GDDmax` and the values of these are summed for the temporal period;
 #'  ii) **precipitation and reference evapotranspiration (ETo)** statistics are estimated using the `RAIN.Calc` function which outputs a number of variables
 #'   described in the documentation for this function;
-#'  iii) **min, max and mean daily temperatures and rainfall plus variance**
+#'  iii) **min, max and mean daily temperatures and rainfall plus variance**;
 #'  iv) Using the `Rain.Threshold` and `Temp.Threshold` parameters thresholds and their direction (greater or lower) can be specified for rainfall and
 #'  minimum and maximum temperatures. Within a temporal period the total number of threshold exceedance days are calculated. The `RSeqLen` and `TSeqLen`
 #'  parameters define sequence lengths (e.g. 5 days), for each value of these parameters the number of sequences of consecutive days in exceedance of rainfall or
 #'  temperature thresholds equal to higher than the specified sequence length are summed. If the rainfall threshold is `1` with direction `lower` and `RSeqLen`
 #'  is 5, then the number of sequences of consecutive days with less than 1mm rainfall of sequence length 5 days or more are counted. Note in the previous
-#'  scenario a sequence of length 30 days would only count as one sequence.
-#'  v) Similar to iv), the number of days and sequences of days (`ERSeqLen`) with `Eratio` less than the thresholds set in `ER.Threshold` are calculated. Mean, median and minimum `ERatio` values are also calculated
+#'  scenario a sequence of length 30 days would only count as one sequence;
+#'  v) Similar to iv), the number of days and sequences of days (`ERSeqLen`) with `Eratio` less than the thresholds set in `ER.Threshold` are calculated. Mean, median and minimum `ERatio` values are also calculated; and
 #'  vi) Similar to iv), the number of days and sequences of days (`LSeqLen`) where `Logging` exceeds `0`, `0.5*ssat` or `ssat` are calculated. Summed, mean, median and maximum `Logging` values are also calculated
 #'
 #'
@@ -66,40 +67,47 @@
 #'   3 & 4. Data are return as `[[LongTerm]][[LT.Clim.Years]]`. Where insufficient rainfall fell to meet the thresholds specified in ii) then the a median
 #'   planting date is substituted from those years that did have sufficient rainfall in ii);
 #'  vi) Long-term climate statistics from v) are calculated across years for mean, median, standard deviation, minimum and maximum statistics. Data are
-#'   returned `[[LongTerm]][[LT.Clim.Avg]]`;
+#'   returned `[[LongTerm]][[LT.Clim.Avg]]`; and
 #'  vii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of v).
 #'
 #'  6) If argument `Do.BioClim==T` then:
 #'   i) Annual bioclimatic values are calculated using the \link[dismo]{biovars} function for each complete year of
 #'    data in `CLIMATE` per unique locationas (`ID` field) in `DATA`. The output data is return as [[Annual.BioClim]][[Annual.Estimates]]`;
-#'   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`;
+#'   ii) Bioclim variables are averaged over time to give long-term mean and median values. The output data is return as [[Annual.BioClim]][[LT.Averages]]`; and
 #'   iii) Deviance from long-term mean and median values for each climate statistic is appended as columns to the output of i).
 #'
 #'   If you are finding there are observations with suspiciously short reported season lengths in the ERA dataset (i.e. errors in the reporting of
 #'   planting and/or harvest dates) you can exclude observations (`Exclude.EC.Diff`) where the absolute difference between reported and EcoCrop estimated season lengths
 #'   is greater than a specified proportion (`EC.Diff`).
 #'
-#' @param
-#' \enumerate{
-#' \item **`[[Data]]`** = An dataset with fields:
+#' @param Data a data.frame or data.table of sites x products (crops) with fields for planting, season length and thermal optima:
 #' \itemize{
-#' \item`Site.Key` = character field containing a unique code for each location in the dataset, this field is key that links to information in the `CLIMATE` dataset
-#' \item`EU` character field containing an ERA product code
-#' \item`Product` character field containing the product name
-#' \item`M.Year` an integer field for the planting year
-#' \item`M.Season` a integer field of planting season (`1, 2, or NA`) for locations with more than one growing season, if only one growing season is prsent at location use `NA`,
-#' \item`PlantingDate` class `Date` field for date of planting,
-#' \item`SeasonLength.Data` integer field for length of growing season/cycle in days (observed),
-#' \item`SeasonLength.EcoCrop` integer field for length of growing season/cycle in days (EcoCrop value)
-#' \item`Topt.low` a numeric field containing lower absolute thermal limit for product (crop)
-#' \item`Topt.high` a numeric field containing upper absolute thermal limit for product (crop)
-#' \item`Tlow` a numeric field containing lower absolute thermal limit for product (crop)
-#' \item`Thigh` a numeric field containingupper absolute thermal limit for product (crop)
+#'  \item{`ID`}{a character field containing a unique code for each location in the dataset, this field is key that links to information in the `CLIMATE` dataset, the field name is given by the `ID` parameter}
+#'  \item{`EU`}{a character field containing an ERA product code}
+#'  \item{`Product`}{a character field containing the product name}
+#'  \item{`M.Year`}{an integer field for the planting year (Y)}
+#'  \item{`M.Season`}{an integer field of planting season,`1, 2, or NA`, for locations with more than one growing season, if only one growing season is present at location use `NA`}
+#'  \item{`PlantingDate`}{a class `Date` field for date of planting (yyyy-mm-dd)}
+#'  \item{`SeasonLength.Data`}{an integer field for observed length of growing season/cycle (d)}
+#'  \item{`SeasonLength.EcoCrop`}{na integer field for EcoCrop growing season/cycle (d)}
+#'  \item{`Topt.low`}{a numeric field containing the lower absolute thermal limit for product}
+#'  \item{`Topt.high`}{a numeric field containing the upper absolute thermal limit for product}
+#'  \item{`Tlow`}{a numeric field containing the lower absolute thermal limit for product}
+#'  \item{`Thigh`}{a numeric field containing the upper absolute thermal limit for product}
 #' }
-#' }
-#' @param CLIMATE A daily agroclimatology dataset with fields: 1) `Temp.Mean` = mean daily temperature - C; 2) `Temp.Max` = maximum daily temperature - C;
-#' `Temp.Min` = minimum daily temperature - C; 4) `Rain` = daily rainfall - mm; 5) `ETo` = reference evapotranspiration - mm; 6) class `Date` field
-#'  named `Date`; and 7) location identity as per `ID` argument and named the same as per `DATA`.
+#'@param CLIMATE A daily agroclimatology dataset with fields:
+#'\itemize{
+#'  \item{`ID`}{a character field containing a unique code for each location in the dataset, this field is key that links to information in the `Data` dataset, the field name is given by the `ID` parameter}
+#'  \item{`Temp.Mean`}{a numeric field containing mean daily temperature (C)}
+#'  \item{`Temp.Max`}{a numeric field containing maximum daily temperature (C)}
+#'  \item{`Temp.Min`}{a numeric field containing minimum daily temperature (C)}
+#'  \item{`Rain`}{a numeric field containing daily rainfall (mm)}
+#'  \item{`ETo`}{a numeric field containing reference evapotranspiration (mm)}
+#'  \item{`Date`}{a class `Date` field containing the date of observation (yyyy-mm-dd)}
+#'  \item{`ERATIO`}{a numeric field containing the ratio of actual to potential evapotranspiration. See \href{https://github.com/fabiolexcastro/Gates-smallholder-adaptation/tree/master/watbal}{this github} for details on how this is calculated}
+#'  \item{`LOGGING`}{a numeric field containing an estimate of waterlogging (mm). See \href{https://github.com/fabiolexcastro/Gates-smallholder-adaptation/tree/master/watbal}{this github} for details on how this is calculated}
+#'  \item{`ssat`}{a numeric field containing the soil saturation value (mm). See \href{https://github.com/fabiolexcastro/Gates-smallholder-adaptation/tree/master/watbal}{this github} for details on how this is calculated}
+#'}
 #' @param ID A character vector of length one containing the column name for a unique id field naming each location in the dataset provided
 #' @param LoadExisting Logical `T/F`; If the analysis has already been conducted given the parameters supplied then setting this parameter to `T` will load the pre-existing data.
 #' @param Rain.Data.Name A character vector of length one containing the name of the rainfall dataset in `CLIMATE`, this must be the same has the rainfall data used when preparing `DATA` using
@@ -140,16 +148,30 @@
 #' \item`GDDopt` growing degree hours within optimal EcoCrop temperature thresholds (h)
 #' \item`GDDhigh` growing degree hours above optimum and below maximum EcoCrop temperature thresholds (h)
 #' \item`GDDmax` growing degree hours above EcoCrop maximum temperature threshold (h)
-#' \item`Rain.L#.Days` or `Rain.G#.Days` total number of days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per parameters specified in `Rain.Threshold` (d)
-#' \item`Rain.L#.Days.Pr` or `Rain.G#.Days.Pr` as per above, but divided by total length of climate window (d)
-#' \item`Rain.L#.Max.RSeq` or `Rain.G#.Max.RSeq` longest continuous period of days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per parameters specified in `Rain.Threshold` (d)
-#' \item`Rain.L#.N.RSeq.D#` or `Rain.G#.N.RSeq.D#` number of continuous periods of `RSeq.D#` days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per parameters specified in `Rain.Threshold` (d)
+#' \item`Rain.L#.Days` or `Rain.G#.Days` total number of days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per thresholds specified in `Rain.Threshold` (d)
+#' \item`Rain.L#.Days.Pr` or `Rain.G#.Days.Pr` as per above (`Rain.G#.Days`), but divided by total length of climate window
+#' \item`Rain.L#.Max.RSeq` or `Rain.G#.Max.RSeq` longest continuous period of days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per thresholds specified in `Rain.Threshold` (d)
+#' \item`Rain.L#.N.RSeq.D#` or `Rain.G#.N.RSeq.D#` number of continuous periods of `RSeq.D#` days with less than `Rain.L#` or greater than `Rain.G#` mm rainfall as per thresholds specified in `Rain.Threshold` (d)
 #' \item`Rain.sum` total rainfall (mm)
-#' \item`ERatio.mean`
-#' \item`ERatio.median`
-#' \item`ERatio.min`
-#' \item`ERatio.L#.Days`  total number of days with less than `ERatio.L#` as per parameters specified in `ER.Threshold` (d)
-#' \item
+#' \item`ERatio.mean` mean ratio of actual to potential evapotranspiration (`ERATIO`) for the growing season
+#' \item`ERatio.median` median ratio of actual to potential evapotranspiration (`ERATIO`) for the growing season
+#' \item`ERatio.min` minimum ratio of actual to potential evapotranspiration (`ERATIO`) for the growing season
+#' \item`ERatio.L#.Days` total number of days `ERATIO` less than `ERatio.L#` as per thresholds specified in `ER.Threshold` (d)
+#' \item`ERatio.L#.Days.Pr` as above (`ERatio.L#.Days`), but divided by total length of climate window
+#' \item`ERatio.L#.Max.Seq` longest continuous period of days with `ERATIO` less than `ERatio.L#` threshold as specified in `ER.Threshold` (d)
+#' \item`ERatio.L#.N.Seq.D#` number of continuous periods of `Seq.D#` days with `ERATIO` less than `ERatio.L#` threshold as specified in `ER.Threshold` (d)
+#' \item`Logging.sum` sum of waterlogging (`LOGGING`) for the growing season (mm)
+#' \item`Logging.mean` mean of waterlogging (`LOGGING`) for the growing season (mm)
+#' \item`Logging.median` median of waterlogging (`LOGGING`) for the growing season (mm)
+#' \item`Logging.max` maximum of waterlogging (`LOGGING`) for the growing season (mm)
+#' \item`Logging.Gssat#Days` total number of days with `LOGGING` more than or equal to 50% `ssat0.5` or 100% waterlogging `ssat` (d)
+#' \item`Logging.Gssat#Days.Pr` as above (`Logging.Gssat#Days`), but divided by total length of climate window
+#' \item`Logging.Gssat#.Max.Seq` longest continuous period of days with `LOGGING` more than or equal to 50% `ssat0.5` or 100% waterlogging `ssat` (d)
+#' \item`Logging.Gssat#.N.Seq.D#`  number of continuous periods of `Seq.D#` days with `LOGGING` more than or equal to 50% `ssat0.5` or 100% waterlogging `ssat` (d)
+#' \item`Logging.G0Days` as per `Logging.Gssat#Days` but with threshold >0 (d)
+#' \item`Logging.G0Days.Pr`  as per `Logging.Gssat#Days.Pr` but with threshold >0
+#' \item`Logging.G0.Max.Seq`  as per `Logging.Gssat#.Max.Seq` but with threshold >0 (d)
+#' \item`Logging.G0.N.Seq.D#`  as per `Logging.Gssat#.N.Seq.D#` but with threshold >0 (d)
 #' \item`ETo.sum` summed Penman-Monteith reference evapotranspiration (mm)
 #' \item`ETo.NA` number of NA values in Penman-Monteith reference evapotranspiration
 #' \item`WBalance` `Rain.sum-ETo.sum` difference between rainfall and reference evapotranspiration (mm)
@@ -776,7 +798,7 @@ CalcClimate2<-function(Data,
                      unlist(RAIN.Calc(C$Rain,C$ETo,Thresholds=Rain.Threshold,RSeqLen=RSeqLen)),
                      unlist(TEMP.Calc(Tmax=C$Temp.Max, Tmin=C$Temp.Min, Tmean=C$Temp.Mean,Thresholds=Temp.Threshold,TSeqLen=TSeqLen)),
                      unlist(ERatio.Calc(C$ERATIO,Thresholds=ER.Threshold,RSeqLen=ERSeqLen)),
-                     unlist(Logging.Calc(C$LOGGING,ssat=ssat[1],RSeqLen=LSeqLen)))
+                     unlist(Logging.Calc(C$LOGGING,ssat=C$ssat[1],RSeqLen=LSeqLen)))
                 suppressWarnings(C[[paste0("Rain.sum.PrePlant",PrePlantWindow)]]<-D[,sum(Rain)])
                 suppressWarnings(C[[paste0("ETo.sum.PrePlant",PrePlantWindow)]]<-D[,sum(ETo)])
                 suppressWarnings(C$EU<-SS.N$EU[i])
