@@ -95,7 +95,7 @@ ExtractRasters<-function(Data,
   })
 
   X<-do.call("cbind",X)
-  X<-cbind(SS[,(ID)],X)
+  X<-cbind(SS[,..ID],X)
 
   if(!is.na(Save_Dir)){
     if(!dir.exists(Save_Dir)){
