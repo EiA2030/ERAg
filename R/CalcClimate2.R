@@ -162,11 +162,12 @@
 #' \item`ERatio.L#.N.Seq.D#` number of continuous periods of `Seq.D#` days with `ERATIO` less than `ERatio.L#` threshold as specified in `ER.Threshold` (d)
 #' \item`Logging.sum` sum of waterlogging (`LOGGING`) for the growing season (mm)
 #' \item`Logging.mean` mean of waterlogging (`LOGGING`) for the growing season (mm)
+#' \item`Logging.present.mean` mean of waterlogging for days where waterlogging is present (`LOGGING>0`) for the growing season (mm)
 #' \item`Logging.median` median of waterlogging (`LOGGING`) for the growing season (mm)
 #' \item`Logging.max` maximum of waterlogging (`LOGGING`) for the growing season (mm)
 #' \item`Logging.Gssat#Days` total number of days with `LOGGING` more than or equal to 50% `ssat0.5` or 100% waterlogging `ssat` (d)
 #' \item`Logging.Gssat#Days.Pr` as above (`Logging.Gssat#Days`), but divided by total length of climate window
-#' \item`Logging.Gssat#.Max.Seq` longest continuous period of days with `LOGGING` more than or equal to 50% `ssat0.5` or 100% waterlogging `ssat` (d)
+#' \item`Logging.Gssat#.Max.Seq` longest continuous period of days with `LOGGING` more than or equal to 50% `ssat0.5` or 90% waterlogging `ssat0.9` (d)
 #' \item`Logging.Gssat#.N.Seq.D#`  number of continuous periods of `Seq.D#` days with `LOGGING` more than or equal to 50% `ssat0.5` or 100% waterlogging `ssat` (d)
 #' \item`Logging.G0Days` as per `Logging.Gssat#Days` but with threshold >0 (d)
 #' \item`Logging.G0Days.Pr`  as per `Logging.Gssat#Days.Pr` but with threshold >0
@@ -519,8 +520,8 @@ CalcClimate2<-function(Data,
 
   Logging.Calc<-function(Logging,ssat,RSeqLen){
 
-    Thresholds<-c(0,ssat*0.5,ssat)
-    TNames<-c(0,"ssat0.5","ssat")
+    Thresholds<-c(0,ssat*0.5,ssat*0.9)
+    TNames<-c(0,"ssat0.5","ssat0.9")
 
     ZDays<-function(Data,Threshold=0,FUN=max){
       # Direction = lower or higher than the threshold specified
@@ -559,9 +560,10 @@ CalcClimate2<-function(Data,
     }))
 
     X<-data.table(
-      Logging.sum=sum(Logging),
-      Logging.mean=if(length(Logging[Logging>0])>0){mean(Logging[Logging>0])}else{NA},
-      Logging.median=if(length(Logging[Logging>0])>0){as.numeric(median(Logging[Logging>0]))}else{NA},
+      Logging.sum=sum(Logging,na.rm=T),
+      Logging.mean=mean(Logging,na.rm=T),
+      Logging.median=median(Logging,na.rm=T),
+      Logging.present.mean=if(length(Logging[Logging>0])>0){mean(Logging[Logging>0])}else{0},
       Y
     )
 
@@ -873,8 +875,8 @@ CalcClimate2<-function(Data,
             if(sum(N1)==0){
               Annual.Plant<-rep(as.Date(NA),length(P.Years))
               names(Annual.Plant)<-P.Years
-              PD.Date.Pub<-SS.N[EU==EU.N.S[i,EU] &  M.Season==EU.N.S[i,M.Season] & PlantingDate>="1983-07-01",PlantingDate]
-              Annual.Plant[match(format(PD.Date.Pub,"%Y"),P.Years)]<-PD.Date.Pub
+              PD.Date.Pub<-SS.N[EU==EU.N.S[i,EU] &  M.Season==EU.N.S[i,M.Season] & PlantingDate>=C[,min(Date)],PlantingDate]
+              Annual.Plant[na.omit(match(format(PD.Date.Pub,"%Y"),P.Years))]<-PD.Date.Pub
 
               No.PDate.Flag<-"No seasons met rainfall threshold, mid-point of published planting period used."
               C.val<-circular::circular(as.numeric(format(as.Date(paste0("2000",substr(as.character(Annual.Plant[!is.na(Annual.Plant)]), 5, 10))),"%j"))*360/365*pi/180)
