@@ -342,8 +342,10 @@
 "ERA_AEZ_MAP_MAT"
 #'
 #' SoilGrids Parameters
-#' \describe{Using ISRIC World Soil Information, soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
-#' uncertainty
+#'
+#' \describe{
+#' Using ISRIC World Soil Information, soil data were downloaded and summarized for each unique ERA locations and its buffer of spatial
+#' uncertainty.
 #'   \item{Latitude}{latitude of study location in decimal degrees}
 #'   \item{Longitude}{longitude of study location in decimal degrees}
 #'   \item{Buffer}{estimation in m of the spatial uncertainty for a point location}
@@ -471,9 +473,9 @@
 #'   \item{PHIKCL_M_sl3_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 15-30cm. Unit = index*10}
 #'   \item{PHIKCL_M_sl3_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 15-30cm. Unit = index*10}
 #'   \item{PHIKCL_M_sl3_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 15-30cm. Unit = index*10}
-#'   \item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH.}
-#'   \item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH.}
-#'   \item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH.}
+#'   \item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH}
+#'   \item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH}
+#'   \item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH}
 #'   \item{SLTPPT_M_sl1_250m.Mean}{mean value of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
 #'   \item{SLTPPT_M_sl1_250m.SD}{standard deviation of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
 #'   \item{SLTPPT_M_sl1_250m.Quantiles}{quantiles of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
