@@ -4,22 +4,22 @@
 \alias{ExtractRasters}
 \title{Extract data from multiple rasters or zipped rasters in a single operation}
 \usage{
-ExtractRasters(DATA, ID, FILES, Save_Dir, Save_Name)
+ExtractRasters(Data, ID, Files, Save_Dir, Save_Name)
 }
 \arguments{
-\item{DATA}{A data.table or data.frame containing decimal degree point locations as two numeric columns \code{Latitude} \code{Longitude}, an numeric field
+\item{Data}{A data.table or data.frame containing decimal degree point locations as two numeric columns \code{Latitude} \code{Longitude}, an numeric field
 \code{Buffer} that describes a radius of spatial uncertainty in meters, and a unique id field naming each location whose name is specified using the \code{ID} parameter.}
 
 \item{ID}{A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.}
 
-\item{FILES}{A character vector listing the paths to raster files.}
+\item{Files}{A character vector listing the paths to raster files.}
 
 \item{Save_Dir}{A character vector of length one containing the path to the directory where the extracted data are to be saved. Set to NA if you do not want to save the returned dataset.}
 
 \item{Save_Name}{A character vector of length one containing a filename for the returned data.table. Data are saved as a '.RData' object.}
 }
 \value{
-A data.table is returned. For each raster specified in the \code{FILES} argument columns are created using the raster filename with the following
+A data.table is returned. For each raster specified in the \code{Files} argument columns are created using the raster filename with the following
 suffixes:
 \itemize{
 \item \code{Mean} = average of non-NA cells for each locations bounding box
