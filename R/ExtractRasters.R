@@ -8,10 +8,10 @@
 #' @param Data A data.table or data.frame containing decimal degree point locations as two numeric columns `Latitude` `Longitude`, an numeric field
 #' `Buffer` that describes a radius of spatial uncertainty in meters, and a unique id field naming each location whose name is specified using the `ID` parameter.
 #' @param ID A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.
-#' @param FILES A character vector listing the paths to raster files.
+#' @param Files A character vector listing the paths to raster files.
 #' @param Save_Dir A character vector of length one containing the path to the directory where the extracted data are to be saved. Set to NA if you do not want to save the returned dataset.
 #' @param Save_Name A character vector of length one containing a filename for the returned data.table. Data are saved as a '.RData' object.
-#' @return A data.table is returned. For each raster specified in the `FILES` argument columns are created using the raster filename with the following
+#' @return A data.table is returned. For each raster specified in the `Files` argument columns are created using the raster filename with the following
 #' suffixes:
 #' * `Mean` = average of non-NA cells for each locations bounding box
 #' * `SD` = standard deviation of non-NA cells for each locations bounding box
@@ -26,7 +26,7 @@
 #' @importFrom data.table fread fwrite
 ExtractRasters<-function(Data,
                          ID,
-                         FILES,
+                         Files,
                          Save_Dir,
                          Save_Name){
 
@@ -50,15 +50,15 @@ ExtractRasters<-function(Data,
 
   pbuf<-Pbuffer(SS,ID,Projected=F)
 
-  X<-lapply(1:length(FILES),FUN=function(i){
+  X<-lapply(1:length(Files),FUN=function(i){
 
     # Progress report
     cat('\r                                                                                              ')
-    cat('\r',paste0("Processing dataset: ",i,"/",length(FILES)))
+    cat('\r',paste0("Processing dataset: ",i,"/",length(Files)))
     flush.console()
 
     # Read in raster
-    RASTER<-rast(FILES[i])
+    RASTER<-rast(Files[i])
 
     RASTER.CRS<-terra::crs(RASTER,proj=T)
 
@@ -69,11 +69,11 @@ ExtractRasters<-function(Data,
       pbuf1<-terra::vect(pbuf)
     }
 
-    A<-gsub(".tif","",tail(unlist(strsplit(FILES[i],"/",fixed=T)),1))
+    A<-gsub(".tif","",tail(unlist(strsplit(Files[i],"/",fixed=T)),1))
 
     # Progress report
     cat('\r                                                                                              ')
-    cat('\r',paste0("Extracting from dataset: ",tail(A,1)," ",i,"/",length(FILES)))
+    cat('\r',paste0("Extracting from dataset: ",tail(A,1)," ",i,"/",length(Files)))
     flush.console()
 
     # extract values from RASTER
