@@ -24,7 +24,7 @@
 #' @importFrom terra rast vect extract crs
 #' @importFrom sp spTransform CRS
 #' @importFrom data.table fread fwrite
-ExtractRasters<-function(DATA,
+ExtractRasters<-function(Data,
                          ID,
                          FILES,
                          Save_Dir,
@@ -42,8 +42,8 @@ ExtractRasters<-function(DATA,
     uniqv[which.max(tabulate(match(v, uniqv)))]
   }
 
-  DATA<-as.data.frame(DATA)
-  SS<-data.table(unique(DATA[!(is.na(DATA$Latitude)|is.na(DATA$Latitude)|is.na(DATA$Buffer)),c(ID,"Latitude","Longitude","Buffer")]))
+  Data<-as.data.frame(Data)
+  SS<-data.table(unique(Data[!(is.na(Data$Latitude)|is.na(Data$Latitude)|is.na(Data$Buffer)),c(ID,"Latitude","Longitude","Buffer")]))
   SS[,Buffer:=as.numeric(Buffer)
      ][,Latitude:=as.numeric(Latitude)
        ][,Longitude:=as.numeric(Longitude)]
