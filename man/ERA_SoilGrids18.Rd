@@ -133,9 +133,9 @@ uncertainty
 \item{PHIKCL_M_sl3_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 15-30cm. Unit = index}10}
 \item{PHIKCL_M_sl3_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 15-30cm. Unit = index\emph{10}
 \item{PHIKCL_M_sl3_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 15-30cm. Unit = index}10}
-\item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH.}
-\item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH.}
-\item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH.}
+\item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH}
+\item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH}
+\item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH}
 \item{SLTPPT_M_sl1_250m.Mean}{mean value of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
 \item{SLTPPT_M_sl1_250m.SD}{standard deviation of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
 \item{SLTPPT_M_sl1_250m.Quantiles}{quantiles of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
@@ -316,9 +316,9 @@ uncertainty
 \item{PHIKCL_M_sl3_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 15-30cm. Unit = index}10}
 \item{PHIKCL_M_sl3_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 15-30cm. Unit = index\emph{10}
 \item{PHIKCL_M_sl3_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 15-30cm. Unit = index}10}
-\item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH.}
-\item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH.}
-\item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH.}
+\item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH}
+\item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH}
+\item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH}
 \item{SLTPPT_M_sl1_250m.Mean}{mean value of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
 \item{SLTPPT_M_sl1_250m.SD}{standard deviation of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
 \item{SLTPPT_M_sl1_250m.Quantiles}{quantiles of Weight percentage of the silt particles (0.0002-0.05 mm) at a depth of 0-5cm. Unit = percent}
