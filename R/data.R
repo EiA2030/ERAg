@@ -1,4 +1,4 @@
-#' The compiled ERA dataset (version = Comb 2022.03.22 2022.03.23)
+#' The compiled ERA dataset (version = Comb 2022.04.04 2022.03.23)
 #' \describe{
 #'   \item{Index}{unique row identity}
 #'   \item{Code}{unique publication identity}
@@ -122,8 +122,7 @@
 #'   \item{CLY}{weight percentage of clay particles (<0.0002 mm)}
 #'   \item{SLT}{weight percentage of silt particles (0.0002-0.05 mm)}
 #'   \item{SND}{weight percentage of the sand particles (0.05-2 mm)}
-#'
-#'   ...
+#'  ...
 #' }
 #' @source ERA Project Team (2021)
 "ERA.Compiled"
