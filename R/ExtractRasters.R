@@ -5,7 +5,7 @@
 #'
 #' Extraction uses the extract function of the terra package.
 #'
-#' @param DATA A data.table or data.frame containing decimal degree point locations as two numeric columns `Latitude` `Longitude`, an numeric field
+#' @param Data A data.table or data.frame containing decimal degree point locations as two numeric columns `Latitude` `Longitude`, an numeric field
 #' `Buffer` that describes a radius of spatial uncertainty in meters, and a unique id field naming each location whose name is specified using the `ID` parameter.
 #' @param ID A character vector of length one containing the column name for a unique id field naming each location in the dataset provided.
 #' @param FILES A character vector listing the paths to raster files.
