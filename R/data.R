@@ -455,24 +455,24 @@
 #'   \item{ORCDRC_M_sl3_250m.Mean}{mean value of soil organic carbon content in permille at a depth of 15-30cm. Unit = g/kg}
 #'   \item{ORCDRC_M_sl3_250m.SD}{standard deviation of soil organic carbon content in permille at a depth of 15-30cm. Unit = g/kg}
 #'   \item{ORCDRC_M_sl3_250m.Quantiles}{quantiles of soil organic carbon content in permille at a depth of 15-30cm. Unit = g/kg}
-#'   \item{PHIHOX_M_sl1_250m.Mean}{mean value of pH index measured in water solution at a depth of 0-5cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl1_250m.SD}{standard deviation of pH index measured in water solution at a depth of 0-5cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl1_250m.Quantiles}{quantiles of pH index measured in water solution at a depth of 0-5cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl2_250m.Mean}{mean value of pH index measured in water solution at a depth of 5-15cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl2_250m.SD}{pH index measured in water solution at a depth of 5-15cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl2_250m.Quantiles}{pH index measured in water solution at a depth of 5-15cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl3_250m.Mean}{mean value of pH index measured in water solution at a depth of 15-30cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl3_250m.SD}{pH index measured in water solution at a depth of 15-30cm. Unit = index*10}
-#'   \item{PHIHOX_M_sl3_250m.Quantiles}{pH index measured in water solution at a depth of 15-30cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl1_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 0-5cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl1_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 0-5cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl1_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 0-5cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl2_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 5-15cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl2_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 5-15cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl2_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 5-15cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl3_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 15-30cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl3_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 15-30cm. Unit = index*10}
-#'   \item{PHIKCL_M_sl3_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 15-30cm. Unit = index*10}
+#'   \item{PHIHOX_M_sl1_250m.Mean}{mean value of pH index measured in water solution at a depth of 0-5cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl1_250m.SD}{standard deviation of pH index measured in water solution at a depth of 0-5cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl1_250m.Quantiles}{quantiles of pH index measured in water solution at a depth of 0-5cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl2_250m.Mean}{mean value of pH index measured in water solution at a depth of 5-15cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl2_250m.SD}{pH index measured in water solution at a depth of 5-15cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl2_250m.Quantiles}{pH index measured in water solution at a depth of 5-15cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl3_250m.Mean}{mean value of pH index measured in water solution at a depth of 15-30cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl3_250m.SD}{pH index measured in water solution at a depth of 15-30cm. Unit = pH x10}
+#'   \item{PHIHOX_M_sl3_250m.Quantiles}{pH index measured in water solution at a depth of 15-30cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl1_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 0-5cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl1_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 0-5cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl1_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 0-5cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl2_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 5-15cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl2_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 5-15cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl2_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 5-15cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl3_250m.Mean}{mean value of pH index measured in KCl solution at a depth of 15-30cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl3_250m.SD}{standard deviation of pH index measured in KCl solution at a depth of 15-30cm. Unit = pH x10}
+#'   \item{PHIKCL_M_sl3_250m.Quantiles}{quantiles of pH index measured in KCl solution at a depth of 15-30cm. Unit = pH x10}
 #'   \item{SLGWRB_250m.Mean}{mean value of Sodic soil grade based on WRB soil types and soil pH}
 #'   \item{SLGWRB_250m.SD}{standard deviation of Sodic soil grade based on WRB soil types and soil pH}
 #'   \item{SLGWRB_250m.Quantiles}{quantiles of Sodic soil grade based on WRB soil types and soil pH}
