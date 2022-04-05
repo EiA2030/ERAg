@@ -1,6 +1,6 @@
 Package: ERAg
 Title: Evidence for Resilient Agriculture Tools
-Version: 0.0.1.19
+Version: 0.0.1.20
 Authors@R: c(
     person(given = "Peter",
            family = "Steward",
