@@ -1,5 +1,8 @@
 #' Extract data from all tif files for a supplied vector layer
 #'
+#' If parallel processing can be added then speeds can be increased. See https://github.com/rspatial/terra/issues/36 using pack and unpack functions to
+#' make serializable SpatRaster and SpatVector objects.
+#'
 #' @param FileDirectory the location of the folder containing `.tif` rasters to be extracted, this folder should only contain `.tif` files.
 #' @param MaxChunkSize the maximum number of rasters to be stacked when extracting data, consider your working RAM when making this decision.
 #' @param ExtractBy a set of locations in `SpatVector` form.
@@ -62,7 +65,7 @@ ExtractFolder<-function(FileDirectory,
       if(!is.na(NAValue)){
         Data<-terra::classify(Data,matrix(c(NAValue,as.numeric(NA)),ncol=2))
       }
-      if(!is.na(Function)){
+      if(!suppressWarnings(is.na(Function))){
         Data<-data.table(terra::extract(Data,ExtractBy,fun=Function,na.rm=T))
       }else{
         Data<-data.table(terra::extract(Data,ExtractBy))

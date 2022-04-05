@@ -50,5 +50,6 @@ A data.table of daily precipitation data including the fields:
 }
 }
 \description{
-Extract data from all tif files for a supplied vector layer
+If parallel processing can be added then speeds can be increased. See https://github.com/rspatial/terra/issues/36 using pack and unpack functions to
+make serializable SpatRaster and SpatVector objects.
 }
