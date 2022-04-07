@@ -52,4 +52,5 @@ A data.table of daily precipitation data including the fields:
 \description{
 If parallel processing can be added then speeds can be increased. See https://github.com/rspatial/terra/issues/36 using pack and unpack functions to
 make serializable SpatRaster and SpatVector objects.
+With a small modification on (line 97) it should be possible to extract using a raster too.
 }
