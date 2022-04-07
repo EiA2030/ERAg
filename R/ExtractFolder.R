@@ -2,6 +2,7 @@
 #'
 #' If parallel processing can be added then speeds can be increased. See https://github.com/rspatial/terra/issues/36 using pack and unpack functions to
 #' make serializable SpatRaster and SpatVector objects.
+#' With a small modification on (line 97) it should be possible to extract using a raster too.
 #'
 #' @param FileDirectory the location of the folder containing `.tif` rasters to be extracted, this folder should only contain `.tif` files.
 #' @param MaxChunkSize the maximum number of rasters to be stacked when extracting data, consider your working RAM when making this decision.
