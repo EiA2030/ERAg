@@ -228,14 +228,16 @@ ExtractPOWER<-function(Data,
         POWER<-fread(PName)
         setnames(POWER,"PRECTOTCORR","PRECTOT")
 
-        POWER<-P.Avg(POWER,SS,i)
-        POWER[,NCells:=nrow(Cells)]
-        POWER
-
 
       }
 
     }),use.names = T)
+
+    POWER<-P.Avg(POWER,SS,i)
+    POWER[,NCells:=nrow(Cells)]
+    POWER
+
+
   })
 
 
