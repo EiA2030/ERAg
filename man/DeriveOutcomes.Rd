@@ -4,7 +4,7 @@
 \alias{DeriveOutcomes}
 \title{Derive ERA outcomes from existing data}
 \usage{
-DeriveOutcomes(Data = ERA.Compiled, RmPartial = T, DoBCR_VC = T, DoWUE = T)
+DeriveOutcomes(Data = ERA.Clim.Class2, RmPartial = T, DoBCR_VC = T, DoWUE = T)
 }
 \arguments{
 \item{Data}{An ERA data.table (e.g. \code{ERAg::ERA.Compiled}).}
