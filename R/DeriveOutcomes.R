@@ -113,11 +113,12 @@ DeriveOutcomes<-function(Data = ERA.Clim.Class2,
 
 
   KeepCols<-colnames(NR$data)[colnames(NR$data) %in% colnames(Data)]
-  NR$data<-NR$data[,..KeepCols]
-  GM$data<-GM$data[,..KeepCols]
-
-  nrow(NR$data)/nrow(Data[Outcode==124])
-  nrow(NR$data)/nrow(Data[Outcode==124.1])
+  if(!is.null(NR$data)){
+    NR$data<-NR$data[,..KeepCols]
+  }
+  if(!is.null(GM$data)){
+    GM$data<-GM$data[,..KeepCols]
+  }
 
   # Combine with master dataset ####
   Data<-rbindlist(list(Data,NR$data),use.names=T)
