@@ -715,7 +715,6 @@ CalcClimate2<-function(Data,
   SaveName<-paste0(SaveDir,"/ClimStats.RData")
 
 
-  if(nrow(SS)>0){
 
     CLIMATE<-CLIMATE[,!c("Latitude","Longitude","Buffer","DayCount")]
 
@@ -1089,15 +1088,9 @@ CalcClimate2<-function(Data,
     }
 
 
-  }else{
-    Seasonal<-S.existing
-  }
-
   if(Do.BioClim){
 
     SaveName<-paste0(SaveDir,"/BioClim.RData")
-
-
 
     Message<-paste0(Temp.Data.Name," x ",Rain.Data.Name,": Calculating BioClim Annual Variables")
 
