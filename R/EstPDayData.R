@@ -20,7 +20,7 @@
 #' `Data.PS.Date` = planting start date estimated from the dataset provided (Date)
 #' `Data.PE.Date` = planting end date estimated from the dataset provided (Date)
 #' `Data.Date.Acc` = a concantenation of the number of decimals places used in latitude/longitude matching and whether matching was conducted using
-#' `Product` (`P.Sub`) or `Product.Subtype` (`P`), for example `3-P.Sub`.
+#' `Product` (`P`) or `Product.Subtype` (`P.Sub`), for example `3-P.Sub`.
 #' 2) `[[Season.Issues]]` a data.table containing Latitude + Longitude combinations where a mixture of season = 1 or 2 and season = NA are reported suggesting
 #' potential issues with consistency of temporal recording at these spatial coordinates.
 #' @export
