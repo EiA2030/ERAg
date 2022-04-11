@@ -16,7 +16,7 @@ A list of two elements is returned:
 \code{Data.PS.Date} = planting start date estimated from the dataset provided (Date)
 \code{Data.PE.Date} = planting end date estimated from the dataset provided (Date)
 \code{Data.Date.Acc} = a concantenation of the number of decimals places used in latitude/longitude matching and whether matching was conducted using
-\code{Product} (\code{P.Sub}) or \code{Product.Subtype} (\code{P}), for example \code{3-P.Sub}.
+\code{Product} (\code{P}) or \code{Product.Subtype} (\code{P.Sub}), for example \code{3-P.Sub}.
 \item \verb{[[Season.Issues]]} a data.table containing Latitude + Longitude combinations where a mixture of season = 1 or 2 and season = NA are reported suggesting
 potential issues with consistency of temporal recording at these spatial coordinates.
 }
