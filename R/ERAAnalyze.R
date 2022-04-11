@@ -107,7 +107,6 @@
 #' @importFrom diagis weighted_se
 #' @importFrom Hmisc wtd.var
 #' @importFrom lmerTest lmer
-#'
 ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
   options(scipen=999)
 
@@ -232,7 +231,6 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
 
     Weight.Group<-unique(c("Code",Aggregate.By))
 
-
     ANALYSED.Data<-cbind(
       Data[,N.Obs.Study:=.N,by=Weight.Group # Recalculate Weightings
       ][,Weight.Study:=(Rep^2/(2*Rep))/N.Obs.Study # Recalculate Weightings
@@ -331,6 +329,17 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
       round(ExtractModel(ANALYSED.Data[i,PC.lmer][[1]],"PC"),ROUND)
     }))
 
+    if(all(is.na(RR.Models))){
+      colnames(RR.Models)<-c("RR.Estimate","RR.Std. Error","RR.t value","RR.Pr(>|t|)","RR.Sigma2")
+      RR.Models<-data.table(RR.Models)
+    }
+
+    if(all(is.na(PC.Models))){
+      colnames(PC.Models)<-c("PC.Estimate","PC.Std. Error","PC.t value","PC.Pr(>|t|)","PC.Sigma2")
+      PC.Models<-data.table(PC.Models)
+
+    }
+
     ANALYSED.Data<-cbind(ANALYSED.Data,RR.Models,PC.Models)
 
     ANALYSED.Data[!is.na(RR.Estimate),RR:=RR.Estimate
@@ -379,4 +388,3 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
 
   return(ANALYSED.Data)
 }
-
