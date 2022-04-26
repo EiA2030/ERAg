@@ -1,5 +1,5 @@
 Package: ERAg
-Title: Evidence for Resilient Agriculture Tools
+Title: Evidence for Resilient Agriculture Tools and Data
 Version: 0.1.0
 Authors@R: c(
     person(given = "Peter",
@@ -13,7 +13,7 @@ Authors@R: c(
            email = "t.rosenstock@cgiar.org",
            comment = c(ORCID = "0000-0002-1958-9500"))
            )
-Description: The ERA dataset, tools and vignettes for its analysis.
+Description: The ERA dataset, tools and explanatory vignettes.
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
