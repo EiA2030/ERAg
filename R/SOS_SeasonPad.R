@@ -10,6 +10,9 @@
 SOS_SeasonPad<-function(Data,PadBack,PadForward){
   Data[is.na(Data)]<-99
 
+  PadBack<-round(PadBack,0)
+  PadForward<-round(PadForward,0)
+
   if(PadBack!=0){
     if(1 %in% Data){
 
