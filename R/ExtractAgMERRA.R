@@ -33,7 +33,6 @@
 #' * `Date` = date of observation (Date)
 #' * `DayCount` = days since date specified in `M.ORIGIN` parameter
 #' @export
-#' @importFrom miceadds load.Rdata2
 #' @importFrom ncdf4 nc_open ncvar_get nc_close
 #' @importFrom parallel makeCluster clusterEvalQ stopCluster clusterExport
 #' @importFrom doSNOW registerDoSNOW
@@ -73,7 +72,7 @@ ExtractAgMERRA<-function(DATA,
     cat('\r',paste("Cross-referencing against existing extracted data"))
     flush.console()
 
-    X<-miceadds::load.Rdata2(file="AgMERRA.RData",path=Save_Dir)
+    X<-load(paste0(Save_Dir,"AgMERRA.RData"))
     YStart<-Years[1]
     YEnd<-Years[2]
     # Check if new years have been added to YStart:YEnd compared to existing dataset
@@ -320,9 +319,9 @@ ExtractAgMERRA<-function(DATA,
     cat('\r',paste("Step 2: Combining Years - Progress:",i,"/",length(AgMERRA_list)))
     flush.console()
     if (i==1){
-      AgMERRA<-miceadds::load.Rdata2(file=AgMERRA_list[i],path=temp_dir)
+      AgMERRA<-load(paste0(temp_dir,AgMERRA_list[i]))
     }else{
-      Z<-miceadds::load.Rdata2(file=AgMERRA_list[i],path=temp_dir)
+      Z<-load(paste0(temp_dir,AgMERRA_list[i]))
       AgMERRA<-rbind(AgMERRA,Z)
     }
 

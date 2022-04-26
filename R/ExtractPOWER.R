@@ -52,7 +52,6 @@
 #' @import data.table
 #' @importFrom data.table fread fwrite
 #' @importFrom sp bbox
-#' @importFrom miceadds load.Rdata2
 ExtractPOWER<-function(Data,
                        ID,
                        Parameters= c("ALLSKY_SFC_SW_DWN", "PRECTOT", "PS","QV2M","RH2M","T2M","T2M_MAX","T2M_MIN","WS2M"),
@@ -100,8 +99,9 @@ ExtractPOWER<-function(Data,
   SS<-unique(Data[!(is.na(Data$Longitude)|is.na(Data$Latitude)|is.na(Data$Buffer)|is.na(Data$Altitude)),c("Latitude","Longitude",ID,"Buffer","Altitude")])
   SS$Buffer[SS$Buffer>MaxBuffer]<-MaxBuffer
 
-  if(file.exists(paste0(Save_Dir,"/POWER.RData"))){
-    POWER<-miceadds::load.Rdata2(path=Save_Dir,file="POWER.RData")
+  FILEX<-paste0(Save_Dir,"/POWER.RData")
+  if(file.exists(FILEX)){
+    POWER<-load(FILEX)
     POWER.LIST<-split(POWER, f = POWER[,..ID] )
     Sites<-names(POWER.LIST)
     POWER.LIST<-POWER.LIST[match(Sites,SS[,ID])]

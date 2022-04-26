@@ -58,22 +58,20 @@ if(!dir.exists(ClimDir)){
 Load saved seasonal climate data:
   
 ```{r  Load ClimateA, eval=F,echo=T}
-ClimateA<-load.Rdata2("ClimStatsA.RData",path=ClimDir)
-
-names(ClimateA)
+ClimateA<-load(paste0(ClimDir,"ClimStatsA.RData"))
 ```
 
 The `ClimateCalc` function also saved the processed input ERA dataset which contains the fields we need to link the climate data back to the ERA dataset. Load this dataset:
 
 ```{r  Load ERA, eval=F,echo=T}
-ERA<-load.Rdata2("Data.RData",path=AnalysisDir)
+ERA<-load(paste0(ClimDir,"Data.RData"))
 ```
 
 #### Prepare iSDA Soils Data
 [iSDA soils data](https://www.isda-africa.com/isdasoil/) are provided for each location in ERA.
 
 ```{r load soils,echo=T,eval=T}
-Soils<-ERA_ISDA
+Soils<-ERAg::ERA_ISDA
 Soils[,1:3]
 ```
 For explanations of the soil variables in the `Variables` field see the

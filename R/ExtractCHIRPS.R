@@ -32,7 +32,6 @@
 #' @export
 #' @import data.table
 #' @importFrom raster raster coordinates
-#' @importFrom miceadds load.Rdata2
 #' @importFrom sp bbox
 ExtractCHIRPS<-function(Data,
                         ID,
@@ -129,7 +128,7 @@ ExtractCHIRPS<-function(Data,
     cat('\r',paste("Step 1: Loading CHIRPS Data | Year: ",k))
     flush.console()
 
-    RAINDATA<-miceadds::load.Rdata2(FILES.RData[match(k,FILES.Years)],path=CHIRPS_dir)
+    RAINDATA<-load(paste0(CHIRPS_dir,FILES.RData[match(k,FILES.Years)]))
 
     Z<-rbindlist(lapply(1:nrow(SS),FUN=function(j){
 

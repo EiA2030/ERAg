@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 require(ERAg)
 require(tidyr)
 require(treemap)
-# require(spatstat)
 ```
 
 ## Exploring the data
@@ -163,9 +162,8 @@ treemap::treemap(ERA.Pits.Crops,
 ```
 
 Where does this data come from?
-
 ```{r WH map data,echo=T,fig.width=7,fig.asp=0.66}
-ERAg::ERAHexPlot(Data=ERA.Pits,Showpoints = "Yes",Point.Col = "black",Mid = "yellow",
+ERAgON::ERAHexPlot(Data=ERA.Pits,Showpoints = "Yes",Point.Col = "black",Mid = "yellow",
   High = "red",)
 
 100*(ERA.Pits[,table(Country)] / nrow(ERA.Pits)) %>% round(digits=3)
@@ -190,8 +188,6 @@ There are some pre-processing steps that we need to apply to the data using the 
 2) *Inverse outcomes*: when a lower value indicates a better outcome, the outcome values for control (`MeanC`) and experimental treatment (`MeanT`) are swapped (excluding economic outcomes).  
 
 *See ?PrepareERA for more details* 
-
-
 ```{r WH Prepare the data,echo=T}
 ERA.Pits.Prep<-ERAg::PrepareERA(Data = ERA.Pits,Perc.Neg = 0.5,RmNeg = T)
 

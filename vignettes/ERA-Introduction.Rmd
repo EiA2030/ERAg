@@ -28,8 +28,7 @@ knitr::opts_chunk$set(
   require(ggnewscale)
   require(terra)
   require(RColorBrewer)
-  require(rasterVis)
-
+  #require(rasterVis)
 ```
 
 In this vignette, we will explore key components of the ERA dataset and some derived products to which it can be linked (also provided in the `ERAg` package). This is not intended to be a complete explanation of everything ERA. Instead its purpose is to highlight a few features to kick-start use and analysis. Please send feedback on the explanations or on discoveries that should be included in the next version to Pete Steward (p.steward@cgiar.org). Please post any questions to the ERA-Data-Sprint Slack Workspace.
@@ -96,7 +95,7 @@ knitr::kable(head(unique(ERA.Compiled[,list(Country,Site.ID,Latitude,Longitude,B
 The `Pbuffer` function  creates a `SpatialPolygons` object of all the study sites in ERA.
 
 ```{r Buffers, echo=T,fig.width=7,fig.height=6}
-SiteBuffers<-Pbuffer(Data=ERA.Compiled, ID = NA, Projected = F)
+SiteBuffers<-ERAg::Pbuffer(Data=ERAg::ERA.Compiled, ID = NA, Projected = F)
 plot(SiteBuffers)
 ```
 
@@ -104,20 +103,20 @@ You will immediately notice that some locations have very high spatial uncertain
 
 ```{r Filter Location, echo=T,eval=F}
 # Filter dataset to sites with spatial uncertainty radius of less than 5km
-ERA.Compiled<-ERA.Compiled[Buffer<5000]
+ERA.Compiled<-ERAg::ERA.Compiled[Buffer<5000]
 ```
 
 The spatial distribution of ERA data can be visualized with the `ERAHexPlot` functions:
 
 ```{r Hexplot, echo=T,eval=T,fig.width=7,fig.height=6,warning=F}
-ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
+ERAgON::ERAHexPlot(Data=ERA.Compiled,Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
 ```
 
-We can also use the `ERAAlphaPlot` function. We can add a background map to the plot using the Background parameters in the function, in this case we add a farming system map supplied from the [CELL5M](https://doi.org/10.7910/DVN/G4TBLF/7RIFT5) dataset.
+We can also use the `ERAAlphaPlot` function from the helper functions supplied in the `ERAgON` package. A background map can be added to the plot using the Background parameters, in this case we add a farming system map supplied from the [CELL5M](https://doi.org/10.7910/DVN/G4TBLF/7RIFT5) dataset.
 
 ```{r Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F}
 
-ERAAlphaPlot(Data = ERA.Compiled,
+ERAgON::ERAAlphaPlot(Data = ERA.Compiled,
             Background = NA,
             Background.Labs = NA,
             Background.Cols = NA,
@@ -169,12 +168,12 @@ The number of experimental replications, **`Rep`**, is used as a proxy for exper
 ## Higher Level Concepts: Practices, Outcomes, and Products (EUs)
 In addition to spatial and temporal variables, there are three high level concepts that are the foundation of ERA's experiment classification system. These are **practices**, **outcomes** and **products** (or experimental units). Practices here is shorthand for **Management practices and technologies** which describe agronomic, agroforestry, and livestock interventions, for example, crop rotations, livestock dietary supplements or the like. Outcomes, as they sound, relate to the dependent variables in experiments (e.g., yield, benefit-cost ratios, soil carbon). Products refers to the the species or commodity that the outcome is measured on, for example maize, milk, or meat.  
 
-Each is organized hierarchically, where concepts are nested below and above related concepts. This organization allows the user to aggregate or disaggregate data using these fields to explore different questions, from narrow (e.g., how does a Gliricidia-based alley cropping change maize crop yields?) to broad (e.g., considering all products which practices, on average, improve productivity, resilience and mitigation outcomes?). It also facilitates the user to deliver information at the level for the specific users. For example, policy makers refer to agroforestry broadly while farmers are typically more interested in nuanced (disaggregated) results for species and practices. ERA's practices, outcomes, and products hierarchies are unique but recently has been mapped to other ontologies including **AGROVOC** and **AgrO** to increase future interoperability. These mappings will be available in future realeases. 
+Each is organized hierarchically, where concepts are nested below and above related concepts. This organization allows the user to aggregate or disaggregate data using these fields to explore different questions, from narrow (e.g., how does a Gliricidia-based alley cropping change maize crop yields?) to broad (e.g., considering all products which practices, on average, improve productivity, resilience and mitigation outcomes?). It also facilitates the user to deliver information at the level for the specific users. For example, policy makers refer to agroforestry broadly while farmers are typically more interested in nuanced (disaggregated) results for species and practices. ERA's practices, outcomes, and products hierarchies are unique but recently has been mapped to other ontologies including **AGROVOC** and **AgrO** to increase future interoperability. These mappings will be available in future releases. 
 
 We can view the subordinates of these high level concepts by accessing the datasets `PracticeCodes`, `OutcomesCodes` and `EUCodes` included with the `ERAg` package. Alternatively the organization of higher level concepts can also be viewed in the `ERAConcepts` list or in somewhat less detail in the manuscript describing the data.
 
 ```{r Show ERA Concepts, echo=T}
-ERAConcepts
+ERAg::ERAConcepts
 ```
 
 Individual concepts have columns containing their name and corresponding column with the suffix **`.Code`** containing much abbreviated versions of the name, for example **`OutSubInd`** & **`OutSubInd.Code`**. The abbreviated names are useful in decluttering plot axes.

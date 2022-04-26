@@ -26,7 +26,7 @@ This vignette will explore how to download and extract climate information for p
     install.packages("pacman",dependencies = T)
   }
   
-  required.packages <- c("data.table","doSNOW","ERAg","miceadds","ncdf4","raster","rgeos","sp","terra")
+  required.packages <- c("data.table","doSNOW","ERAg","ncdf4","raster","rgeos","sp","terra")
   p_load(char=required.packages,install = T,character.only = T)
     
 ```
@@ -248,7 +248,7 @@ The `ERAg` functions used in this section of the vignette are less generalisable
     install.packages("pacman",dependencies = T)
   }
   
-  required.packages <- c("ggplot2","circular","data.table","doSNOW","zoo","pbapply","ERAg","dismo","miceadds")
+  required.packages <- c("ggplot2","circular","data.table","doSNOW","zoo","pbapply","ERAg","dismo")
   p_load(char=required.packages,install = T,character.only = T)
 ```
 
@@ -299,8 +299,8 @@ LargeDir<-"Large Files/"
                 dest = LargeDir)
   }
   
-  POWER<-data.table(miceadds::load.Rdata2("POWER.RData",path=LargeDir))
-  CHIRPS<-data.table(miceadds::load.Rdata2("CHIRPS.RData",path=LargeDir))
+  POWER<-data.table(load("POWER.RData",path=LargeDir))
+  CHIRPS<-data.table(load("CHIRPS.RData",path=LargeDir))
 
 ```
 

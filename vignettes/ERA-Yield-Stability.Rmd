@@ -53,7 +53,7 @@ knitr::kable(head(PracticeCodes[,1:6], 5))
 
 Alternatively the organization of higher level concepts can also be viewed in the `ERAConcepts` list.
 ```{r Show ERA Concepts, echo=T}
-ERAConcepts
+ERAg::ERAConcepts
 ```
 
 To apply standardized column names we need to select which organizational levels of the three higher level concepts to use using the `StandColName` function. The function help describes how to do this `?StandColNames`.
@@ -65,7 +65,7 @@ Regarding practices there are a large number of concepts at the *subpractice* le
 The stability analysis does not explicitly consider products so it's not critical what organization level of prodct we choose; let's set the  `EULevel` parameter to `P`. 
 
 ```{r Run StandColName Function, echo=T}
-StabData<-StandColNames(Data=ERA.Compiled,
+StabData<-ERAg::StandColNames(Data=ERAg::ERA.Compiled,
               PLevel="P",
               OLevel="SI",
               EULevel="P"
@@ -91,7 +91,7 @@ data.table(OutcomeCodes)[grep("Crop Yield",Subindicator),list(Subindicator,Code)
 ```
 
 ```{r Prepare Stability Data, echo=T}
-StabData<-PrepareStabData(Data=StabData,OutCodes=101)
+StabData<-ERAg::PrepareStabData(Data=StabData,OutCodes=101)
 ```
 
 The stability analysis needs MYOs of at least 3 seasons to generate any statistics and the `StabCalc` function will filter any MYOs that do not meet this minimum data requirement. If you want to increase the thresholds for MYO length then you can filter on the `nryear` field of the `PrepareStabData` output. For example: 
@@ -105,7 +105,7 @@ StabData<-StabData[nryears>=4]
 Next we pass the `PrepareStabData` output to the `StabCalc2` function.
 
 ```{r Stability calc, echo=T, eval=T,include=F}
-StabData<-StabCalc2(Data=StabData,
+StabData<-ERAg::StabCalc2(Data=StabData,
           Do.Weight=T,
           Weight.by.Study=T,
           Rm.Out=T,
@@ -118,7 +118,7 @@ StabData<-StabCalc2(Data=StabData,
 Now we use the `ERAStabPlot` function to plot the data, this function creates a list of plots, one for each combination of product x outcome.
 
 ```{r Stability Plots, echo =T}
-StabPlots<-ERAStabPlot(Data=StabData,Robust=F,Intercept=F)
+StabPlots<-ERAgON::ERAStabPlot(Data=StabData,Robust=F,Intercept=F)
 ```
 Each list element contains two elements, these are ggplots of 1) absolute yield variability (`lnVR`) vs. yield (`lnRR`) and 2) relative yield variability (`lnCVR`) vs. yield (`lnRR`).
 
