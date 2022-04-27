@@ -71,7 +71,7 @@ ERA<-load(paste0(ClimDir,"Data.RData"))
 [iSDA soils data](https://www.isda-africa.com/isdasoil/) are provided for each location in ERA.
 
 ```{r load soils,echo=T,eval=T}
-Soils<-ERAg::ERA_ISDA
+Soils<-ERAgON::ERA_ISDA
 Soils[,1:3]
 ```
 For explanations of the soil variables in the `Variables` field see the

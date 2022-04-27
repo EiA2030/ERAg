@@ -26,7 +26,7 @@ This vignette will explore how to download and extract climate information for p
     install.packages("pacman",dependencies = T)
   }
   
-  required.packages <- c("data.table","doSNOW","ERAg","ncdf4","raster","rgeos","sp","terra")
+  required.packages <- c("data.table","doSNOW","ERAg","ERAgON","ncdf4","raster","rgeos","sp","terra")
   p_load(char=required.packages,install = T,character.only = T)
     
 ```
@@ -53,7 +53,7 @@ The extracted dataset is returned and saved as an `AgMERRA.RData` object in the 
 
 ```{r AgMERRA,echo = T, eval = F}
 
-AgMERRA<-ExtractAgMERRA(DATA=ERA.Data,
+AgMERRA<-ERAgON::ExtractAgMERRA(DATA=ERA.Data,
               ID="Site.Key",
               AgMERRA_dir = "/AgMERRA Downloads",
               TempDir = "/Temp",
@@ -74,7 +74,7 @@ There are three phases to extraction of CHIRPS precipitation data: 1) downloadin
 This function download the CHIRPS 2.0 dataset as .tif.gz files with 0.05 degree resolution from an online [repository](https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_daily/tifs/p05/1981/) to the local directory specified in the `SaveDir` argument.
 
 ```{r download CHIRPS,echo=T,eval=FALSE}
-DownloadCHIRPs(StartYear=1983,
+ERAgON::DownloadCHIRPs(StartYear=1983,
                EndYear=2019,
                SaveDir=paste0(getwd(),"/CHIRPS Downloads"))
 ```
@@ -83,14 +83,14 @@ DownloadCHIRPs(StartYear=1983,
 The `ReformatCHIRPS` function transforms the CHIRPS data downloaded by the `DownloadCHIRPS` function to be an array object from which data can be quickly extracted. The directory containing the download CHIRPS data is specified by `CHIRPS_dir` argument.  
 
 ```{r reformat CHIRPS,echo=T,eval=FALSE}
-ReformatCHIRPS<-function(CHIRPS_dir="CHIRPS Downloads"),
+ERAgON::ReformatCHIRPS<-function(CHIRPS_dir="CHIRPS Downloads"),
                          Save_dir="CHIRPS Reformatted")
 ```
 #### 3) Extract
 The `ExtractCHIRPS` function extracts daily climate data from a reformatted CHIRPS object created by the `ReformatCHIRPS` and located in the directory specified by the `CHIRPS_dir` argument.  The period for which data are extracted for, specified by the `YStart` and `YEnd` arguments, should not exceed the bounds of the years specified when the CHIRPS data were downloaded.  
 
 ```{r extract CHIRPS,echo=T,eval=FALSE}
-  CHIRPS<-ExtractCHIRPS(
+  CHIRPS<-ERAgON::ExtractCHIRPS(
     Data=Data,
     ID="Site",
     CHIRPS_dir = "CHIRPS Reformatted",
@@ -117,7 +117,7 @@ The code below will download chunks of data for combination of POWER parameter (
 Downloaded files are stored in the directory specified by the `Save_Dir` argument and once all the data have been downloaded they are combined together and saved as a `POWER.RData` object in the directory specified in the `PowerSave` argument. The `Delete` argument removes downloaded files when set to `TRUE`.
 
 ```{r POWER,echo = T, eval = F}
-POWER<-ExtractPOWER(Data=ERA.Data,
+POWER<-ERAgON::ExtractPOWER(Data=ERA.Data,
                     ID="Site",
                     Parameters=c("ALLSKY_SFC_SW_DWN", "PRECTOT", "PS","QV2M","RH2M","T2M","T2M_MAX","T2M_MIN","WS2M"),
                     Rename= c("Solar.Rad","Rain","Pressure","Humid","Temp.Min","Temp.Max","Temp.Mean","WindSpeed","Specific.Humid"),
@@ -171,7 +171,7 @@ For remaining values we use the `ReplaceSRAD` function to search withing the POW
 The `PETcalc` function applies the  [FAO Penman-Monteith method](http://www.fao.org/docrep/X0490E/x0490e06.htm) to  calculate reference evapotranspiration. 
 
 ```{r Add PET, echo =T, eval=F}
-    POWER[,ETo:=PETcalc(Tmin=Temp.Min,
+    POWER[,ETo:=ERAg::PETcalc(Tmin=Temp.Min,
                       Tmax=Temp.Max,
                       SRad=SRad,
                       Wind=WindSpeed,
@@ -340,7 +340,7 @@ ERA[,Harvest.Start:=as.Date(Harvest.Start,"%d.%m.%Y")
 Update missing altitude values with those derived from digital elevation models (DEMs): 
 
 ```{r CS add altitude, eval=F,echo=T}
-Physical<-data.table(ERA_Physical)
+Physical<-data.table(ERAgON::ERA_Physical)
 
 # Add DEM altitude to ERA
 ERA[!is.na(Latitude),Altitude.DEM:=Physical[match(unlist(ERA[!is.na(Latitude),..ID]),unlist(Physical[,..ID])) , Altitude.mean]]
@@ -354,9 +354,9 @@ Ensure ERA code fields are data.table format:
 
 ```{r CS code tables, echo=T, eval=F}
 # Ensure code tables are data.table format
-PracticeCodes<-data.table(PracticeCodes)
-OutcomeCodes<-data.table(OutcomeCodes)
-EUCodes<-data.table(EUCodes)
+PracticeCodes<-data.table(ERAg::PracticeCodes)
+OutcomeCodes<-data.table(ERAg::OutcomeCodes)
+EUCodes<-data.table(ERAg::EUCodes)
 ```
 
 Nest we subset ERA data for 1) crop yields; 2) single season annual products; 3) observations with no temporal aggregation; 4) outcomes that correspond to a single product; and 5) locations with radius of spatial uncertainty less than 25km.
@@ -378,7 +378,7 @@ ERA.Yields<-ERA[Out.SubInd == "Crop Yield" & # Subset to crop yields
 When harvest dates are not reported in the studies that comprise ERA we can substitute season length values from the EcoCrop dataset. First we need to merge EcoCrop data with `ERAg::AddEcoCrop` function.
 
 ```{r CS add EcoCrop, echo=T, eval=F}
-ERA.Yields<-cbind(ERA.Yields,ERAg::AddEcoCrop(Products = ERA.Yields[,Product]))
+ERA.Yields<-cbind(ERA.Yields,ERAgON::AddEcoCrop(Products = ERA.Yields[,Product]))
 ```
 
 ### Prepare Climate dataset
@@ -410,7 +410,7 @@ Note that you can also download this dataset pre-prepared as `POWER.CHIRPS.RData
   
   # Calculate ETo if absent
   if(POWER.CHIRPS[,is.null(ETo)]){
-  POWER.CHIRPS[,ETo<-PETcalc(Tmin=Temp.Min,
+  POWER.CHIRPS[,ETo:=ERAgON::PETcalc(Tmin=Temp.Min,
                             Tmax=Temp.Max,
                             SRad=Solar.Rad ,
                             Wind=WindSpeed,
@@ -448,7 +448,7 @@ round(sum(!is.na(ERA.Yields$Data.PS.Date))/sum(is.na(ERA.Yields$Plant.Start))*10
 Using similar methods to the `EstPDayData` function, the `EstSLenData` estimates season length values from similar crops and locations nearby to missing values.
 
 ```{r CS EstSLenData,echo=T,eval=F}
-ERA.Yields<-EstSLenData(DATA=ERA.Yields)
+ERA.Yields<-ERAg::EstSLenData(DATA=ERA.Yields)
 
 # Estimate % of missing data that could be substituted using EstSLenData estimates
 round(sum(!is.na(ERA.Yields$SLen))/sum(is.na(ERA.Yields$Data.SLen))*100,2)
@@ -502,7 +502,7 @@ Up to two additional temporal search periods after the above can be specified in
 By setting the `Use.Data.Dates` argument to `TRUE` we are substituting `NA` planting dates in ERA with values calculated by `EstPDayData` and refining these with the `EstPDayRain` function.
 
 ```{r CS EstPDayRain 2, echo=T, eval=F}
-ERA.Yields<-EstPDayRain(Data=ERA.Yields, 
+ERA.Yields<-ERAg::EstPDayRain(Data=ERA.Yields, 
                     ID=ID, 
                     Rain.Data = CHIRPS, # You could also use POWER.CHIRPS here
                     Rain.Data.Name = "CHIRPS", 
@@ -581,7 +581,7 @@ If argument `Do.LT.Avg=T`estimates of long-term climate are estimated using plan
 If you are finding there are observations with suspiciously short reported season lengths in the ERA dataset (i.e. errors in the reporting of planting and/or harvest dates) you can exclude observations (`Exclude.EC.Diff`) where the absolute difference between reported and EcoCrop estimated season lengths is greater than a specified proportion (`EC.Diff`).
 
 ```{r CS CalcClimate, echo=T, eval=F}
-Climate<-CalcClimate(DATA=ERA.Yields,
+Climate<-ERAg::CalcClimate(DATA=ERA.Yields,
                 ID=ID,
                 CLIMATE=POWER.CHIRPS,
                 Rain.Data.Name="CHIRPS", 
