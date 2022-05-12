@@ -12,7 +12,7 @@
 
 <meta name="author" content="Peter Steward" />
 
-<meta name="date" content="2021-10-28" />
+<meta name="date" content="2022-05-11" />
 
 <title>ERA-Merge-Biophysical</title>
 
@@ -26,6 +26,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -141,7 +142,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">ERA-Merge-Biophysical</h1>
 <h4 class="author">Peter Steward</h4>
-<h4 class="date">2021-10-28</h4>
+<h4 class="date">2022-05-11</h4>
 
 
 
@@ -167,16 +168,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(ClimDir)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Load saved seasonal climate data:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ClimateA<span class="ot">&lt;-</span><span class="fu">load.Rdata2</span>(<span class="st">&quot;ClimStatsA.RData&quot;</span>,<span class="at">path=</span>ClimDir)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ClimateA)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ClimateA<span class="ot">&lt;-</span><span class="fu">load</span>(<span class="fu">paste0</span>(ClimDir,<span class="st">&quot;ClimStatsA.RData&quot;</span>))</span></code></pre></div>
 <p>The <code>ClimateCalc</code> function also saved the processed input ERA dataset which contains the fields we need to link the climate data back to the ERA dataset. Load this dataset:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ERA<span class="ot">&lt;-</span><span class="fu">load.Rdata2</span>(<span class="st">&quot;Data.RData&quot;</span>,<span class="at">path=</span>AnalysisDir)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ERA<span class="ot">&lt;-</span><span class="fu">load</span>(<span class="fu">paste0</span>(ClimDir,<span class="st">&quot;Data.RData&quot;</span>))</span></code></pre></div>
 </div>
 <div id="prepare-isda-soils-data" class="section level4">
 <h4>Prepare iSDA Soils Data</h4>
 <p><a href="https://www.isda-africa.com/isdasoil/">iSDA soils data</a> are provided for each location in ERA.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Soils<span class="ot">&lt;-</span>ERA_ISDA</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Soils<span class="ot">&lt;-</span>ERAgON<span class="sc">::</span>ERA_ISDA</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Soils[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        Median   Mean   SD</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     1:    200 198.31 2.85</span></span>
@@ -192,22 +191,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 48741:      6   6.00 0.09</span></span></code></pre></div>
 <p>For explanations of the soil variables in the <code>Variables</code> field see the <a href="https://gitlab.com/openlandmap/africa-soil-and-agronomy-data-cube">Africa Soil and Agronomy Data Cube</a> gitlab and/or the publication <a href="https://doi.org/10.1038/s41598-021-85639-y">Hengl, T., Miller, M.A.E., Križan, J. et al. (2021) African soil properties and nutrients mapped at 30 m spatial resolution using two-scale ensemble machine learning. Sci Rep 11, 6130</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Soils[,<span class="fu">unique</span>(Variable)]</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;bdr_m_30m_0..200cm&quot;             &quot;clay_tot_psa_m_30m_0..20cm&quot;    </span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;clay_tot_psa_m_30m_20..50cm&quot;    &quot;db_od_m_30m_0..20cm&quot;           </span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;db_od_m_30m_20..50cm&quot;           &quot;log.al_mehlich3_m_30m_0..20cm&quot; </span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;log.al_mehlich3_m_30m_20..50cm&quot; &quot;log.c_tot_m_30m_0..20cm&quot;       </span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;log.c_tot_m_30m_20..50cm&quot;       &quot;log.ca_mehlich3_m_30m_0..20cm&quot; </span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;log.ca_mehlich3_m_30m_20..50cm&quot; &quot;log.ecec.f_m_30m_0..20cm&quot;      </span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;log.ecec.f_m_30m_20..50cm&quot;      &quot;log.fe_mehlich3_m_30m_0..20cm&quot; </span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [15] &quot;log.fe_mehlich3_m_30m_20..50cm&quot; &quot;log.k_mehlich3_m_30m_0..20cm&quot;  </span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;log.k_mehlich3_m_30m_20..50cm&quot;  &quot;log.mg_mehlich3_m_30m_20..50cm&quot;</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [19] &quot;log.n_tot_ncs_m_30m_0..20cm&quot;    &quot;log.n_tot_ncs_m_30m_20..50cm&quot;  </span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [21] &quot;log.oc_m_30m_0..20cm&quot;           &quot;log.oc_m_30m_20..50cm&quot;         </span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [23] &quot;log.p_mehlich3_m_30m_0..20cm&quot;   &quot;log.p_mehlich3_m_30m_20..50cm&quot; </span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [25] &quot;log.s_mehlich3_m_30m_0..20cm&quot;   &quot;ph_h2o_m_30m_0..20cm&quot;          </span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [27] &quot;ph_h2o_m_30m_20..50cm&quot;          &quot;sand_tot_psa_m_30m_0..20cm&quot;    </span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [29] &quot;sand_tot_psa_m_30m_20..50cm&quot;    &quot;silt_tot_psa_m_30m_0..20cm&quot;    </span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [31] &quot;silt_tot_psa_m_30m_20..50cm&quot;    &quot;texture.class_m_30m_0..20cm&quot;   </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;bdr_m_30m_0..200cm&quot;           &quot;clay_tot_psa_m_30m_0..20cm&quot;  </span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;clay_tot_psa_m_30m_20..50cm&quot;  &quot;db_od_m_30m_0..20cm&quot;         </span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;db_od_m_30m_20..50cm&quot;         &quot;al_mehlich3_m_30m_0..20cm&quot;   </span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;al_mehlich3_m_30m_20..50cm&quot;   &quot;c_tot_m_30m_0..20cm&quot;         </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;c_tot_m_30m_20..50cm&quot;         &quot;ca_mehlich3_m_30m_0..20cm&quot;   </span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;ca_mehlich3_m_30m_20..50cm&quot;   &quot;ecec.f_m_30m_0..20cm&quot;        </span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;ecec.f_m_30m_20..50cm&quot;        &quot;fe_mehlich3_m_30m_0..20cm&quot;   </span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [15] &quot;fe_mehlich3_m_30m_20..50cm&quot;   &quot;k_mehlich3_m_30m_0..20cm&quot;    </span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;k_mehlich3_m_30m_20..50cm&quot;    &quot;mg_mehlich3_m_30m_20..50cm&quot;  </span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [19] &quot;n_tot_ncs_m_30m_0..20cm&quot;      &quot;n_tot_ncs_m_30m_20..50cm&quot;    </span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [21] &quot;oc_m_30m_0..20cm&quot;             &quot;oc_m_30m_20..50cm&quot;           </span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [23] &quot;p_mehlich3_m_30m_0..20cm&quot;     &quot;p_mehlich3_m_30m_20..50cm&quot;   </span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [25] &quot;s_mehlich3_m_30m_0..20cm&quot;     &quot;ph_h2o_m_30m_0..20cm&quot;        </span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [27] &quot;ph_h2o_m_30m_20..50cm&quot;        &quot;sand_tot_psa_m_30m_0..20cm&quot;  </span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [29] &quot;sand_tot_psa_m_30m_20..50cm&quot;  &quot;silt_tot_psa_m_30m_0..20cm&quot;  </span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [31] &quot;silt_tot_psa_m_30m_20..50cm&quot;  &quot;texture.class_m_30m_0..20cm&quot; </span></span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [33] &quot;texture.class_m_30m_20..50cm&quot;</span></span></code></pre></div>
 <p>The soil variable names in <code>Variable</code> are bit a clunky (see above), let’s simplify them by removing everything but the variable code from the name. We want to retain the depth information, so we create fields for upper and lower measurement depths.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Soils[<span class="fu">grepl</span>(<span class="st">&quot;0..200cm&quot;</span>,Variable),Depth.Upper<span class="sc">:</span><span class="er">=</span><span class="dv">0</span></span>
@@ -223,11 +222,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        ][,Variable<span class="sc">:</span><span class="er">=</span><span class="fu">gsub</span>(<span class="st">&quot;_m_30m_20..50cm&quot;</span>,<span class="st">&quot;&quot;</span>,Variable)]</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>Soils[,<span class="fu">unique</span>(Variable)]</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;bdr&quot;             &quot;clay_tot_psa&quot;    &quot;db_od&quot;           &quot;log.al_mehlich3&quot;</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;log.c_tot&quot;       &quot;log.ca_mehlich3&quot; &quot;log.ecec.f&quot;      &quot;log.fe_mehlich3&quot;</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;log.k_mehlich3&quot;  &quot;log.mg_mehlich3&quot; &quot;log.n_tot_ncs&quot;   &quot;log.oc&quot;         </span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;log.p_mehlich3&quot;  &quot;log.s_mehlich3&quot;  &quot;ph_h2o&quot;          &quot;sand_tot_psa&quot;   </span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;silt_tot_psa&quot;    &quot;texture.class&quot;</span></span></code></pre></div>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;bdr&quot;           &quot;clay_tot_psa&quot;  &quot;db_od&quot;         &quot;al_mehlich3&quot;  </span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;c_tot&quot;         &quot;ca_mehlich3&quot;   &quot;ecec.f&quot;        &quot;fe_mehlich3&quot;  </span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;k_mehlich3&quot;    &quot;mg_mehlich3&quot;   &quot;n_tot_ncs&quot;     &quot;oc&quot;           </span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;p_mehlich3&quot;    &quot;s_mehlich3&quot;    &quot;ph_h2o&quot;        &quot;sand_tot_psa&quot; </span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;silt_tot_psa&quot;  &quot;texture.class&quot;</span></span></code></pre></div>
 <p>Two soil depths are provided for many variables, if you want to convert these to a single value the we can use a weighted mean based on soil depths. Alternatively you could provide your own weightings, perhaps you consider upper depths in the soil profile to be more important for crop yields than lower depths. You could also just consider the upper soil profile (in this case 0-20cm) if you feel greater depths are unimportant.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Soils[,Weight<span class="sc">:</span><span class="er">=</span>Depth.Lower<span class="sc">-</span>Depth.Upper]</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -243,30 +242,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>Soils<span class="ot">&lt;-</span><span class="fu">dcast</span>(Soils,Site.Key<span class="sc">~</span>Variable,<span class="at">value.var =</span> <span class="fu">c</span>(<span class="st">&quot;Median&quot;</span>,<span class="st">&quot;Mean&quot;</span>,<span class="st">&quot;SD&quot;</span>,<span class="st">&quot;Mode&quot;</span>))</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(Soils)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;Site.Key&quot;               &quot;Median_bdr&quot;             &quot;Median_clay_tot_psa&quot;   </span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;Median_db_od&quot;           &quot;Median_log.al_mehlich3&quot; &quot;Median_log.c_tot&quot;      </span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;Median_log.ca_mehlich3&quot; &quot;Median_log.ecec.f&quot;      &quot;Median_log.fe_mehlich3&quot;</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;Median_log.k_mehlich3&quot;  &quot;Median_log.mg_mehlich3&quot; &quot;Median_log.n_tot_ncs&quot;  </span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;Median_log.oc&quot;          &quot;Median_log.p_mehlich3&quot;  &quot;Median_log.s_mehlich3&quot; </span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;Median_ph_h2o&quot;          &quot;Median_sand_tot_psa&quot;    &quot;Median_silt_tot_psa&quot;   </span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [19] &quot;Median_texture.class&quot;   &quot;Mean_bdr&quot;               &quot;Mean_clay_tot_psa&quot;     </span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [22] &quot;Mean_db_od&quot;             &quot;Mean_log.al_mehlich3&quot;   &quot;Mean_log.c_tot&quot;        </span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [25] &quot;Mean_log.ca_mehlich3&quot;   &quot;Mean_log.ecec.f&quot;        &quot;Mean_log.fe_mehlich3&quot;  </span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [28] &quot;Mean_log.k_mehlich3&quot;    &quot;Mean_log.mg_mehlich3&quot;   &quot;Mean_log.n_tot_ncs&quot;    </span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [31] &quot;Mean_log.oc&quot;            &quot;Mean_log.p_mehlich3&quot;    &quot;Mean_log.s_mehlich3&quot;   </span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [34] &quot;Mean_ph_h2o&quot;            &quot;Mean_sand_tot_psa&quot;      &quot;Mean_silt_tot_psa&quot;     </span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [37] &quot;Mean_texture.class&quot;     &quot;SD_bdr&quot;                 &quot;SD_clay_tot_psa&quot;       </span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [40] &quot;SD_db_od&quot;               &quot;SD_log.al_mehlich3&quot;     &quot;SD_log.c_tot&quot;          </span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [43] &quot;SD_log.ca_mehlich3&quot;     &quot;SD_log.ecec.f&quot;          &quot;SD_log.fe_mehlich3&quot;    </span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [46] &quot;SD_log.k_mehlich3&quot;      &quot;SD_log.mg_mehlich3&quot;     &quot;SD_log.n_tot_ncs&quot;      </span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [49] &quot;SD_log.oc&quot;              &quot;SD_log.p_mehlich3&quot;      &quot;SD_log.s_mehlich3&quot;     </span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [52] &quot;SD_ph_h2o&quot;              &quot;SD_sand_tot_psa&quot;        &quot;SD_silt_tot_psa&quot;       </span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [55] &quot;SD_texture.class&quot;       &quot;Mode_bdr&quot;               &quot;Mode_clay_tot_psa&quot;     </span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [58] &quot;Mode_db_od&quot;             &quot;Mode_log.al_mehlich3&quot;   &quot;Mode_log.c_tot&quot;        </span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [61] &quot;Mode_log.ca_mehlich3&quot;   &quot;Mode_log.ecec.f&quot;        &quot;Mode_log.fe_mehlich3&quot;  </span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [64] &quot;Mode_log.k_mehlich3&quot;    &quot;Mode_log.mg_mehlich3&quot;   &quot;Mode_log.n_tot_ncs&quot;    </span></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [67] &quot;Mode_log.oc&quot;            &quot;Mode_log.p_mehlich3&quot;    &quot;Mode_log.s_mehlich3&quot;   </span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [70] &quot;Mode_ph_h2o&quot;            &quot;Mode_sand_tot_psa&quot;      &quot;Mode_silt_tot_psa&quot;     </span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;Site.Key&quot;             &quot;Median_al_mehlich3&quot;   &quot;Median_bdr&quot;          </span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;Median_c_tot&quot;         &quot;Median_ca_mehlich3&quot;   &quot;Median_clay_tot_psa&quot; </span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;Median_db_od&quot;         &quot;Median_ecec.f&quot;        &quot;Median_fe_mehlich3&quot;  </span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;Median_k_mehlich3&quot;    &quot;Median_mg_mehlich3&quot;   &quot;Median_n_tot_ncs&quot;    </span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;Median_oc&quot;            &quot;Median_p_mehlich3&quot;    &quot;Median_ph_h2o&quot;       </span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;Median_s_mehlich3&quot;    &quot;Median_sand_tot_psa&quot;  &quot;Median_silt_tot_psa&quot; </span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [19] &quot;Median_texture.class&quot; &quot;Mean_al_mehlich3&quot;     &quot;Mean_bdr&quot;            </span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [22] &quot;Mean_c_tot&quot;           &quot;Mean_ca_mehlich3&quot;     &quot;Mean_clay_tot_psa&quot;   </span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [25] &quot;Mean_db_od&quot;           &quot;Mean_ecec.f&quot;          &quot;Mean_fe_mehlich3&quot;    </span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [28] &quot;Mean_k_mehlich3&quot;      &quot;Mean_mg_mehlich3&quot;     &quot;Mean_n_tot_ncs&quot;      </span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [31] &quot;Mean_oc&quot;              &quot;Mean_p_mehlich3&quot;      &quot;Mean_ph_h2o&quot;         </span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [34] &quot;Mean_s_mehlich3&quot;      &quot;Mean_sand_tot_psa&quot;    &quot;Mean_silt_tot_psa&quot;   </span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [37] &quot;Mean_texture.class&quot;   &quot;SD_al_mehlich3&quot;       &quot;SD_bdr&quot;              </span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [40] &quot;SD_c_tot&quot;             &quot;SD_ca_mehlich3&quot;       &quot;SD_clay_tot_psa&quot;     </span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [43] &quot;SD_db_od&quot;             &quot;SD_ecec.f&quot;            &quot;SD_fe_mehlich3&quot;      </span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [46] &quot;SD_k_mehlich3&quot;        &quot;SD_mg_mehlich3&quot;       &quot;SD_n_tot_ncs&quot;        </span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [49] &quot;SD_oc&quot;                &quot;SD_p_mehlich3&quot;        &quot;SD_ph_h2o&quot;           </span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [52] &quot;SD_s_mehlich3&quot;        &quot;SD_sand_tot_psa&quot;      &quot;SD_silt_tot_psa&quot;     </span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [55] &quot;SD_texture.class&quot;     &quot;Mode_al_mehlich3&quot;     &quot;Mode_bdr&quot;            </span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [58] &quot;Mode_c_tot&quot;           &quot;Mode_ca_mehlich3&quot;     &quot;Mode_clay_tot_psa&quot;   </span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [61] &quot;Mode_db_od&quot;           &quot;Mode_ecec.f&quot;          &quot;Mode_fe_mehlich3&quot;    </span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [64] &quot;Mode_k_mehlich3&quot;      &quot;Mode_mg_mehlich3&quot;     &quot;Mode_n_tot_ncs&quot;      </span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [67] &quot;Mode_oc&quot;              &quot;Mode_p_mehlich3&quot;      &quot;Mode_ph_h2o&quot;         </span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [70] &quot;Mode_s_mehlich3&quot;      &quot;Mode_sand_tot_psa&quot;    &quot;Mode_silt_tot_psa&quot;   </span></span>
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [73] &quot;Mode_texture.class&quot;</span></span></code></pre></div>
 </div>
 </div>

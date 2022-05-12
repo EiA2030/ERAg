@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 #      install.packages("pacman",dependencies = T)
 #    }
 #  
-#    required.packages <- c("data.table","doSNOW","ERAg","doSNOW","miceadds","ncdf4","raster","rgeos","sp","terra")
+#    required.packages <- c("data.table","doSNOW","ERAg","ERAgON","ncdf4","raster","rgeos","sp","terra")
 #    p_load(char=required.packages,install = T,character.only = T)
 #  
 
@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## ----AgMERRA,echo = T, eval = F-----------------------------------------------
 #  
-#  AgMERRA<-ExtractAgMERRA(DATA=ERA.Data,
+#  AgMERRA<-ERAgON::ExtractAgMERRA(DATA=ERA.Data,
 #                ID="Site.Key",
 #                AgMERRA_dir = "/AgMERRA Downloads",
 #                TempDir = "/Temp",
@@ -31,47 +31,44 @@ knitr::opts_chunk$set(
 #                M.ORIGIN = M.ORIGIN)
 
 ## ----download CHIRPS,echo=T,eval=FALSE----------------------------------------
-#  DownloadCHIRPs(StartYear=1983,
+#  ERAgON::DownloadCHIRPs(StartYear=1983,
 #                 EndYear=2019,
 #                 SaveDir=paste0(getwd(),"/CHIRPS Downloads"))
 
 ## ----reformat CHIRPS,echo=T,eval=FALSE----------------------------------------
-#  ReformatCHIRPS<-function(CHIRPS_dir=paste0(getwd(),"/CHIRPS Downloads"),
-#                           Save_dir=paste0(getwd(),"/CHIRPS Reformatted")
+#  ERAgON::ReformatCHIRPS<-function(CHIRPS_dir="CHIRPS Downloads"),
+#                           Save_dir="CHIRPS Reformatted")
 
 ## ----extract CHIRPS,echo=T,eval=FALSE-----------------------------------------
-#  CHIRPS<-ExtractCHIRPS(DATA = ERA.Data,
-#                       ID = "Site.Key",
-#                       CHIRPS_dir="/CHIRPS Reformatted",
-#                       Save_Dir = "/CHIRPS",
-#                       YStart = 1983,
-#                       YEnd = 2019,
-#                       ROUND=5,
-#                       M.ORIGIN=M.ORIGIN)
+#    CHIRPS<-ERAgON::ExtractCHIRPS(
+#      Data=Data,
+#      ID="Site",
+#      CHIRPS_dir = "CHIRPS Reformatted",
+#      Save_Dir = "CHIRPS",
+#      YStart=1983,
+#      YEnd=2020,
+#      Round = 2,
+#      Origin = "1900-01-01"
+#    )
+
+## ----Add Altitude,eval=F------------------------------------------------------
+#  ERA.Data<-merge(ERA.Data,ERA_Physical[,list(Site.Key,Altitude.mean)],by="Site.Key",all.x =T)
 
 ## ----POWER,echo = T, eval = F-------------------------------------------------
-#  POWER<-ExtractPOWER(DATA=ERA.Data,
-#                     Parameters= paste0("ALLSKY_SFC_SW_DWN,", "PRECTOT,", "PS,","QV2M,","RH2M,","T2M,","T2M_MAX,","T2M_MIN,","WS2M"),
-#                     StartDate=19830701,
-#                     EndDate=20181231,
-#                     ID="Site.Key",
-#                     Save_Dir="/POWERdownloads",
-#                     PowerSave="/POWER",
-#                     DELETE=FALSE,
-#                     M.ORIGIN=M.ORIGIN,
-#                     MaxBuffer=50000)
-#  
-
-## ----add altitude, echo=T,eval=F----------------------------------------------
-#  
-#      funX<-function(ID){
-#        ID.NAME<-ID
-#        ERA_Physical[match(ID.NAME,unlist(ERA_Physical[,Site.Key])),Altitude.mean]
-#      }
-#  
-#      POWER[,Altitude:=funX(Site.Key[1]),by=Site.Key]
-#      rm(funX)
-#  
+#  POWER<-ERAgON::ExtractPOWER(Data=ERA.Data,
+#                      ID="Site",
+#                      Parameters=c("ALLSKY_SFC_SW_DWN", "PRECTOT", "PS","QV2M","RH2M","T2M","T2M_MAX","T2M_MIN","WS2M"),
+#                      Rename= c("Solar.Rad","Rain","Pressure","Humid","Temp.Min","Temp.Max","Temp.Mean","WindSpeed","Specific.Humid"),
+#                      StartDate="1983-07-01",
+#                      EndDate="2021-12-31",
+#                      Save_Dir="POWER",
+#                      PowerSave = "POWER/Downloads",
+#                      Delete=F,
+#                      MaxBuffer=240000,
+#                      AddDate=T,
+#                      AddDayCount=T,
+#                      Origin = "1900-01-01",
+#                      Quiet=T)
 
 ## ----sub SRad AgMERRA, echo=T,eval=F------------------------------------------
 #        N<-POWER[,which(is.na(SRad))]
@@ -91,7 +88,7 @@ knitr::opts_chunk$set(
 #  
 
 ## ----Add PET, echo =T, eval=F-------------------------------------------------
-#      POWER[,ETo:=PETcalc(Tmin=Temp.Min,
+#      POWER[,ETo:=ERAg::PETcalc(Tmin=Temp.Min,
 #                        Tmax=Temp.Max,
 #                        SRad=SRad,
 #                        Wind=WindSpeed,
@@ -148,7 +145,7 @@ knitr::opts_chunk$set(
 #      install.packages("pacman",dependencies = T)
 #    }
 #  
-#    required.packages <- c("ggplot2","circular","data.table","doSNOW","zoo","pbapply","ERAg","dismo","miceadds")
+#    required.packages <- c("ggplot2","circular","data.table","doSNOW","zoo","pbapply","ERAg","dismo")
 #    p_load(char=required.packages,install = T,character.only = T)
 
 ## ----CS create dirs, eval=F,echo=T--------------------------------------------
@@ -190,8 +187,8 @@ knitr::opts_chunk$set(
 #                  dest = LargeDir)
 #    }
 #  
-#    POWER<-data.table(miceadds::load.Rdata2("POWER.RData",path=LargeDir))
-#    CHIRPS<-data.table(miceadds::load.Rdata2("CHIRPS.RData",path=LargeDir))
+#    POWER<-data.table(load("POWER.RData",path=LargeDir))
+#    CHIRPS<-data.table(load("CHIRPS.RData",path=LargeDir))
 #  
 
 ## ----CS set parameters, eval=F,echo=T-----------------------------------------
@@ -219,7 +216,7 @@ knitr::opts_chunk$set(
 #          ][,Plant.End:=as.Date(Plant.End,"%d.%m.%Y")]
 
 ## ----CS add altitude, eval=F,echo=T-------------------------------------------
-#  Physical<-data.table(ERA_Physical)
+#  Physical<-data.table(ERAgON::ERA_Physical)
 #  
 #  # Add DEM altitude to ERA
 #  ERA[!is.na(Latitude),Altitude.DEM:=Physical[match(unlist(ERA[!is.na(Latitude),..ID]),unlist(Physical[,..ID])) , Altitude.mean]]
@@ -230,9 +227,9 @@ knitr::opts_chunk$set(
 
 ## ----CS code tables, echo=T, eval=F-------------------------------------------
 #  # Ensure code tables are data.table format
-#  PracticeCodes<-data.table(PracticeCodes)
-#  OutcomeCodes<-data.table(OutcomeCodes)
-#  EUCodes<-data.table(EUCodes)
+#  PracticeCodes<-data.table(ERAg::PracticeCodes)
+#  OutcomeCodes<-data.table(ERAg::OutcomeCodes)
+#  EUCodes<-data.table(ERAg::EUCodes)
 
 ## ----CS subset yields, echo=T, eval=F-----------------------------------------
 #  
@@ -248,7 +245,7 @@ knitr::opts_chunk$set(
 #                    Buffer<=25000]
 
 ## ----CS add EcoCrop, echo=T, eval=F-------------------------------------------
-#  ERA.Yields<-cbind(ERA.Yields,ERAg::AddEcoCrop(Products = ERA.Yields[,Product]))
+#  ERA.Yields<-cbind(ERA.Yields,ERAgON::AddEcoCrop(Products = ERA.Yields[,Product]))
 
 ## ----CS prepare climate dataset,echo=T,eval=F---------------------------------
 #  
@@ -271,7 +268,7 @@ knitr::opts_chunk$set(
 #  
 #    # Calculate ETo if absent
 #    if(POWER.CHIRPS[,is.null(ETo)]){
-#    POWER.CHIRPS[,ETo<-PETcalc(Tmin=Temp.Min,
+#    POWER.CHIRPS[,ETo:=ERAgON::PETcalc(Tmin=Temp.Min,
 #                              Tmax=Temp.Max,
 #                              SRad=Solar.Rad ,
 #                              Wind=WindSpeed,
@@ -297,7 +294,7 @@ knitr::opts_chunk$set(
 #  
 
 ## ----CS EstSLenData,echo=T,eval=F---------------------------------------------
-#  ERA.Yields<-EstSLenData(DATA=ERA.Yields)
+#  ERA.Yields<-ERAg::EstSLenData(DATA=ERA.Yields)
 #  
 #  # Estimate % of missing data that could be substituted using EstSLenData estimates
 #  round(sum(!is.na(ERA.Yields$SLen))/sum(is.na(ERA.Yields$Data.SLen))*100,2)
@@ -333,7 +330,7 @@ knitr::opts_chunk$set(
 #  
 
 ## ----CS EstPDayRain 2, echo=T, eval=F-----------------------------------------
-#  ERA.Yields<-EstPDayRain(Data=ERA.Yields,
+#  ERA.Yields<-ERAg::EstPDayRain(Data=ERA.Yields,
 #                      ID=ID,
 #                      Rain.Data = CHIRPS, # You could also use POWER.CHIRPS here
 #                      Rain.Data.Name = "CHIRPS",
@@ -365,7 +362,7 @@ knitr::opts_chunk$set(
 #  
 
 ## ----CS CalcClimate, echo=T, eval=F-------------------------------------------
-#  Climate<-CalcClimate(DATA=ERA.Yields,
+#  Climate<-ERAg::CalcClimate(DATA=ERA.Yields,
 #                  ID=ID,
 #                  CLIMATE=POWER.CHIRPS,
 #                  Rain.Data.Name="CHIRPS",
@@ -429,16 +426,4 @@ Climate[["LongTerm"]][["LT.Clim.Avg"]][1:3,]
 
 ## ----CS BioClim Years, echo=T,eval=T------------------------------------------
 Climate[["BioClim"]][["Annual.Estimates"]][1:3,]
-
-## ----CS BioClim Codes, echo=T,eval=T------------------------------------------
-  ERAg::BioClimCodes
-
-## ----CS BioClim LTAvg, echo=T,eval=T------------------------------------------
-Climate[["BioClim"]][["LT.Averages"]][1:3,]
-
-## ----CS BioClim LTAvg Vars, echo=T,eval=F-------------------------------------
-#  Climate[["BioClim"]][["LT.Averages"]][,unique(Variable)]
-
-## ----bug hack 2,echo=F,eval=T-------------------------------------------------
-c("Mean","Median","SD")
 

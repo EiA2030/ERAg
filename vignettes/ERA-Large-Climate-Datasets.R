@@ -4,9 +4,9 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----packages,include=F,eval=T,echo=T-----------------------------------------
-require(ERAg)
-require(piggyback)
+## ----packages,include=F,eval=F,echo=T-----------------------------------------
+#  require(ERAg)
+#  require(piggyback)
 
 ## ----Create Dir, echo =TRUE,eval=F--------------------------------------------
 #  LargeDir<-"Large Files/"
