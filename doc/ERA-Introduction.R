@@ -6,6 +6,7 @@ knitr::opts_chunk$set(
 
 ## ----packages,include=F,eval=T,echo=T-----------------------------------------
   require(ERAg)
+  require(ERAgON)
   require(sp)
   require(rgeos)
   require(ggplot2)
@@ -15,17 +16,16 @@ knitr::opts_chunk$set(
   require(ggnewscale)
   require(terra)
   require(RColorBrewer)
-  require(rasterVis)
-
+  #require(rasterVis)
 
 ## ----Access ERA, echo=T-------------------------------------------------------
-knitr::kable(head(ERA.Compiled[,1:8], 5))
+knitr::kable(head(ERAg::ERA.Compiled[,1:8], 5))
 
 ## ----ERA Fields, echo=T-------------------------------------------------------
-knitr::kable(head(ERACompiledFields[c(1,7,10,19,50),c("Field.Name","Description")]))
+knitr::kable(head(ERAg::ERACompiledFields[c(1,7,10,19,50),c("Field.Name","Description")]))
 
 ## ----Bibliographic, echo=T, fig.align='center', fig.asp=1, fig.width=6, warning=FALSE----
-knitr::kable(head(unique(ERA.Compiled[,list(Code,Author,Date,Journal,DOI,DataLoc)]), 5))
+knitr::kable(head(unique(ERAg::ERA.Compiled[,list(Code,Author,Date,Journal,DOI,DataLoc)]), 5))
 
 # Plot no. studies x theme x year
 
@@ -59,22 +59,22 @@ ggplot(PrxThxYe,aes(x=Date,y=Cum.Sum,col=Theme))+
 
 
 ## ----Location, echo=T---------------------------------------------------------
-knitr::kable(head(unique(ERA.Compiled[,list(Country,Site.ID,Latitude,Longitude,Buffer)]), 5))
+knitr::kable(head(unique(ERAg::ERA.Compiled[,list(Country,Site.ID,Latitude,Longitude,Buffer)]), 5))
 
 ## ----Buffers, echo=T,fig.width=7,fig.height=6---------------------------------
-SiteBuffers<-Pbuffer(Data=ERA.Compiled, ID = NA, Projected = F)
+SiteBuffers<-ERAg::Pbuffer(Data=ERAg::ERA.Compiled, ID = NA, Projected = F)
 plot(SiteBuffers)
 
 ## ----Filter Location, echo=T,eval=F-------------------------------------------
 #  # Filter dataset to sites with spatial uncertainty radius of less than 5km
-#  ERA.Compiled<-ERA.Compiled[Buffer<5000]
+#  ERA.Compiled<-ERAg::ERA.Compiled[Buffer<5000]
 
 ## ----Hexplot, echo=T,eval=T,fig.width=7,fig.height=6,warning=F----------------
-ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
+ERAgON::ERAHexPlot(Data=ERA.Compiled,Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
 
 ## ----Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F-----------------
 
-ERAAlphaPlot(Data = ERA.Compiled,
+ERAgON::ERAAlphaPlot(Data = ERA.Compiled,
             Background = NA,
             Background.Labs = NA,
             Background.Cols = NA,
@@ -96,13 +96,13 @@ Agg.Sites<-unique(ERA.Compiled[grep("[.][.]",Site.ID),
 knitr::kable(head(Agg.Sites,5))
 
 ## ----Show ERA Concepts, echo=T------------------------------------------------
-ERAConcepts
+ERAg::ERAConcepts
 
 ## ----Names vs. Codes, echo=T--------------------------------------------------
 knitr::kable(head(unique(ERA.Compiled[,list(Out.SubInd,Out.SubInd.Code,PrName,PrName.Code,Product.Simple,Product.Simple.Code)]), 5))
 
 ## ----Show Practice Codes, echo=T----------------------------------------------
-knitr::kable(head(PracticeCodes[,1:6], 5))
+knitr::kable(head(ERAg::PracticeCodes[,1:6], 5))
 
 ## ----Demonstrate Set Differences, echo=T--------------------------------------
 T.Cols<-paste0("T",1:13)
@@ -131,13 +131,13 @@ T.Cols[T.Cols %in% C.Cols]
 knitr::kable(ERA.Compiled[99,list(plist,base.list,SubPrName,SubPrName.Code,SubPrName.Base,SubPrName.Base.Code)])
 
 ## ----Show Outcome Codes, echo=T-----------------------------------------------
-knitr::kable(head(OutcomeCodes[,1:6], 5))
+knitr::kable(head(ERAg::OutcomeCodes[,1:6], 5))
 
 ## ----ERA Show Outcomes, echo=T------------------------------------------------
 knitr::kable(head(unique(ERA.Compiled[!is.na(Units),list(Outcode,Units,Out.SubInd,Out.SubInd.Code,Out.Ind,Out.Ind.Code,Out.Pillar,Out.Pillar.Code)]),5))
 
 ## ----Show EU Codes, echo=T----------------------------------------------------
-knitr::kable(EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
+knitr::kable(ERAg::EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
 
 ## ----Climate Published, echo=T, warning=FALSE, fig.width=5, fig.align='center', fig.asp=1----
 knitr::kable(head(unique(ERA.Compiled[!(is.na(MAT)|is.na(MAP)|is.na(TSP)),list(Code,Country,Site.Key,MAT,MAP,MSP,TAP,TSP)]), 5))
@@ -173,9 +173,9 @@ knitr::kable(head(unique(ERA.Compiled[!(is.na(SOC)|is.na(Soil.pH)|is.na(Soil.Tex
 ## ----SoilGrids, echo=T, warning=FALSE-----------------------------------------
 # Lets look at Cation Exchange Capacity of soil (variable name = CECSOL) at 5-15cm (sl2)
  Cols<-c("Site.Key",grep("CECSOL_M_sl2",colnames(ERA_SoilGrids18),value=T))
- knitr::kable(head(ERA_SoilGrids18[,Cols],5))
+ knitr::kable(head(ERAgON::ERA_SoilGrids18[,Cols],5))
 # There are a lot of SoilGrids variables in this dataset:
-  length(colnames(ERA_SoilGrids18))
+  length(colnames(ERAgON::ERA_SoilGrids18))
 
 ## ----Elevation, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.asp=1----
 
@@ -188,7 +188,7 @@ hist(Elevation,main="Elevation",xlab="Reported Elevation (m)")
 
 
 ## ----Physical, echo=T, warning=FALSE------------------------------------------
- knitr::kable(head(ERA_Physical[,4:10],5))
+ knitr::kable(head(ERAgON::ERA_Physical[,4:10],5))
 
 ## ----AEZs, echo=T, warning=FALSE,fig.width=5,fig.align='center',fig.height=7----
 
@@ -197,14 +197,14 @@ AEZ16Simple<-table(unique(ERA.Compiled[!is.na(AEZ16simple),list(Site.Key,AEZ16si
 barplot(sort(AEZ16Simple), las=2,col = brewer.pal(8, "Set2"),ylab="No. Studies")
 
 ## ----BioClim, include = T, eval = T,echo=T------------------------------------
-   knitr::kable(ERA_BioClim[1:5,1:5])
+   knitr::kable(ERAgON::ERA_BioClim[1:5,1:5])
 
 ## ----Landuse, include = T, eval = T,echo=T------------------------------------
-   knitr::kable(ERA_CCI_LC_15[1:5,1:15])
+   knitr::kable(ERAgON::ERA_CCI_LC_15[1:5,1:15])
 
 ## ----Landuse Fields, include = T, eval = T,echo=T-----------------------------
-   knitr::kable(ERA_CCI_LC_15_Fields[1:5,])
+   knitr::kable(ERAgON::ERA_CCI_LC_15_Fields[1:5,])
 
 ## ----Other Datasets, echo=T, warning=FALSE------------------------------------
- knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
+ knitr::kable(ERAgON::ERA_Other_Linked_Data_Fields$Dataset_Descriptions[-(1:4),c("Name","Description")])
 
