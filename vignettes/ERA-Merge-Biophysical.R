@@ -25,15 +25,13 @@ knitr::opts_chunk$set(
 #  }
 
 ## ----Load ClimateA, eval=F,echo=T---------------------------------------------
-#  ClimateA<-load.Rdata2("ClimStatsA.RData",path=ClimDir)
-#  
-#  names(ClimateA)
+#  ClimateA<-load(paste0(ClimDir,"ClimStatsA.RData"))
 
 ## ----Load ERA, eval=F,echo=T--------------------------------------------------
-#  ERA<-load.Rdata2("Data.RData",path=AnalysisDir)
+#  ERA<-load(paste0(ClimDir,"Data.RData"))
 
 ## ----load soils,echo=T,eval=T-------------------------------------------------
-Soils<-ERA_ISDA
+Soils<-ERAgON::ERA_ISDA
 Soils[,1:3]
 
 ## ----soils show Variable names,echo=T,eval=T----------------------------------
