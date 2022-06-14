@@ -770,10 +770,10 @@ Annual estimates of bioclimatic variables for each location as per processes 6a 
 Climate[["BioClim"]][["Annual.Estimates"]][1:3,]
 ```
 
-For an explanation of the `BIO` codes see `ERAg::BioClimCodes`:
+For an explanation of the `BIO` codes see `ERAgON::BioClimCodes`:
 
 ```{r CS BioClim Codes, echo=T,eval=T}
-  ERAg::BioClimCodes
+  ERAgON::BioClimCodes
 ```
 Values in the `Variable` field indicate:
 

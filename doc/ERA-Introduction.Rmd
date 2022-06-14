@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r packages,include=F,eval=T,echo=T}
   require(ERAg)
+  require(ERAgON)
   require(sp)
   require(rgeos)
   require(ggplot2)
@@ -28,8 +29,7 @@ knitr::opts_chunk$set(
   require(ggnewscale)
   require(terra)
   require(RColorBrewer)
-  require(rasterVis)
-
+  #require(rasterVis)
 ```
 
 In this vignette, we will explore key components of the ERA dataset and some derived products to which it can be linked (also provided in the `ERAg` package). This is not intended to be a complete explanation of everything ERA. Instead its purpose is to highlight a few features to kick-start use and analysis. Please send feedback on the explanations or on discoveries that should be included in the next version to Pete Steward (p.steward@cgiar.org). Please post any questions to the ERA-Data-Sprint Slack Workspace.
@@ -38,21 +38,21 @@ In this vignette, we will explore key components of the ERA dataset and some der
 The ERA dataset is included with the `ERAg` package as a `data.table` object **`ERA.Compiled`**.
 
 ```{r Access ERA, echo=T}
-knitr::kable(head(ERA.Compiled[,1:8], 5))
+knitr::kable(head(ERAg::ERA.Compiled[,1:8], 5))
 ```
 
 ## ERA's structure
 Each row of the dataset forms one **`observation`**. An observation encodes a unique article, site, treatment comparison, outcome measure, and time period combination. Each observation includes the article’s bibliographic information, spatial variables, environmental context, experimental design, treatment comparisons, and outcome indicator effects. Each observation has a unique identifier in the `Index` column. The **`Code`** is each study's unique identifier. The most complete description of ERA fields can be found in either `ERA.Compiled`, the `ERACompiledFields` object from within R, or 'Online-only Table 2' in the Data Descriptor manuscript.
 
 ```{r ERA Fields, echo=T}
-knitr::kable(head(ERACompiledFields[c(1,7,10,19,50),c("Field.Name","Description")]))
+knitr::kable(head(ERAg::ERACompiledFields[c(1,7,10,19,50),c("Field.Name","Description")]))
 ```
 
 ## Bibliographic Variables
 Even bibliographic data can provide insights in to agricultural research. The **`Author`**, ,**`Date`**, **`DOI`** and **`Journal`** fields provide bibliographic information for the publication that has contributed the row of data. **`DataLoc`** field describes where data were extracted from in the publication (e.g. a table or figure). Here, a simple plot shows how the number of publications reporting different ERA practice themes changes over time:
 
 ```{r Bibliographic, echo=T, fig.align='center', fig.asp=1, fig.width=6, warning=FALSE}
-knitr::kable(head(unique(ERA.Compiled[,list(Code,Author,Date,Journal,DOI,DataLoc)]), 5))
+knitr::kable(head(unique(ERAg::ERA.Compiled[,list(Code,Author,Date,Journal,DOI,DataLoc)]), 5))
 
 # Plot no. studies x theme x year
 
@@ -90,13 +90,13 @@ ggplot(PrxThxYe,aes(x=Date,y=Cum.Sum,col=Theme))+
 ERA's power, in part, comes from the ability to link it to other datasets such as soils, historical climate, distance to markets among many others. Unfortunately, geographic coordinates have not always been commonly reported. Even today coordinates are often reported with low degrees of precision or are simply incorrect. During data extraction, significant effort was made to identify the most likely coordinates for where a study occurred and to provide some estimate of uncertainty for those coordinates. These data can be found in the **`Country`**, **`Site.ID`**, ,**`Latitude`**, **`Longitude`** and **`Buffer`** fields. These fields give the spatial location of the site in decimal degrees and a radius of uncertainty in meters. There is also the **Site.Key** field which is a concatenation of the **`Latitude`**, **`Longitude`** and **`Buffer`** fields, this can be used to identify unique locations independent of what the site is called in a publication (i.e. the **`Site.ID`** field). We standardized location names so the experiments that occurred at the same locations have the same corresponding names. 
 
 ```{r Location, echo=T}
-knitr::kable(head(unique(ERA.Compiled[,list(Country,Site.ID,Latitude,Longitude,Buffer)]), 5))
+knitr::kable(head(unique(ERAg::ERA.Compiled[,list(Country,Site.ID,Latitude,Longitude,Buffer)]), 5))
 ```
 
 The `Pbuffer` function  creates a `SpatialPolygons` object of all the study sites in ERA.
 
 ```{r Buffers, echo=T,fig.width=7,fig.height=6}
-SiteBuffers<-Pbuffer(Data=ERA.Compiled, ID = NA, Projected = F)
+SiteBuffers<-ERAg::Pbuffer(Data=ERAg::ERA.Compiled, ID = NA, Projected = F)
 plot(SiteBuffers)
 ```
 
@@ -104,20 +104,20 @@ You will immediately notice that some locations have very high spatial uncertain
 
 ```{r Filter Location, echo=T,eval=F}
 # Filter dataset to sites with spatial uncertainty radius of less than 5km
-ERA.Compiled<-ERA.Compiled[Buffer<5000]
+ERA.Compiled<-ERAg::ERA.Compiled[Buffer<5000]
 ```
 
 The spatial distribution of ERA data can be visualized with the `ERAHexPlot` functions:
 
 ```{r Hexplot, echo=T,eval=T,fig.width=7,fig.height=6,warning=F}
-ERAHexPlot(Data=ERA.Compiled[Buffer<10000],Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
+ERAgON::ERAHexPlot(Data=ERA.Compiled,Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)
 ```
 
-We can also use the `ERAAlphaPlot` function. We can add a background map to the plot using the Background parameters in the function, in this case we add a farming system map supplied from the [CELL5M](https://doi.org/10.7910/DVN/G4TBLF/7RIFT5) dataset.
+We can also use the `ERAAlphaPlot` function from the helper functions supplied in the `ERAgON` package. A background map can be added to the plot using the Background parameters, in this case we add a farming system map supplied from the [CELL5M](https://doi.org/10.7910/DVN/G4TBLF/7RIFT5) dataset.
 
 ```{r Alphaplot, echo=T,eval=T,fig.width=7,fig.asp=1,warning=F}
 
-ERAAlphaPlot(Data = ERA.Compiled,
+ERAgON::ERAAlphaPlot(Data = ERA.Compiled,
             Background = NA,
             Background.Labs = NA,
             Background.Cols = NA,
@@ -169,12 +169,12 @@ The number of experimental replications, **`Rep`**, is used as a proxy for exper
 ## Higher Level Concepts: Practices, Outcomes, and Products (EUs)
 In addition to spatial and temporal variables, there are three high level concepts that are the foundation of ERA's experiment classification system. These are **practices**, **outcomes** and **products** (or experimental units). Practices here is shorthand for **Management practices and technologies** which describe agronomic, agroforestry, and livestock interventions, for example, crop rotations, livestock dietary supplements or the like. Outcomes, as they sound, relate to the dependent variables in experiments (e.g., yield, benefit-cost ratios, soil carbon). Products refers to the the species or commodity that the outcome is measured on, for example maize, milk, or meat.  
 
-Each is organized hierarchically, where concepts are nested below and above related concepts. This organization allows the user to aggregate or disaggregate data using these fields to explore different questions, from narrow (e.g., how does a Gliricidia-based alley cropping change maize crop yields?) to broad (e.g., considering all products which practices, on average, improve productivity, resilience and mitigation outcomes?). It also facilitates the user to deliver information at the level for the specific users. For example, policy makers refer to agroforestry broadly while farmers are typically more interested in nuanced (disaggregated) results for species and practices. ERA's practices, outcomes, and products hierarchies are unique but recently has been mapped to other ontologies including **AGROVOC** and **AgrO** to increase future interoperability. These mappings will be available in future realeases. 
+Each is organized hierarchically, where concepts are nested below and above related concepts. This organization allows the user to aggregate or disaggregate data using these fields to explore different questions, from narrow (e.g., how does a Gliricidia-based alley cropping change maize crop yields?) to broad (e.g., considering all products which practices, on average, improve productivity, resilience and mitigation outcomes?). It also facilitates the user to deliver information at the level for the specific users. For example, policy makers refer to agroforestry broadly while farmers are typically more interested in nuanced (disaggregated) results for species and practices. ERA's practices, outcomes, and products hierarchies are unique but recently has been mapped to other ontologies including **AGROVOC** and **AgrO** to increase future interoperability. These mappings will be available in future releases. 
 
 We can view the subordinates of these high level concepts by accessing the datasets `PracticeCodes`, `OutcomesCodes` and `EUCodes` included with the `ERAg` package. Alternatively the organization of higher level concepts can also be viewed in the `ERAConcepts` list or in somewhat less detail in the manuscript describing the data.
 
 ```{r Show ERA Concepts, echo=T}
-ERAConcepts
+ERAg::ERAConcepts
 ```
 
 Individual concepts have columns containing their name and corresponding column with the suffix **`.Code`** containing much abbreviated versions of the name, for example **`OutSubInd`** & **`OutSubInd.Code`**. The abbreviated names are useful in decluttering plot axes.
@@ -191,7 +191,7 @@ Each observation (row in the dataset) is set up to compare two treatments.  A tr
 #### Management practices and technologies: Code Sheet
 We can find practice codes, their names and definitions in the `PracticeCodes` object:
 ```{r Show Practice Codes, echo=T}
-knitr::kable(head(PracticeCodes[,1:6], 5))
+knitr::kable(head(ERAg::PracticeCodes[,1:6], 5))
 ```
 
 There are two types of practice code **h codes** and **ERA codes** (all other code values). **h codes** are control codes for unimproved or non-focal experimental practices. 
@@ -275,7 +275,7 @@ Outcomes are simpler than practices as each ERA observation can only have a sing
 #### Outcomes: Code Sheet
 Outcome codes, their names and definitions can be found in the `OutcomeCodes` object:
 ```{r Show Outcome Codes, echo=T}
-knitr::kable(head(OutcomeCodes[,1:6], 5))
+knitr::kable(head(ERAg::OutcomeCodes[,1:6], 5))
 ```
 
 #### Outcomes: ERA Columns
@@ -315,7 +315,7 @@ Products are the final high level concept in ERA. Due to legacy of the data extr
 #### Products: Code Sheet
 Products codes, their names and definitions can be found in the `EUCodes` object:
 ```{r Show EU Codes, echo=T}
-knitr::kable(EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
+knitr::kable(ERAg::EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
 ```
 
 #### Products: ERA Columns
@@ -409,9 +409,9 @@ A near complete list of SoilGrids 2018 variables for depths 0-5, 5-15 and 15-30c
 ```{r SoilGrids, echo=T, warning=FALSE}
 # Lets look at Cation Exchange Capacity of soil (variable name = CECSOL) at 5-15cm (sl2)
  Cols<-c("Site.Key",grep("CECSOL_M_sl2",colnames(ERA_SoilGrids18),value=T))
- knitr::kable(head(ERA_SoilGrids18[,Cols],5))
+ knitr::kable(head(ERAgON::ERA_SoilGrids18[,Cols],5))
 # There are a lot of SoilGrids variables in this dataset:
-  length(colnames(ERA_SoilGrids18))
+  length(colnames(ERAgON::ERA_SoilGrids18))
 ```
 
 ### Elevation
@@ -428,10 +428,10 @@ hist(Elevation,main="Elevation",xlab="Reported Elevation (m)")
 
 ```
 #### Elevation: Derived 
-Elevation data was derived from the [ASTER Global Digital Elevation Model](10.5067/ASTER/ASTGTM.003) at 1" resolution averaged for the spatial uncertainty buffer of each site location. The elevation data were also used to calculate mean slope and aspect. These variables can be found in the `ERA_Physical` dataset and can be matched to ERA observations using the `Site.Key` parameter.
+Elevation data was derived from the [ASTER Global Digital Elevation Model](10.5067/ASTER/ASTGTM.003) at 1" resolution averaged for the spatial uncertainty buffer of each site location. The elevation data were also used to calculate mean slope and aspect. These variables can be found in the `ERAgON::ERA_Physical` dataset and can be matched to ERA observations using the `Site.Key` parameter.
 
 ```{r Physical, echo=T, warning=FALSE}
- knitr::kable(head(ERA_Physical[,4:10],5))
+ knitr::kable(head(ERAgON::ERA_Physical[,4:10],5))
 ```
 
 ### Agroecological Zone
@@ -451,35 +451,35 @@ barplot(sort(AEZ16Simple), las=2,col = brewer.pal(8, "Set2"),ylab="No. Studies")
 
 ### Bioclimatic variables
 According to the [Worldclim 2.1 2020](https://www.worldclim.org/data/bioclim.html)  dataset there are  19 “bioclimatic” variables which are derived from the monthly temperature and rainfall values in order to generate biologically meaningful variables. These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter is a period of three months (1/4 of the year). Values are extracted for each unique ERA location plus its buffer of spatial uncertainty.  
-Bioclimatic data are extracted and summmarized for each unique ERA location plus its buffer of spatial uncertainty, these data can be found in the *`ERA_BioClim`* object. 
+Bioclimatic data are extracted and summmarized for each unique ERA location plus its buffer of spatial uncertainty, these data can be found in the *`ERAgON::ERA_BioClim`* object. 
 
 ```{r BioClim, include = T, eval = T,echo=T}
-   knitr::kable(ERA_BioClim[1:5,1:5])
+   knitr::kable(ERAgON::ERA_BioClim[1:5,1:5])
 ```
 Fields are described in the help for this object: `?ERA_BioClim`.
 
 ### Landuse
 The [CCI-LC project](http://maps.elie.ucl.ac.be/CCI/viewer/index.php) delivers a new time series of 24 consistent global LC maps at 300 m spatial resolution on an annual basis from 1992 to 2015.  
 The number of raster cells of each landcover class for the year 2015 is summed for each unique ERA locations buffer of spatial uncertainty.  
-Landcover data can be found in the **`ERA_CCI_LC_15`** object and linked to the `ERA.Complied` dataset using the `Site.Key` field.  
+Landcover data can be found in the **`ERAgON::ERA_CCI_LC_15`** object and linked to the `ERA.Complied` dataset using the `Site.Key` field.  
 ```{r Landuse, include = T, eval = T,echo=T}
-   knitr::kable(ERA_CCI_LC_15[1:5,1:15])
+   knitr::kable(ERAgON::ERA_CCI_LC_15[1:5,1:15])
 ```
 
-A description of the fields in this dataset can be found in the **`ERA_CCI_LC_15_Fields`** object.
+A description of the fields in this dataset can be found in the **`ERAgON::ERA_CCI_LC_15_Fields`** object.
 
 ```{r Landuse Fields, include = T, eval = T,echo=T}
-   knitr::kable(ERA_CCI_LC_15_Fields[1:5,])
+   knitr::kable(ERAgON::ERA_CCI_LC_15_Fields[1:5,])
 ```
 
 ## Other Derived Variables
 Like other derived datasets these have been extracted for the spatial uncertainty buffer for each ERA location and are linked to `ERA/Compiled` using the `Site.Key` field.
 
 A number of datasets including many from the former HarvestChoice website now found on the [Harvard Dataverse](https://dataverse.harvard.edu/dataverse/harvestchoice)
-can be found in the `ERA_Other_Linked_Data` dataset. You can find details of these in the `ERA_Other_Linked_Data_Fields` object:
+can be found in the `ERAgON::ERA_Other_Linked_Data` dataset. You can find details of these in the `ERAgON::ERA_Other_Linked_Data_Fields` object:
 
 ```{r Other Datasets, echo=T, warning=FALSE}
- knitr::kable(ERA_Other_Linked_Data_Fields[-(1:4),c("Name","Description")])
+ knitr::kable(ERAgON::ERA_Other_Linked_Data_Fields$Dataset_Descriptions[-(1:4),c("Name","Description")])
 ```
 
 
