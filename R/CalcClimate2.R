@@ -683,13 +683,13 @@ CalcClimate2<-function(Data,
                     Temp.Threshold=c("Temp.Threshold:",unlist(Temp.Threshold)),
                     TSeqLen = c("TSeqLen:",TSeqLen),
                     Max.LT.Avg=c("Max.LT.Avg:",Max.LT.Avg),
-                    PrePlantWindow=PrePlantWindow,
+                    PrePlantWindow=c("PrePlantWindow:",PrePlantWindow),
                     Windows=c("Windows:",unlist(Windows)),
-                    Win.Start=Win.Start,
+                    Win.Start=c("Win.Stat: ", Win.Start),
                     Rain.Data.Name=c("Rain.Data.Name:",Rain.Data.Name),
                     Temp.Data.Name=c("Temp.Data.Name:",Temp.Data.Name),
-                    Do.LT.Avg=Do.LT.Avg,
-                    Do.BioClim=Do.BioClim
+                    Do.LT.Avg=c("Do.LT.Avg:", Do.LT.Avg),
+                    Do.BioClim=c("Do.BioClim:",Do.BioClim)
     )
 
     if(file.exists(paste0(SaveDir,"/parameters.txt"))){
