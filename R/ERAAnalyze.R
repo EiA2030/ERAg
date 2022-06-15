@@ -372,7 +372,7 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
     ][,PC.pc.se.high:=round(100*(PC+PC.se)-100,ROUND)]
 
     ANALYSED.Data[,RR.lmer:=NULL]
-    setnames(ANALYSED.Data,"PC.lmer","Model")
+    data.table::setnames(ANALYSED.Data,"PC.lmer","Model")
     ANALYSED.Data[Model=="logical",Model:=NA]
 
   }
