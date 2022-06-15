@@ -309,7 +309,7 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
     RR.CI<-lapply(1:nrow(ANALYSED.Data),FUN=function(i){
       X<-ANALYSED.Data[i,RR.lmer][[1]]
       suppressWarnings(
-        if(!is.na(X)){
+        if(class(X) %in% c("lm","lmerModLmerTest")){
           X<-round(confint(X,method="Wald"),ROUND)
           if(nrow(X)>1){
             X[3,]
