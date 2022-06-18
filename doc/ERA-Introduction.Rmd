@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
   require(ggnewscale)
   require(terra)
   require(RColorBrewer)
-  #require(rasterVis)
+  require(cicular)
 ```
 
 In this vignette, we will explore key components of the ERA dataset and some derived products to which it can be linked (also provided in the `ERAg` package). This is not intended to be a complete explanation of everything ERA. Instead its purpose is to highlight a few features to kick-start use and analysis. Please send feedback on the explanations or on discoveries that should be included in the next version to Pete Steward (p.steward@cgiar.org). Please post any questions to the ERA-Data-Sprint Slack Workspace.

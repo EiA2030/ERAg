@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
   require(ggnewscale)
   require(terra)
   require(RColorBrewer)
-  #require(rasterVis)
+  require(cicular)
 
 ## ----Access ERA, echo=T-------------------------------------------------------
 knitr::kable(head(ERAg::ERA.Compiled[,1:8], 5))

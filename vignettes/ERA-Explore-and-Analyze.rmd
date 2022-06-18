@@ -30,10 +30,10 @@ Observations in the main `ERA.Compiled` often consist of bundles of practices wh
 
 ```{r Combo numbers, echo =TRUE}
 # No. combination practices
-nrow(ERA.Compiled[grepl("-",SubPrName)])
+nrow(ERAg::ERA.Compiled[grepl("-",SubPrName)])
 
 # No. solo practices
-nrow(ERA.Compiled[!grepl("-",SubPrName)])
+nrow(ERAg::ERA.Compiled[!grepl("-",SubPrName)])
 ```
 
 This makes visualization of
@@ -44,14 +44,14 @@ combination present in the original observation.
 ```{r Splitting Combinations, echo =T}
 
 # There are many subpractice combinations in ERA
-ERA.Compiled[grepl("-",SubPrName),length(unique(SubPrName))]
-ERA.Compiled[,unique(SubPrName)][1:10]
+ERAg::ERA.Compiled[grepl("-",SubPrName),length(unique(SubPrName))]
+ERAg::ERA.Compiled[,unique(SubPrName)][1:10]
 
 # Lets split these
-ERA.Compiled.Split<-ERAComboSplit(Data=ERA.Compiled)
+ERA.Compiled.Split<-ERAComboSplit(Data=ERAg::ERA.Compiled)
 
 # The dataset gets longer
-dim(ERA.Compiled)
+dim(ERAg::ERA.Compiled)
 dim(ERA.Compiled.Split)
 
 # Suffixed .Combo columns contain split names and codes
@@ -119,7 +119,7 @@ Great both are are types of planting pit.
 Now let's see what data we have in ERA on these practices 
 
 ```{r WH tabulate practices,echo=T}
-  (PitPracs<-ERA.Compiled[grepl(paste(FocalPractices,collapse = "|"),SubPrName),SubPrName] %>%
+  (PitPracs<-ERAg::ERA.Compiled[grepl(paste(FocalPractices,collapse = "|"),SubPrName),SubPrName] %>%
   table %>%
   sort(decreasing = T))
 ```
@@ -130,7 +130,7 @@ It seems planting basins are often used in combination with minimum tillage and 
 
 ```{r WH Subset,echo=T}
   PitPracs<-PitPracs[PitPracs>=50] %>% names
-  ERA.Pits<-ERA.Compiled[SubPrName %in% PitPracs] 
+  ERA.Pits<-ERAg::ERA.Compiled[SubPrName %in% PitPracs] 
 ```
 
 What outcomes do we have data for?

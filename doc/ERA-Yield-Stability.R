@@ -16,7 +16,7 @@ require(sfsmisc)
 require(MASS)
 
 ## ----Access ERA, echo=T-------------------------------------------------------
-knitr::kable(head(ERA.Compiled[,1:8], 5))
+knitr::kable(head(ERAg::ERA.Compiled[,1:8], 5))
 
 ## ----Show Practice Codes, echo=T----------------------------------------------
 knitr::kable(head(PracticeCodes[,1:6], 5))

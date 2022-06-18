@@ -36,7 +36,7 @@ In this vignette we will explore how to plot and calculate absolute and relative
 First we access the compiled ERA dataset included with the ERA package.
 
 ```{r Access ERA, echo=T}
-knitr::kable(head(ERA.Compiled[,1:8], 5))
+knitr::kable(head(ERAg::ERA.Compiled[,1:8], 5))
 ```
 
 Our analyses of outcome stability are inspired and based on the publication *A global meta-analysis of yield stability in organic and conservation agriculture* by [Knapp *et al.* 2018](https://doi.org/10.1038/s41467-018-05956-1). As such we will be exploring the outcome subindicator crop yield in this vignette, which is a data rich vein in ERA.
