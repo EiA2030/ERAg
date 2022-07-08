@@ -54,6 +54,7 @@
 #' \item`Practice` character, ERA practice
 #' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
+#' \item`EU` character, ERA EU (product) code
 #' }
 #' \item**`[[Models]]`** Multivariate Meta-Analysis Model objects
 #' \itemize{
@@ -81,6 +82,7 @@
 #' \item`Practice` character, ERA practice
 #' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
+#' \item`EU` character, ERA EU (product) code
 #' \item`PSymbol` character, `*` P<=0.05, `**` P<=0.01, `***` P<=0.001, N.S. P>0.05.
 #' \item`N.Obs`  integer, depreciated field
 #' \item`N.Studies`integer, number of studies contributing to the analysis
@@ -128,6 +130,7 @@
 #' \item`Practice` character, ERA practice
 #' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
+#' \item`EU` character, ERA EU (product) code
 #' }
 #' }
 #' @export

@@ -63,6 +63,7 @@ StabCalc(
 \item\code{Practice} character, ERA practice
 \item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
+\item\code{EU} character, ERA EU (product) code
 }
 \item**\verb{[[Models]]}** Multivariate Meta-Analysis Model objects
 \itemize{
@@ -90,6 +91,7 @@ StabCalc(
 \item\code{Practice} character, ERA practice
 \item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
+\item\code{EU} character, ERA EU (product) code
 \item\code{PSymbol} character, \code{*} P<=0.05, \verb{**} P<=0.01, \verb{***} P<=0.001, N.S. P>0.05.
 \item\code{N.Obs}  integer, depreciated field
 \item\code{N.Studies}integer, number of studies contributing to the analysis
@@ -137,6 +139,7 @@ StabCalc(
 \item\code{Practice} character, ERA practice
 \item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
+\item\code{EU} character, ERA EU (product) code
 }
 }
 }

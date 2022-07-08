@@ -13,7 +13,9 @@ StabCalc2(
   DoRandom = T,
   Control = list(optimizer = "optim", optmethod = "Nelder-Mead", maxit = 10000),
   Responses = c("lnRR", "lnVR", "lnCVR"),
-  Use.acv = F
+  Use.acv = F,
+  Inc.Prod = F,
+  Cores = 1
 )
 }
 \arguments{
@@ -31,7 +33,11 @@ StabCalc2(
 
 \item{Responses}{character vector, this argument is depreciated do edit (default=\code{c("lnRR","lnVR","lnCVR")})}
 
-\item{Use.acv}{logical T/F. If T scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).}
+\item{Use.acv}{logical T/F. If \code{T} scale-adjusted coefficient of variation, acv, is substituted for the coefficient of variation (cv).}
+
+\item{Inc.Prod}{logical T/F. If \code{F} analysis is conducted at the practice x outcome level (i.e. aggregated across crops). If \code{T} analysis is dis-aggregated to the Crop x Outcome x Practice level (Crops represented by the \code{EU} column in the \verb{Data parameter})}
+
+\item{Cores}{integer. The number of cores to use for parallel processing, if set to \code{1} no parallel processing is applied.}
 }
 \value{
 \code{StabCalc2} returns a \code{list}
