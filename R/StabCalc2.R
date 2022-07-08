@@ -27,7 +27,7 @@
 #' @importFrom pbapply pblapply
 #' @importFrom data.table dcast rbindlist
 #' @importFrom snow makeCluster clusterEvalQ registerDoSNOW stopCluster parLapply
-#' @importFrom DoSnow registerDoSNOW
+#' @importFrom doSnow registerDoSNOW
 StabCalc2<-function(Data,
                     Do.Weight=T,
                     Weight.by.Study=T,

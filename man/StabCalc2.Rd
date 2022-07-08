@@ -42,11 +42,11 @@ StabCalc2(
 \value{
 \code{StabCalc2} returns a \code{list}
 \enumerate{
-\item \strong{\verb{[[StabStats]]}} The first level of this list contains the outputs of \code{ERAg::StabCalc} for each Practice x Outcome combination present in \code{Data}
+\item \strong{\verb{[[StabStats]]}} The first level of this list contains the outputs of \code{ERAg::StabCalc} for each Practice x Outcome ( x EU if Inc.Prod==T) combination present in \code{Data}
 \item \strong{\verb{[[StabStats.Test]]}} This is the equivalent of the \strong{\verb{[[Tests]]}} \code{data.table} output by \code{ERAg::StabCalc}
 \item \strong{\verb{[[StabStats.Tab]]}} This is the equivalent of the \strong{\verb{[[Coefs]]}} \code{data.table} output by \code{ERAg::StabCalc}
 \item \strong{\verb{[[StabStats.Test2]]}} This is the equivalent of the \strong{\verb{[[Tests2]]}} \code{data.table} output by \code{ERAg::StabCalc}
-\item \strong{\verb{[[StabList]]}} A \code{list} of the input \code{Data} \code{data.table} split by Practice and Outcome
+\item \strong{\verb{[[StabList]]}} A \code{list} of the input \code{Data} \code{data.table} split by Practice and Outcome ( and EU if Inc.Prod==T)
 }
 }
 \description{
