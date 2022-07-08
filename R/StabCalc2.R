@@ -23,7 +23,6 @@
 #'  }
 #' @export
 #' @import data.table
-#' @importFrom data.table split
 #' @importFrom pbapply pblapply
 #' @importFrom data.table dcast rbindlist
 #' @importFrom snow makeCluster clusterEvalQ registerDoSNOW stopCluster parLapply
@@ -44,8 +43,6 @@ StabCalc2<-function(Data,
 
   # Ensure at least 3 years long
   Data<-Data[nryears>=3]
-  #Data<-Data[,N:=.N,by=list(Practice,Outcome)]
-  #Data<-Data[N>=3]
 
   if(Inc.Prod){
     Data<-split(Data,list(Data$Outcome,Data$Practice,Data$EU))
