@@ -425,6 +425,7 @@ StabCalc<-function(Data,
   LMs[,Practice:=Y[1,"Practice"]
   ][,Practice.Code:=Y[1,"Practice.Code"]
   ][,Outcome:=Y[1,"Outcome"]
+  ][,EU:=Y[1,"EU"]
   ][,PSymbol:=psymbol(`Pr(>|t|)`)
   ][,N.Obs:=nrow(Y)
   ][,N.Studies:=Y[,length(unique(Code))]]
@@ -443,7 +444,8 @@ StabCalc<-function(Data,
 
   Tests2[,Practice:=Data[1,"Practice"]
   ][,Practice.Code:=Data[1,"Practice.Code"]
-  ][,Outcome:=Data[1,"Outcome"]]
+  ][,Outcome:=Data[1,"Outcome"]
+  ][,EU:=Data[1,"EU"]]
 
   W<-lapply(X,"[[","Model")
   names(W)<-Responses
@@ -452,8 +454,8 @@ StabCalc<-function(Data,
   Z<-rbindlist(lapply(X,"[[","Coefs"))
   Z[,Practice:=Data[1,"Practice"]
   ][,Practice.Code:=Data[1,"Practice.Code"]
-  ][,Outcome:=Data[1,"Outcome"]]
+  ][,Outcome:=Data[1,"Outcome"]
+  ][,EU:=Data[1,"EU"]]
 
   return(list(Coefs=Z,Models=W,R.Models=Y,Tests=LMs,Tests2=Tests2))
-
 }
