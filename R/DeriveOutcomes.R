@@ -1,7 +1,7 @@
 #' Derive ERA outcomes from existing data
 #'
-#' This function identifies exactly colocated outcomes (same experiment, treatment, location and time) ERA data that can be combined
-#' to create additional outcome observations, generates these additional outcomes and appends them to the supplied Data.
+#' This function identifies exactly co-located ERA outcomes (same experiment, treatment, location and time) to
+#' generate additional outcomes and appends them to the supplied Data.
 #'
 #' The function currently generates additional outcomes for:
 #' 1) Net Returns = gross returns - total costs
@@ -25,7 +25,7 @@
 #' @return DeriveOutcomes returns the input `data.table` with additional rows appended for derived outcomes.
 #' @export
 #' @import data.table
-DeriveOutcomes<-function(Data = ERA.Clim.Class2,
+DeriveOutcomes<-function(Data,
                          RmPartial = T,
                          DoBCR_VC = T,
                          DoWUE = T){
