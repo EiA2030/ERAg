@@ -4,7 +4,7 @@
 #' data before using with this function.
 #'
 #' Method:
-#' We adapted a lower confidence limit (LCL) approach (e.g.  \href{https://onlinelibrary.wiley.com/doi/abs/10.2307/1243967}{Hildebrand1996},
+#' We adapted a lower confidence limit (LCL) approach (e.g.  \href{https://www.cabdirect.org/cabdirect/abstract/19996775299}{Hildebrand1996},
 #' \href{https://doi.org/10.1016/S0167-8809(00)00140-7}{Yamoah2000}, \href{https://doi.org/10.3763/ijas.2010.0471}{Sirrine2010}) to estimate production risk as:
 #' 1) `Risk.Means` = the probability of the mean experimental treatment yielding lower than the control treatment; and
 #' 2) `Risk.Diff` = the probability of the mean yield difference between experimental and control treatments being less than 0.
