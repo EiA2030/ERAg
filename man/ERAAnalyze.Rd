@@ -4,7 +4,7 @@
 \alias{ERAAnalyze}
 \title{Analyze Outcome Ratios}
 \usage{
-ERAAnalyze(Data, rmOut = T, Aggregate.By, ROUND = 5, Fast = F)
+ERAAnalyze(Data, rmOut = T, Aggregate.By, ROUND = 5, Fast = F, UseAllCores = F)
 }
 \arguments{
 \item{Data}{A preapred ERA dataset (see PrepareERA function)}
@@ -16,6 +16,8 @@ ERAAnalyze(Data, rmOut = T, Aggregate.By, ROUND = 5, Fast = F)
 \item{ROUND}{Integer value for the number of decimal places numeric columns in the output dataset should be rounded to.}
 
 \item{Fast}{Logical T/F. If \code{FALSE} then lmer and lm models are used to estimate means, errors and significance if sufficient data exist.}
+
+\item{UseAllCores}{Logical T/F. If \code{TRUE} then data.table uses the maximum number of cores available for parallel processing.}
 }
 \value{
 A data.table of response ratios and percentage change values, each row representing a combination of the grouping variables specified in the Aggregrate.By parameter. \code{RR} = outcome response ratio $log(MeanT/MeanC)$, \code{PC} = outcome proportional change $MeanT/MeanC$.

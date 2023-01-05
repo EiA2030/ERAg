@@ -4,7 +4,7 @@
 \alias{DeriveOutcomes}
 \title{Derive ERA outcomes from existing data}
 \usage{
-DeriveOutcomes(Data = ERA.Clim.Class2, RmPartial = T, DoBCR_VC = T, DoWUE = T)
+DeriveOutcomes(Data, RmPartial = T, DoBCR_VC = T, DoWUE = T)
 }
 \arguments{
 \item{Data}{An ERA data.table (e.g. \code{ERAg::ERA.Compiled}).}
@@ -19,8 +19,8 @@ DeriveOutcomes(Data = ERA.Clim.Class2, RmPartial = T, DoBCR_VC = T, DoWUE = T)
 DeriveOutcomes returns the input \code{data.table} with additional rows appended for derived outcomes.
 }
 \description{
-This function identifies exactly colocated outcomes (same experiment, treatment, location and time) ERA data that can be combined
-to create additional outcome observations, generates these additional outcomes and appends them to the supplied Data.
+This function identifies exactly co-located ERA outcomes (same experiment, treatment, location and time) to
+generate additional outcomes and appends them to the supplied Data.
 }
 \details{
 The function currently generates additional outcomes for:
