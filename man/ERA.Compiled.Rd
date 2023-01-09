@@ -3,7 +3,7 @@
 \docType{data}
 \name{ERA.Compiled}
 \alias{ERA.Compiled}
-\title{The compiled ERA dataset (version = Comb 2022.04.04 2022.03.23)
+\title{The compiled ERA dataset (version = Comb 2023.01.06 2023.01.05)
 \describe{
 \item{Index}{unique row identity}
 \item{Code}{unique publication identity}
@@ -139,7 +139,7 @@ ERA Project Team (2021)
 ERA.Compiled
 }
 \description{
-The compiled ERA dataset (version = Comb 2022.04.04 2022.03.23)
+The compiled ERA dataset (version = Comb 2023.01.06 2023.01.05)
 \describe{
 \item{Index}{unique row identity}
 \item{Code}{unique publication identity}
