@@ -3,9 +3,9 @@
 \docType{data}
 \name{EUCodes}
 \alias{EUCodes}
-\title{EU Codes (18.01.2023)}
+\title{EU Codes (Version 03.05.2021)}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 355 rows and 20 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 355 rows and 42 columns.
 }
 \source{
 ERA Project Team (2021)
