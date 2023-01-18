@@ -171,7 +171,7 @@
 #' @source ERA Project Team (2021)
 "OutcomeCodes"
 #'
-#' EU Codes (28.10.2021)
+#' EU Codes (18.01.2023)
 #'
 #' \describe{The organizational hierarchy of experimental units considered in ERA and their descriptions.
 #'   \item{EU}{unique alpha numeric code}
