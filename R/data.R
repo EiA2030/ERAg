@@ -146,7 +146,7 @@
 #' @source ERA Project Team (2021)
 "PracticeCodes"
 #'
-#' Outcome Codes (Version 03.05.2021")
+#' Outcome Codes (Version 18.01.2023)
 #'
 #' \describe{The organizational hierarchy of outcomes considered in ERA and their descriptions.
 #'   \item{Code}{unique alpha numeric code}
@@ -171,7 +171,7 @@
 #' @source ERA Project Team (2021)
 "OutcomeCodes"
 #'
-#' EU Codes (18.01.2023)
+#' EU Codes (Version 03.05.2021)
 #'
 #' \describe{The organizational hierarchy of experimental units considered in ERA and their descriptions.
 #'   \item{EU}{unique alpha numeric code}

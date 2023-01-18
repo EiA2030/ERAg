@@ -3,7 +3,7 @@
 \docType{data}
 \name{EUCodes}
 \alias{EUCodes}
-\title{EU Codes (28.10.2021)}
+\title{EU Codes (18.01.2023)}
 \format{
 An object of class \code{data.table} (inherits from \code{data.frame}) with 355 rows and 20 columns.
 }
