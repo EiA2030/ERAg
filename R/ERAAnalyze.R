@@ -128,7 +128,7 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F,UseAllCores=F){
     Data<-Data[!Outliers]
   }
 
-  # Remove any data where MeanC and MeanT are identical (creates Error in asMethod(object) : not a positive definite matrix)
+  # Remove any data where all MeanC and MeanT are identical (creates Error in asMethod(object) : not a positive definite matrix)
 
   Data<-Data[,Identical:=all(MeanT==MeanC),by=Aggregate.By][Identical==F][,Identical:=NULL]
 
