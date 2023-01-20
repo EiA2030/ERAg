@@ -77,14 +77,12 @@ PrepareERA<-function(Data,
   ][Outcode==267.1,Out.SubInd.Code:=OutcomeCodes[Code==267,Subindicator.Code]
   ][Outcode==267.1,Outcode:=267]
 
-
   DataX[Outcode==265.1,MeanC:=1/MeanC
   ][Outcode==265.1,MeanT:=1/MeanT
   ][Outcode==265.1,Out.SubInd:=OutcomeCodes[Code==265,Subindicator]
   ][Outcode==265.1,Out.SubInd.S:=OutcomeCodes[Code==265,Subindicator.Short]
   ][Outcode==265.1,Out.SubInd.Code:=OutcomeCodes[Code==265,Subindicator.Code]
   ][Outcode==265.1,Outcode:=265]
-
 
   # Filter out outcomes with >Perc.Neg% negative values
 
@@ -102,7 +100,6 @@ PrepareERA<-function(Data,
   ][order(N.OBs,decreasing = T)]
 
   DataX[Outcode %in% A[Perc.Neg.One<=Perc.Neg,Outcode],Neg.Vals:="N"]
-
 
   OutcomeCodes$Negative.Values[OutcomeCodes$Code %in% A[Perc.Neg.One<=Perc.Neg,Outcode]]<-"N"
 
