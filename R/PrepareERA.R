@@ -15,7 +15,7 @@
 #' @param CombineAll Logical `T/F`. Applies only when DoCombinations is `TRUE.` When set to TRUE all rows containing a practice (alone or in combination with other practices) are copied to the
 #' Data.Combos table and renamed. When set FALSE only the rows of a practice where it occurs in combination with other practice are copied to the Data.Combos table and renamed.
 #' Default = F.
-#' @param Perc.Neg A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
+#' @param Perc.Neg A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome x practice combination. If an outcome x practice has a higher percentage of negative values than `Perc.Neg`
 #' it is filtered from the dataset. Default = 0.5.
 #' @param Cols A vector of column names to retain from the ERA dataset supplied. Default values are supplied.
 #' @param Invert2xNeg Swaps MeanT and MeanC values where they are both negative. Less negative values become better than more negative values.
@@ -86,22 +86,11 @@ PrepareERA<-function(Data,
 
   # Filter out outcomes with >Perc.Neg% negative values
 
-  DataX[,Neg.Vals:=OutcomeCodes[match(DataX[,Outcode],Code),Negative.Values]]
+  DataX[,Neg.Vals.One:=sum((MeanC<0 & MeanT>0)|(MeanC>0 & MeanT<0),na.rm=T),by=c("Out.SubInd","PrName")
+  ][,N.OBs:=.N,by=c("Out.SubInd","PrName")
+  ][,Perc.Neg.One:=round(100*Neg.Vals.One/N.OBs,1)
+  ][Perc.Neg.One<=Perc.Neg,Neg.Vals:="N"]
 
-  A<-DataX[Neg.Vals=="Y"
-  ][,list(Neg.Vals.MeanC=sum(MeanC<0,na.rm=T),
-          Neg.Vals.MeanT=sum(MeanT<0,na.rm=T),
-          Neg.Vals.Both=sum(MeanC<0 & MeanT<0,na.rm=T),
-          Neg.Vals.Any=sum((MeanC<0 | MeanT<0) & !(MeanC<0 & MeanT<0),na.rm=T),
-          N.OBs=.N),by=c("Outcode")
-  ][,Perc.Neg.Any:=round(100*Neg.Vals.Any/N.OBs,1)
-  ][,Perc.Neg.One:=round(100*(Neg.Vals.Any-Neg.Vals.Both)/N.OBs,1)
-  ][,Outname:=OutcomeCodes$Subindicator[match(Outcode,OutcomeCodes$Code)]
-  ][order(N.OBs,decreasing = T)]
-
-  DataX[Outcode %in% A[Perc.Neg.One<=Perc.Neg,Outcode],Neg.Vals:="N"]
-
-  OutcomeCodes$Negative.Values[OutcomeCodes$Code %in% A[Perc.Neg.One<=Perc.Neg,Outcode]]<-"N"
 
   if(Invert2xNeg){
     T.Vals<-DataX[MeanC<0 & MeanT<0,MeanC]
@@ -123,7 +112,6 @@ PrepareERA<-function(Data,
   # Note that this changes the structure of the compendium dataset. The resulting data.table should not be shared as this could lead to confusion.
 
   DataX<-Flip.Neg(DataX=DataX,OutcomeCodes)
-
 
   # Calculate response ratios
   DataX<-DataX[Neg.Vals=="N"]
@@ -157,7 +145,6 @@ PrepareERA<-function(Data,
       }
 
     }else{
-
 
       if(PLevel=="Practice"){
         Combinations<-rbindlist(lapply(Practices,FUN=function(X){
