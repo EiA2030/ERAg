@@ -6,10 +6,10 @@
 #' The function currently generates additional outcomes for:
 #' 1) Net Returns = gross returns - total costs
 #' 2) Gross Margin = gross returns - variable costs
-#' 3) Benefit Cost Ratio (GRTC) =  gross returns/total costs
-#' 4) Benefit Cost Ratio (NRTC) =  net returns/total costs
-#' 5) Benefit Cost Ratio (GRVC) =  gross returns/variable costs
-#' 6) Benefit Cost Ratio (NRVC) =  net returns/variable costs
+#' 3) Benefit Cost Ratio (GMTC) =  gross margin/total costs
+#' 4) Benefit Cost Ratio (NRTC) =  net return/total costs
+#' 5) Benefit Cost Ratio (GMVC) =  gross margin/variable costs
+#' 6) Benefit Cost Ratio (NRVC) =  net return/variable costs
 #' 7) Water Use Efficiency (WUE) = yield/total seasonal precipitation
 #' 8) Nitrogen Total Factor Productivity (NTFP) = (yield.exp - yield.cont)/N added
 #'
@@ -108,9 +108,11 @@ DeriveOutcomes<-function(Data,
 
   }
 
+  # Gross Return (120) - Total Cost (150) = Net Return (124)
   NR<-Returns.Fun(Data=data.table::copy(Data),ACode=120,BCode=150,CCode=124)
-  GM<-Returns.Fun(Data=data.table::copy(Data),ACode=120,BCode=152,CCode=124.1)
 
+  # Gross Return (120) - Variable Cost (152) = Gross Margin (124.1)
+  GM<-Returns.Fun(Data=data.table::copy(Data),ACode=120,BCode=152,CCode=124.1)
 
   KeepCols<-colnames(NR$data)[colnames(NR$data) %in% colnames(Data)]
   if(!is.null(NR$data)){
@@ -122,6 +124,7 @@ DeriveOutcomes<-function(Data,
 
   # Combine with master dataset ####
   Data<-rbindlist(list(Data,NR$data),use.names=T)
+
 
   # Choose Outcome Codes
   # Net returns to total/variable costs
@@ -200,15 +203,15 @@ DeriveOutcomes<-function(Data,
 
   }
 
-  # Gross Return (120) / Total Cost (150) = Benefit Cost Ratio (125) ####
-  GRTC<-BCR.Fun(Data=data.table::copy(Data),CostCode=150,ReturnCode=120,RatioCode=125)
+  # Gross Margin (124.1) / Total Cost (150) = Benefit Cost Ratio (125) ####
+  GMTC<-BCR.Fun(Data=data.table::copy(Data),CostCode=150,ReturnCode=124.1,RatioCode=125)
   # Net Return (124) / Total Cost (150) = Benefit Cost Ratio (125.1) ####
   NRTC<-BCR.Fun(Data=data.table::copy(Data),CostCode=150,ReturnCode=124,RatioCode=125.1)
 
-  KeepCols<-colnames(GRTC$data)[colnames(GRTC$data) %in% colnames(Data)]
+  KeepCols<-colnames(GMTC$data)[colnames(GMTC$data) %in% colnames(Data)]
 
-  if(!is.null(GRTC$data)){
-    GRTC$data<-GRTC$data[,..KeepCols]
+  if(!is.null(GMTC$data)){
+    GMTC$data<-GMTC$data[,..KeepCols]
   }
 
   if(!is.null(NRTC$data)){
@@ -216,8 +219,8 @@ DeriveOutcomes<-function(Data,
   }
 
   if(DoBCR_VC==T){
-    # Gross Return (120) / Variable Cost (152) = Benefit Cost Ratio (125.2) ####
-    GRVC<-BCR.Fun(Data=data.table::copy(Data),CostCode=152,ReturnCode=120,RatioCode=125.2)
+    # Gross Margin (124.1) / Variable Cost (152) = Benefit Cost Ratio (125.2) ####
+    GMVC<-BCR.Fun(Data=data.table::copy(Data),CostCode=152,ReturnCode=124.1,RatioCode=125.2)
     # Gross Return (124) / Variable Cost (152) = Benefit Cost Ratio (125.3) ####
     NRVC<-BCR.Fun(Data=data.table::copy(Data),CostCode=152,ReturnCode=124,RatioCode=125.3)
 
@@ -225,16 +228,16 @@ DeriveOutcomes<-function(Data,
       NRVC$data<-NRVC$data[,..KeepCols]
     }
 
-    if(!is.null(GRVC$data)){
-      GRVC$data<-GRVC$data[,..KeepCols]
+    if(!is.null(GMVC$data)){
+      GMVC$data<-GMVC$data[,..KeepCols]
     }
 
     # Combine with master dataset ####
-    Data<-rbindlist(list(Data,GRTC$data,NRTC$data,NRVC$data,GRVC$data),use.names=T)
+    Data<-rbindlist(list(Data,GMTC$data,NRTC$data,NRVC$data,GMVC$data),use.names=T)
 
   }else{
     # Combine with master dataset ####
-    Data<-rbindlist(list(Data,GRTC$data,NRTC$data),use.names=T)
+    Data<-rbindlist(list(Data,GMTC$data,NRTC$data),use.names=T)
   }
 
   # Add WUE
