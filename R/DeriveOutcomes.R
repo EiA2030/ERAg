@@ -47,7 +47,7 @@ DeriveOutcomes<-function(Data,
 
     X<-data.table::copy(Data)
     # Add ID field
-    X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Duration,EU,Units)]
+    X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Diversity,Variety,Tree,Duration,EU,Units)]
 
     # Remove groups that already have BCR outcome present
     X<-X[,Out.Present:=any(Outcode %in% CCode),by=IDx][Out.Present!=T]
@@ -62,9 +62,9 @@ DeriveOutcomes<-function(Data,
       # There should only be 2 practices, differences could be due to data being presented in two different places
       # In any case it probably indicates an error that should be investigated
       More.Than.2.SubPrNames<-rbind(
-        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU),IDx][order(IDx),!"IDx"][Outcode==ACode],
-        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU),IDx][order(IDx),!"IDx"][Outcode==BCode]
-      )
+        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU),IDx][order(IDx)][Outcode==ACode],
+        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU),IDx][order(IDx)][Outcode==BCode]
+      )[,!"IDx"]
 
       # Once checking data for those papers with >2 add the dataloc to the IDx field
       X[N>2,IDx:=paste(IDx,DataLoc)]
@@ -77,9 +77,9 @@ DeriveOutcomes<-function(Data,
 
       # Has adding dataloc "resolved" issue?
       Error1.Unresolved.by.Dataloc<-rbind(
-        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx),!"IDx"][Outcode==ACode],
-        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx),!"IDx"][Outcode==BCode]
-      )
+        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx)][Outcode==ACode],
+        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx)][Outcode==BCode]
+      )[,!"IDx"]
 
       # Remove problem observations
       X<-X[N==2]
@@ -137,7 +137,7 @@ DeriveOutcomes<-function(Data,
 
     X<-data.table::copy(Data)
     # Add ID field
-    X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Duration,EU,Units)]
+    X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Diversity,Duration,EU,Units)]
 
     # Remove groups that already have BCR outcome present
     X<-X[,BCR.Present:=any(Outcode %in% RatioCode),by=IDx][BCR.Present!=T]
@@ -152,9 +152,9 @@ DeriveOutcomes<-function(Data,
       # There should only be 2 practices, differences could be due to data being presented in two different places
       # In any case it probably indicates an error that should be investigated
       More.Than.2.SubPrNames<-rbind(
-        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU),IDx][order(IDx),!"IDx"][Outcode==CostCode],
-        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU),IDx][order(IDx),!"IDx"][Outcode==ReturnCode]
-      )
+        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU,Units),IDx][order(IDx)][Outcode==CostCode],
+        X[N>2,list(T.Descrip,TID,C.Descrip,CID,Code,M.Year,MeanT,MeanC,Outcode,DataLoc,EU,Units),IDx][order(IDx)][Outcode==ReturnCode]
+      )[,!"IDx"]
 
       # Once checking data for those papers with >2 add the dataloc to the IDx field
       X[N>2,IDx:=paste(IDx,DataLoc)]
@@ -167,33 +167,35 @@ DeriveOutcomes<-function(Data,
 
       # Has adding dataloc "resolved" issue?
       Error1.Unresolved.by.Dataloc<-rbind(
-        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx),!"IDx"][Outcode==CostCode],
-        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx),!"IDx"][Outcode==ReturnCode]
-      )
+        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx)][Outcode==CostCode],
+        X[N!=2,list(T.Descrip,C.Descrip,Code,M.Year,MeanT,MeanC,Outcode,DataLoc),IDx][order(IDx)][Outcode==ReturnCode]
+      )[,!"IDx"]
 
       # Remove problem observations
       X<-X[N==2]
 
-      Y<-rbindlist(lapply(X[,unique(IDx)],FUN=function(CODE){
-        Z<-X[IDx==CODE,list(Outcode,MeanT,MeanC)]
-        Z<-data.table(
-          IDx=CODE,
-          MeanT=Z[Outcode==ReturnCode,MeanT]/Z[Outcode==CostCode,MeanT],
-          MeanC=Z[Outcode==ReturnCode,MeanC]/Z[Outcode==CostCode,MeanC]
-        )
-        Z
-      }))
+      if(nrow(X)>0){
+        Y<-rbindlist(lapply(X[,unique(IDx)],FUN=function(CODE){
+          Z<-X[IDx==CODE,list(Outcode,MeanT,MeanC)]
+          Z<-data.table(
+            IDx=CODE,
+            MeanT=Z[Outcode==ReturnCode,MeanT]/Z[Outcode==CostCode,MeanT],
+            MeanC=Z[Outcode==ReturnCode,MeanC]/Z[Outcode==CostCode,MeanC]
+          )
+          Z
+        }))
 
-      X<-X[Outcode!=ReturnCode]
+        X<-X[Outcode!=ReturnCode]
 
-      X[,Outcode:=RatioCode]
+        X[,Outcode:=RatioCode]
 
-      X<-X[,!c("MeanC","MeanT")]
+        X<-X[,!c("MeanC","MeanT")]
 
-      X<-cbind(X,Y[match(IDx,X[,IDx])])
-      X<-X[,!c("IDx","N","BCR.Present","BothPresent")]
+        X<-cbind(X,Y[match(IDx,X[,IDx])])
+        X<-X[,!c("IDx","N","BCR.Present","BothPresent")]
 
-      return(list(data=X,errors1=More.Than.2.SubPrNames,errors2=Error1.Unresolved.by.Dataloc))
+        return(list(data=X,errors1=More.Than.2.SubPrNames,errors2=Error1.Unresolved.by.Dataloc))
+      }
     }
 
   }
@@ -243,7 +245,7 @@ DeriveOutcomes<-function(Data,
 
       X<-data.table::copy(Data)
       # Add ID field
-      X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Variety,Tree,Duration,EU,Units)]
+      X[,IDx:=paste(TID,CID,EU,SubPrName,SubPrName.Base,Code,M.Year,Site.ID,Diversity,Variety,Tree,Duration,EU,Units)]
 
       # Remove groups that already have ACode outcome present
       X<-X[,Out.Present:=any(Outcode %in% ACode),by=IDx][Out.Present!=T]
