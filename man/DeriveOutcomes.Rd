@@ -27,10 +27,10 @@ The function currently generates additional outcomes for:
 \enumerate{
 \item Net Returns = gross returns - total costs
 \item Gross Margin = gross returns - variable costs
-\item Benefit Cost Ratio (GRTC) =  gross returns/total costs
-\item Benefit Cost Ratio (NRTC) =  net returns/total costs
-\item Benefit Cost Ratio (GRVC) =  gross returns/variable costs
-\item Benefit Cost Ratio (NRVC) =  net returns/variable costs
+\item Benefit Cost Ratio (GMTC) =  gross margin/total costs
+\item Benefit Cost Ratio (NRTC) =  net return/total costs
+\item Benefit Cost Ratio (GMVC) =  gross margin/variable costs
+\item Benefit Cost Ratio (NRVC) =  net return/variable costs
 \item Water Use Efficiency (WUE) = yield/total seasonal precipitation
 \item Nitrogen Total Factor Productivity (NTFP) = (yield.exp - yield.cont)/N added
 }
