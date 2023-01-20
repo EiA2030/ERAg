@@ -34,11 +34,11 @@
 #' @export
 #' @import data.table
 ClassifyNegVals<-function(Data,
-                       OCode,
-                       Thresholds=c(0.7,0.95,1.05,1.3),
-                       Vals=c("0"=0,"++"=2,"+"=1,"-"=-1,"--"=-2,"+-"=1,"-+"=-1,"+0"=1,"0+"=-1,"-0"=-1,"0-"=1),
-                       Invert2xNeg=T
-                       ){
+                          OCode,
+                          Thresholds=c(0.7,0.95,1.05,1.3),
+                          Vals=c("0"=0,"++"=2,"+"=1,"-"=-1,"--"=-2,"+-"=1,"-+"=-1,"+0"=1,"0+"=-1,"-0"=-1,"0-"=1),
+                          Invert2xNeg=T
+){
 
   Y<-data.table::copy(Data)
   Y<-Y[Outcode %in% OCode]
@@ -48,8 +48,8 @@ ClassifyNegVals<-function(Data,
   X[,yi:=log(MeanT/MeanC)][,list(MeanC,MeanT)]
 
   if(Invert2xNeg){
-  # Invert yi for double negative outcomes
-  X[MeanC<0 & MeanT<0,yi:=log(MeanC/MeanT)]
+    # Invert yi for double negative outcomes
+    X[MeanC<0 & MeanT<0,yi:=log(MeanC/MeanT)]
   }
 
   # Set percentage change to NA
@@ -77,17 +77,7 @@ ClassifyNegVals<-function(Data,
 
 
   # Add ordinal numeric classification
-  X[,Class.Val:=Vals[1]
-  ][yi>=log(Thresholds[3]),Class.Val:=Vals[2]
-  ][yi>=log(Thresholds[4]),Class.Val:=Vals[3]
-  ][yi<=log(Thresholds[2]),Class.Val:=Vals[4]
-  ][yi<=log(Thresholds[1]),Class.Val:=Vals[5]
-  ][MeanC<0 & MeanT>0,Class.Val:=Vals[6]
-  ][MeanC>0 & MeanT<0,Class.Val:=Vals[7]
-  ][MeanC==0 & MeanT>0,Class.Val:=Vals[8]
-  ][MeanC>0 & MeanT==0,Class.Val:=Vals[9]
-  ][MeanC==0 & MeanT<0,Class.Val:=Vals[10]
-  ][MeanC<0 & MeanT==0,Class.Val:=Vals[11]]
+  X[,Class.Val:=Vals[match(X$Class,names(Vals))]]
 
   # If only MeanT value present
   X[is.na(MeanC) & !is.na(MeanT),Class.Val:=Vals[1]
@@ -103,7 +93,7 @@ ClassifyNegVals<-function(Data,
   X[is.infinite(yi),yi:=NA]
 
   # Merge Classes with supplied dataset
-  Y<-cbind(Y[,yi:=X[,yi]],X[,!"yi"])
+  Y<-cbind(Y[,yi:=X[,yi]],X[,c("Class","Class.Val")])
 
   return(Y)
 
