@@ -37,7 +37,7 @@ Default = F.}
 (e.g. if PrName is Mulch-BioChar then the row is duplicated (n=2) with PrName in row 1 as Mulch and in row 2 as BioChar). The copied rows are joined and the function output changes to a list of two data.tables, "Data"
 and "Data.Combos" . Note ONLY the PrName/SubPrName field is changed in the Data.Combos table, all other fields remain the same. Default = \code{F}.}
 
-\item{Perc.Neg}{A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome. If an outcome has more negative values than the number specified
+\item{Perc.Neg}{A numeric vector of length one defining the maximum percentage of negative values allowed for an outcome x practice combination. If an outcome x practice has a higher percentage of negative values than \code{Perc.Neg}
 it is filtered from the dataset. Default = 0.5.}
 
 \item{Invert2xNeg}{Swaps MeanT and MeanC values where they are both negative. Less negative values become better than more negative values.}
