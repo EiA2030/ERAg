@@ -9,7 +9,7 @@
 #' @param n2 Sample size for treatment group 2
 #' @param n1_data Vector of sample sizes for treatment group 1 (for those observations with CV)
 #' @param n2_data Vector of sample sizes for treatment group 2 (for those observations with CV)
-#'
+#' @export
 lnrr_naga<-function(m1,m2,n1,n2,n1_data,n2_data,CV1_data,CV2_data){
   log(m1/m2)+0.5*(
     ((sum(n1_data*CV1_data)/sum(n1_data)^2)/n1)-
