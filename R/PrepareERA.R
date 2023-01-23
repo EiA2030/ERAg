@@ -84,6 +84,22 @@ PrepareERA<-function(Data,
   ][Outcode==265.1,Out.SubInd.Code:=OutcomeCodes[Code==265,Subindicator.Code]
   ][Outcode==265.1,Outcode:=265]
 
+  # Swap CBR for BCR
+  DataX[Outcode==126,MeanC:=1/MeanC
+  ][Outcode==126,MeanT:=1/MeanT
+  ][Outcode==126,Out.SubInd:=OutcomeCodes[Code==125,Subindicator]
+  ][Outcode==126,Out.SubInd.S:=OutcomeCodes[Code==125,Subindicator.Short]
+  ][Outcode==126,Out.SubInd.Code:=OutcomeCodes[Code==125,Subindicator.Code]
+  ][Outcode==126,Outcode:=125]
+
+  DataX[Outcode==126.1,MeanC:=1/MeanC
+  ][Outcode==126.1,MeanT:=1/MeanT
+  ][Outcode==126.1,Out.SubInd:=OutcomeCodes[Code==125.1,Subindicator]
+  ][Outcode==126.1,Out.SubInd.S:=OutcomeCodes[Code==125.1,Subindicator.Short]
+  ][Outcode==126.1,Out.SubInd.Code:=OutcomeCodes[Code==125.1,Subindicator.Code]
+  ][Outcode==126.1,Outcode:=125]
+
+
   # Filter out outcomes with >Perc.Neg% negative values
 
   DataX[,Neg.Vals.One:=sum((MeanC<0 & MeanT>0)|(MeanC>0 & MeanT<0),na.rm=T),by=c("Out.SubInd","PrName")
