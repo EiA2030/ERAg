@@ -1,7 +1,7 @@
 #' Derive ERA outcomes from existing data
 #'
 #' This function identifies exactly co-located ERA outcomes (same experiment, treatment, location and time) to
-#' generate additional outcomes and appends them to the supplied Data.
+#' generate additional outcomes and appends them to the supplied Data. Note infinite MeanC or MeanT values are removed.
 #'
 #' The function currently generates additional outcomes for:
 #' 1) Net Returns = gross returns - total costs
@@ -53,13 +53,6 @@ DeriveOutcomes<-function(Data,
   # Combine with master dataset ####
   Data<-rbindlist(list(Data,NR$data),use.names=T)
 
-  # Choose Outcome Codes
-  # Net returns to total/variable costs
-  CodesNet<-c(125.1,125.3,126.1,126.3)
-
-  # Gross returns to total/variable costs
-  CodesGross<-c(125.0,125.2,126.0,126.2)
-
   # Gross Return (120) / Total Cost (150) = Benefit Cost Ratio (125) ####
   GMTC<-derive_outcome_ratio(Data=data.table::copy(Data),numerator=120,denominator=150,result=125)
   # Gross Return (120) / Variable Cost (152) = Benefit Cost Ratio (125.1) ####
@@ -77,7 +70,6 @@ DeriveOutcomes<-function(Data,
 
   # Combine with master dataset ####
   Data<-rbindlist(list(Data,GMTC$data,NRTC$data),use.names=T)
-
 
   # Add WUE
   if(DoWUE){
