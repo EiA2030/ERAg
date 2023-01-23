@@ -4,14 +4,12 @@
 \alias{DeriveOutcomes}
 \title{Derive ERA outcomes from existing data}
 \usage{
-DeriveOutcomes(Data, RmPartial = T, DoBCR_VC = T, DoWUE = T)
+DeriveOutcomes(Data, RmPartial = T, DoWUE = T)
 }
 \arguments{
 \item{Data}{An ERA data.table (e.g. \code{ERAg::ERA.Compiled}).}
 
 \item{RmPartial}{Logical \code{T/F}. If \code{T} partial economic outcomes are excluded from the process.}
-
-\item{DoBCR_VC}{Logical \code{T/F}. If \code{T} benefit cost ratios calculated using variable costs are also included in calculations as per description points 5) & 6).}
 
 \item{DoWUE}{Logical \code{T/F}. If \code{T} water use efficiency outcome is derived from yield and TSP (total seasonal precipitation) data}
 }
@@ -20,17 +18,15 @@ DeriveOutcomes returns the input \code{data.table} with additional rows appended
 }
 \description{
 This function identifies exactly co-located ERA outcomes (same experiment, treatment, location and time) to
-generate additional outcomes and appends them to the supplied Data.
+generate additional outcomes and appends them to the supplied Data. Note infinite MeanC or MeanT values are removed.
 }
 \details{
 The function currently generates additional outcomes for:
 \enumerate{
 \item Net Returns = gross returns - total costs
 \item Gross Margin = gross returns - variable costs
-\item Benefit Cost Ratio (GMTC) =  gross margin/total costs
-\item Benefit Cost Ratio (NRTC) =  net return/total costs
-\item Benefit Cost Ratio (GMVC) =  gross margin/variable costs
-\item Benefit Cost Ratio (NRVC) =  net return/variable costs
+\item Benefit Cost Ratio (GRTC) =  gross returns/total costs
+\item Benefit Cost Ratio (GRVC) =  gross returns/variable costs
 \item Water Use Efficiency (WUE) = yield/total seasonal precipitation
 \item Nitrogen Total Factor Productivity (NTFP) = (yield.exp - yield.cont)/N added
 }
