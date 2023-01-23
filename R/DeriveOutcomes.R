@@ -4,10 +4,10 @@
 #' generate additional outcomes and appends them to the supplied Data. Note infinite MeanC or MeanT values are removed.
 #'
 #' The function currently generates additional outcomes for:
-#' 1) Net Returns = gross returns - total costs
-#' 2) Gross Margin = gross returns - variable costs
-#' 3) Benefit Cost Ratio (GRTC) =  gross returns/total costs
-#' 4) Benefit Cost Ratio (GRVC) =  gross returns/variable costs
+#' 1) Net Returns (NR) = gross returns (GR) - total costs (TC)
+#' 2) Gross Margin (GM) = gross returns (GR) - variable costs (VC)
+#' 3) Benefit Cost Ratio (GRTC) =  gross returns (GR)/total costs (TC)
+#' 4) Benefit Cost Ratio (GRVC) =  gross returns (GR)/variable costs (VC)
 #' 5) Water Use Efficiency (WUE) = yield/total seasonal precipitation
 #' 6) Nitrogen Total Factor Productivity (NTFP) = (yield.exp - yield.cont)/N added
 #'
@@ -54,22 +54,22 @@ DeriveOutcomes<-function(Data,
   Data<-rbindlist(list(Data,NR$data),use.names=T)
 
   # Gross Return (120) / Total Cost (150) = Benefit Cost Ratio (125) ####
-  GMTC<-derive_outcome_ratio(Data=data.table::copy(Data),numerator=120,denominator=150,result=125)
+  GRTC<-derive_outcome_ratio(Data=data.table::copy(Data),numerator=120,denominator=150,result=125)
   # Gross Return (120) / Variable Cost (152) = Benefit Cost Ratio (125.1) ####
-  NRTC<-derive_outcome_ratio(Data=data.table::copy(Data),numerator=120,denominator=152,result=125.1)
+  GRVC<-derive_outcome_ratio(Data=data.table::copy(Data),numerator=120,denominator=152,result=125.1)
 
-  KeepCols<-colnames(GMTC$data)[colnames(GMTC$data) %in% colnames(Data)]
+  KeepCols<-colnames(GRTC$data)[colnames(GRTC$data) %in% colnames(Data)]
 
-  if(!is.null(GMTC$data)){
-    GMTC$data<-GMTC$data[,..KeepCols]
+  if(!is.null(GRTC$data)){
+    GRTC$data<-GRTC$data[,..KeepCols]
   }
 
-  if(!is.null(NRTC$data)){
-    NRTC$data<-NRTC$data[,..KeepCols]
+  if(!is.null(GRVC$data)){
+    GRVC$data<-GRVC$data[,..KeepCols]
   }
 
   # Combine with master dataset ####
-  Data<-rbindlist(list(Data,GMTC$data,NRTC$data),use.names=T)
+  Data<-rbindlist(list(Data,GRTC$data,GRVC$data),use.names=T)
 
   # Add WUE
   if(DoWUE){
