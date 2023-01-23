@@ -5,7 +5,7 @@
 \alias{OutcomeCodes}
 \title{Outcome Codes (Version 18.01.2023)}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 113 rows and 19 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 111 rows and 19 columns.
 }
 \source{
 ERA Project Team (2021)
