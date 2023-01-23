@@ -1,5 +1,5 @@
 #' derive_outcome_sub
-#' Calculates new outcomes by subtracting one outcome from another. If function returns NULL then no derived data are present.
+#' Calculates new outcomes by subtracting one outcome from another. If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
 #' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
 #' @param target ERA outcome code of target outcome (see `ERAg::OutcomeCodes`)
 #' @param subtract ERA outcome code of outcome that will be substracted from the target outcome (see `ERAg::OutcomeCodes`)
