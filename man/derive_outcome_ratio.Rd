@@ -3,7 +3,7 @@
 \name{derive_outcome_ratio}
 \alias{derive_outcome_ratio}
 \title{derive_outcome_ratio
-Calculates new outcomes by dividing one outcome from another. If function returns NULL then no derived data are present.}
+Calculates new outcomes by dividing one outcome from another. If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.}
 \usage{
 derive_outcome_ratio(Data, numerator, denominator, result)
 }
@@ -18,5 +18,5 @@ derive_outcome_ratio(Data, numerator, denominator, result)
 }
 \description{
 derive_outcome_ratio
-Calculates new outcomes by dividing one outcome from another. If function returns NULL then no derived data are present.
+Calculates new outcomes by dividing one outcome from another. If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
 }

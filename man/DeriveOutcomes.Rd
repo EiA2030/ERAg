@@ -23,10 +23,10 @@ generate additional outcomes and appends them to the supplied Data. Note infinit
 \details{
 The function currently generates additional outcomes for:
 \enumerate{
-\item Net Returns = gross returns - total costs
-\item Gross Margin = gross returns - variable costs
-\item Benefit Cost Ratio (GRTC) =  gross returns/total costs
-\item Benefit Cost Ratio (GRVC) =  gross returns/variable costs
+\item Net Returns (NR) = gross returns (GR) - total costs (TC)
+\item Gross Margin (GM) = gross returns (GR) - variable costs (VC)
+\item Benefit Cost Ratio (GRTC) =  gross returns (GR)/total costs (TC)
+\item Benefit Cost Ratio (GRVC) =  gross returns (GR)/variable costs (VC)
 \item Water Use Efficiency (WUE) = yield/total seasonal precipitation
 \item Nitrogen Total Factor Productivity (NTFP) = (yield.exp - yield.cont)/N added
 }

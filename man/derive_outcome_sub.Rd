@@ -3,7 +3,7 @@
 \name{derive_outcome_sub}
 \alias{derive_outcome_sub}
 \title{derive_outcome_sub
-Calculates new outcomes by subtracting one outcome from another. If function returns NULL then no derived data are present.}
+Calculates new outcomes by subtracting one outcome from another. If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.}
 \usage{
 derive_outcome_sub(Data, target = 120, subtract = 150, result = 124)
 }
@@ -18,5 +18,5 @@ derive_outcome_sub(Data, target = 120, subtract = 150, result = 124)
 }
 \description{
 derive_outcome_sub
-Calculates new outcomes by subtracting one outcome from another. If function returns NULL then no derived data are present.
+Calculates new outcomes by subtracting one outcome from another. If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
 }
