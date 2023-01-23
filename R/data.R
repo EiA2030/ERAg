@@ -146,7 +146,7 @@
 #' @source ERA Project Team (2021)
 "PracticeCodes"
 #'
-#' Outcome Codes (Version 18.01.2023)
+#' Outcome Codes (Version 23.01.2023)
 #'
 #' \describe{The organizational hierarchy of outcomes considered in ERA and their descriptions.
 #'   \item{Code}{unique alpha numeric code}
