@@ -101,7 +101,7 @@ PrepareERA<-function(Data,
   }
 
   # Remove outcomes where they are negative > Perc.Neg of the time
-  if(RmNeg){
+  if(RmNeg==T){
     DataX<-DataX[!Neg.Vals=="Y"]
   }
 
@@ -112,9 +112,6 @@ PrepareERA<-function(Data,
   # Note that this changes the structure of the compendium dataset. The resulting data.table should not be shared as this could lead to confusion.
 
   DataX<-Flip.Neg(DataX=DataX,OutcomeCodes)
-
-  # Calculate response ratios
-  DataX<-DataX[Neg.Vals=="N"]
 
   # Remove unecessary cols
   DataX<-DataX[,..Cols]
