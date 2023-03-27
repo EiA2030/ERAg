@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 This document describes the search terms and process used to discover literature for the ERA data (formely known as the Climate Smart Agriculture (CSA) Compendium)
 
 Also see:
-* [The Scientific Basis of Climate-Smart Agriculture: A Systematic Review Protocol](https://ccafs.cgiar.org/publications/scientific-basis-climate-smart-agriculture-systematic-review-protocol#.Xbg22pozaHs)
+* [The Scientific Basis of Climate-Smart Agriculture: A Systematic Review Protocol](https://cgspace.cgiar.org/handle/10568/70967)
 * [Climate-Smart Agriculture Compendium 2019 Reference Guide](https://docs.google.com/document/d/1_7XyQlkmI1XLQfzhcRUltGYGjM5myuYOuR6EZXeRegM)
 
 ### Search Strings
