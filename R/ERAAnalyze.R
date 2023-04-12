@@ -256,7 +256,7 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F,UseAllCores=F){
               PC.median=spatstat.geom::weighted.median(x=MeanT/MeanC,w=Weight.Study,na.rm = T),
               PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
               PC.CIlow=suppressWarnings(confint(lm(MeanT/MeanC~1,weights=Weight.Study))[1]),
-              PC.CIhigh=suppressWarnings(confint(lm(MeanT/MeanC~1,weights=Weight.Study))[1]),
+              PC.CIhigh=suppressWarnings(confint(lm(MeanT/MeanC~1,weights=Weight.Study))[2]),
               PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
               PC.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.geom::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"},
