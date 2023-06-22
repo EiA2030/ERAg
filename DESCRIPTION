@@ -1,6 +1,6 @@
 Package: ERAg
 Title: Evidence for Resilient Agriculture Tools and Data
-Version: 0.9.12
+Version: 0.10.0
 Authors@R: c(
     person(given = "Peter",
            family = "Steward",
@@ -18,7 +18,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Depends: R (>= 2.10),
           data.table
 Imports: broom,
