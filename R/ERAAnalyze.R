@@ -242,7 +242,7 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F,UseAllCores=F){
       ][,Weight.Study:=(Rep^2/(2*Rep))/N.Obs.Study # Recalculate Weightings
       ][,list(Observations=.N,
               Studies=length(unique(Code)),
-              Sites=length(unique(ID)),
+              Sites=length(unique(Site.Key)),
               RR.Shapiro.Sig=FunShap(log(MeanT/MeanC)),
               RR=stats::weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
               RR.median=spatstat.geom::weighted.median(x=log(MeanT/MeanC),w=Weight.Study,na.rm = T),
@@ -262,17 +262,17 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F,UseAllCores=F){
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"},
               # To run the lmer the requirement of three or more sites of which two must have at least three observations must be met
               # If not sufficient data for random-effects model run a t-test if >5 observations
-              RR.lmer=list(if(length(unique(ID))>2 & sum(table(ID)>2)>=2 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
-                suppressWarnings(lmerTest::lmer(log(MeanT/MeanC)~1 + (1|ID),weights=Weight.Study))
+              RR.lmer=list(if(length(unique(Site.Key))>2 & sum(table(Site.Key)>2)>=2 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
+                suppressWarnings(lmerTest::lmer(log(MeanT/MeanC)~1 + (1|Site.Key),weights=Weight.Study))
               }else{
-                if(length(ID)>5 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
+                if(length(Site.Key)>5 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
                   suppressWarnings(lm(log(MeanT/MeanC)~1,weights=Weight.Study))
                 }else{NA}
               }),
-              PC.lmer=list(if(length(unique(ID))>2 & sum(table(ID)>2)>=2 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
-                suppressWarnings(lmerTest::lmer(MeanT/MeanC~1 + (1|ID),weights=Weight.Study))
+              PC.lmer=list(if(length(unique(Site.Key))>2 & sum(table(Site.Key)>2)>=2 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
+                suppressWarnings(lmerTest::lmer(MeanT/MeanC~1 + (1|Site.Key),weights=Weight.Study))
               }else{
-                if(length(ID)>5 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
+                if(length(Site.Key)>5 & !sum(Out.SubInd %in% c("Feed Conversion Ratio (FCR)","Protein Conversion Ratio (PCR)"))>0){
                   suppressWarnings(lm(MeanT/MeanC~1,weights=Weight.Study))
                 }else{NA}
               })
