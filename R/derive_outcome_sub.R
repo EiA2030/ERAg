@@ -6,7 +6,7 @@
 #' @param result ERA outcome code for the resulting values (see `ERAg::OutcomeCodes`)
 #' @export
 #' @import data.table
-derive_outcome_sub<-function(Data,target=120,subtract=150,result=124){
+derive_outcome_sub<-function(Data,target=120,subtract=150,result=124){c("")
 
   OutcomeCodes<-data.table(ERAg::OutcomeCodes)
 

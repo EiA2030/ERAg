@@ -10,11 +10,11 @@ derive_outcome_ratio(Data, numerator, denominator, result)
 \arguments{
 \item{Data}{An ERA data.table (e.g. \code{ERAg::ERA.Compiled}).}
 
+\item{numerator}{ERA outcome code of numerator outcome (see \code{ERAg::OutcomeCodes})}
+
+\item{denominator}{ERA outcome code of denominator outcome (see \code{ERAg::OutcomeCodes})}
+
 \item{result}{ERA outcome code for the resulting values (see \code{ERAg::OutcomeCodes})}
-
-\item{target}{ERA outcome code of target outcome (see \code{ERAg::OutcomeCodes})}
-
-\item{subtract}{ERA outcome code of outcome that will be substracted from the target outcome (see \code{ERAg::OutcomeCodes})}
 }
 \description{
 derive_outcome_ratio

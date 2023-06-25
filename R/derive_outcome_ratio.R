@@ -1,9 +1,8 @@
 #' derive_outcome_ratio
 #' Calculates new outcomes by dividing one outcome from another. If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
 #' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
-#' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
-#' @param target ERA outcome code of target outcome (see `ERAg::OutcomeCodes`)
-#' @param subtract ERA outcome code of outcome that will be substracted from the target outcome (see `ERAg::OutcomeCodes`)
+#' @param numerator ERA outcome code of numerator outcome (see `ERAg::OutcomeCodes`)
+#' @param denominator ERA outcome code of denominator outcome (see `ERAg::OutcomeCodes`)
 #' @param result ERA outcome code for the resulting values (see `ERAg::OutcomeCodes`)
 #' @export
 #' @import data.table
