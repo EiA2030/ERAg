@@ -19,7 +19,8 @@
 #' it is filtered from the dataset. Default = 0.5.
 #' @param Cols A vector of column names to retain from the ERA dataset supplied. Default values are supplied.
 #' @param Invert2xNeg Swaps MeanT and MeanC values where they are both negative. Less negative values become better than more negative values.
-#' @param PLevel choose `Practice` or `Subpractice` to determine hierarchical level at which practice combinations are detected.
+#' @param PLevel choose `Practice` or `Subpractice` to determine hierarchical level at which practice combinations are detected. To make the function more generalizable you can also include the column name of a field here.
+#' @param Delim Character. The delimter that separates multiple names within a character string (for example the delimiter `-` separates two practices in the string `Inorganic Fertilizer-Organic Fertilizer`)
 #' @return If DoCombinations = F a data.table of the processed ERA dataset. If DoCombinations = T a list of two data.tables, "Data" as per combinations = F and "Data.Combos" where
 #' PrNames/SubPrName have been modified to reflect combination practices.
 #' @export
@@ -32,6 +33,7 @@ PrepareERA<-function(Data,
                     RmNeg = T,
                     Invert2xNeg=T,
                     PLevel="Practice",
+                    Delim="-",
                     Cols = c("Code","Country","Latitude","Longitude","Site.Type","ID","Site.ID","Rep","Diversity","Tree","Variety","Duration","M.Year","EU","EUlist",
                              "Outcode","MeanC","MeanC.Error","MeanT","MeanT.Error","Mean.Error.Type","Units","TID","CID","MeanFlip","Neg.Vals","plist","base.list","Product","Product.Type","Product.Subtype",
                              "Product.Simple","Out.Pillar","Out.SubPillar","Out.Ind","Out.SubInd","SubPrName","PrName","Theme","SubPrName.Base","PrName.Base",
@@ -135,56 +137,23 @@ PrepareERA<-function(Data,
   DataX[,pc:=100*((MeanT/MeanC)-1)
   ][,yi:=log(MeanT/MeanC)]
 
-  Practices<-unique(unlist(strsplit(unique(DataX$PrName),"-")))
-  Subpractices<-unique(unlist(strsplit(unique(DataX$SubPrName),"-")))
+  Target_Field<-PLevel
 
-  if(DoCombinations){
-    if(CombineAll){
-
-      if(PLevel=="Practice"){
-
-        Combinations<-rbindlist(lapply(Practices,FUN=function(X){
-          Y<-DataX[grep(X,PrName)]
-          Y[,PrName:=X]
-          Y
-        }))
-
-      }else{
-        Combinations<-rbindlist(lapply(Subpractices,FUN=function(X){
-          Y<-DataX[grep(X,SubPrName)]
-          Y[,SubPrName:=X]
-          Y
-        }))
-      }
-
-    }else{
-
-      if(PLevel=="Practice"){
-        Combinations<-rbindlist(lapply(Practices,FUN=function(X){
-          Y<-DataX[grepl(X,PrName) & grepl("-",PrName)]
-          Y[,PrName:=X]
-          Y}
-        ))
-
-      }else{
-        Combinations<-rbindlist(lapply(Subpractices,FUN=function(X){
-          Y<-DataX[grepl(X,SubPrName) & grepl("-",SubPrName)]
-          Y[,SubPrName:=X]
-          Y
-        }))
-      }
-
-    }}
-
-  # Split out combinations data
-  if(DoCombinations){
-    Combinations[,Is.Combo:=T]
-    DataX[,Is.Combo:=F]
-
-    return(list(Data=DataX,Data.Combos=Combinations))
-
-  }else{
-    return(DataX)
+  if(PLevel=="Practice"){
+    Target_Field<-"PrName"
   }
+
+  if(PLevel=="Subpractice"){
+    Target_Field<-"SubPrName"
+    }
+
+  X<-aggregate_names(Data,
+                  CombineAll=CombineAll,
+                  DoCombinations=DoCombinations,
+                  Target_Field=Target_Field,
+                  Delim=Delim)
+
+  return(X)
+
 
 }
