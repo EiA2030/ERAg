@@ -54,8 +54,8 @@ derive_outcome<-function(Data,outcome_col="Out.SubInd",outcome1,outcome2,outcome
       Z<-X[IDx==CODE,list(Outcode,MeanT,MeanC)]
       Z<-data.table(
         IDx=CODE,
-        MeanT=if(operation=="subtract"){Z[Outcode==outcome1,MeanT]-Z[Outcode==outcome2,MeanC]}else{Z[Outcode==outcome1,MeanT]/Z[Outcode==outcome2,MeanC]},
-        MeanC=if(operation=="subtract"){Z[Outcode==outcome1,MeanC]-Z[Outcode==outcome2,MeanC]}else{Z[Outcode==outcome1,MeanT]/Z[Outcode==outcome2,MeanC]}
+        MeanT=if(operation=="subtract"){Z[Outcode==outcome1,MeanT]-Z[Outcode==outcome2,MeanT]}else{Z[Outcode==outcome1,MeanT]/Z[Outcode==outcome2,MeanT]},
+        MeanC=if(operation=="subtract"){Z[Outcode==outcome1,MeanC]-Z[Outcode==outcome2,MeanC]}else{Z[Outcode==outcome1,MeanC]/Z[Outcode==outcome2,MeanC]}
       )
       Z
     }))
