@@ -12,6 +12,7 @@ PrepareERA(
   RmNeg = T,
   Invert2xNeg = T,
   PLevel = "Practice",
+  Delim = "-",
   Cols = c("Code", "Country", "Latitude", "Longitude", "Site.Type", "ID", "Site.ID",
     "Rep", "Diversity", "Tree", "Variety", "Duration", "M.Year", "EU", "EUlist",
     "Outcode", "MeanC", "MeanC.Error", "MeanT", "MeanT.Error", "Mean.Error.Type",
@@ -42,7 +43,9 @@ it is filtered from the dataset. Default = 0.5.}
 
 \item{Invert2xNeg}{Swaps MeanT and MeanC values where they are both negative. Less negative values become better than more negative values.}
 
-\item{PLevel}{choose \code{Practice} or \code{Subpractice} to determine hierarchical level at which practice combinations are detected.}
+\item{PLevel}{choose \code{Practice} or \code{Subpractice} to determine hierarchical level at which practice combinations are detected. To make the function more generalizable you can also include the column name of a field here.}
+
+\item{Delim}{Character. The delimter that separates multiple names within a character string (for example the delimiter \code{-} separates two practices in the string \verb{Inorganic Fertilizer-Organic Fertilizer})}
 
 \item{Cols}{A vector of column names to retain from the ERA dataset supplied. Default values are supplied.}
 }

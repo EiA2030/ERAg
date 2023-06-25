@@ -16,7 +16,7 @@
 #' PrNames/SubPrName have been modified to reflect combination practices.
 #' @export
 #' @import data.table
-#' @importFrom data.table copy setnames rbindlist
+#' @importFrom data.table rbindlist
 aggregate_names<-function(Data,
                      CombineAll=F,
                      DoCombinations=F,
