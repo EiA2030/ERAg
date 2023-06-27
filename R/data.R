@@ -1,4 +1,4 @@
-#' The compiled ERA dataset (version = Comb 2023.01.11 2023.01.18)
+#' The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
 #' \describe{
 #'   \item{Index}{unique row identity}
 #'   \item{Code}{unique publication identity}
