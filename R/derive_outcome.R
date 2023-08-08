@@ -1,5 +1,5 @@
 #' derive_outcome
-#' Calculates new outcomes by dividing or subtracting one outcome from another. If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
+#' Calculates new outcomes by dividing (outcome1/outcome2) or subtracting (outcome1 - outcome2). If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
 #' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
 #' @param outcome_col
 #' @param outcome1
