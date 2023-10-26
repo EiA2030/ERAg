@@ -1,14 +1,14 @@
 #' derive_outcome
-#' Calculates new outcomes by dividing (outcome1/outcome2) or subtracting (outcome1 - outcome2). If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
+#' Calculates new outcomes by dividing (`outcome1`/`outcome2`) or subtracting (`outcome1` - `outcome2`). If function returns `NULL` then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
 #' @param Data An ERA data.table (e.g. `ERAg::ERA.Compiled`).
-#' @param outcome_col
-#' @param outcome1
-#' @param outcome2
-#' @param outcome_result
-#' @param operation
-#' @param match_fields
-#' @param val_col1
-#' @param val_col2
+#' @param outcome_col Column in `Data` containing the outcome labels for `outcome1` and `outcome2`
+#' @param outcome1 Set `outcome1` name for dividing (`outcome1`/`outcome2`) or subtracting (`outcome1` - `outcome2`) outcomes
+#' @param outcome2 Set `outcome2` name for dividing (`outcome1`/`outcome2`) or subtracting (`outcome1` - `outcome2`) outcomes
+#' @param outcome_result Set code of outcome to added to the `Outcode` field
+#' @param operation Choose `subtract` or `divide`
+#' @param match_fields Select fields within `Data` that can match identical observation contexts for `outcome1` and `outcome2`
+#' @param val_col1 Field in `Data` that contains value of `outcome1`
+#' @param val_col2 Field in `Data` that contains value of `outcome2`
 #' @export
 #' @import data.table
 derive_outcome<-function(Data,outcome_col="Out.SubInd",outcome1,outcome2,outcome_result,operation="subtract",match_fields,val_col1="MeanT",val_col2="MeanC"){
