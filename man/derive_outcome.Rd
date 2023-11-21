@@ -3,7 +3,7 @@
 \name{derive_outcome}
 \alias{derive_outcome}
 \title{derive_outcome
-Calculates new outcomes by dividing (outcome1/outcome2) or subtracting (outcome1 - outcome2). If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.}
+Calculates new outcomes by dividing (\code{outcome1}/\code{outcome2}) or subtracting (\code{outcome1} - \code{outcome2}). If function returns \code{NULL} then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.}
 \usage{
 derive_outcome(
   Data,
@@ -19,8 +19,24 @@ derive_outcome(
 }
 \arguments{
 \item{Data}{An ERA data.table (e.g. \code{ERAg::ERA.Compiled}).}
+
+\item{outcome_col}{Column in \code{Data} containing the outcome labels for \code{outcome1} and \code{outcome2}}
+
+\item{outcome1}{Set \code{outcome1} name for dividing (\code{outcome1}/\code{outcome2}) or subtracting (\code{outcome1} - \code{outcome2}) outcomes}
+
+\item{outcome2}{Set \code{outcome2} name for dividing (\code{outcome1}/\code{outcome2}) or subtracting (\code{outcome1} - \code{outcome2}) outcomes}
+
+\item{outcome_result}{Set code of outcome to added to the \code{Outcode} field}
+
+\item{operation}{Choose \code{subtract} or \code{divide}}
+
+\item{match_fields}{Select fields within \code{Data} that can match identical observation contexts for \code{outcome1} and \code{outcome2}}
+
+\item{val_col1}{Field in \code{Data} that contains value of \code{outcome1}}
+
+\item{val_col2}{Field in \code{Data} that contains value of \code{outcome2}}
 }
 \description{
 derive_outcome
-Calculates new outcomes by dividing (outcome1/outcome2) or subtracting (outcome1 - outcome2). If function returns NULL then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
+Calculates new outcomes by dividing (\code{outcome1}/\code{outcome2}) or subtracting (\code{outcome1} - \code{outcome2}). If function returns \code{NULL} then no derived data are present. Any observation outcome sets that already have a result outcome associated with them are removed.
 }
