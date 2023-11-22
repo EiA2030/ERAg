@@ -4,7 +4,7 @@
 \name{ERA.Compiled}
 \alias{ERA.Compiled}
 \title{The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
-\describe{
+\describe{Description of fields in the ERA.Compiled dataset.
 \item{Index}{unique row identity}
 \item{Code}{unique publication identity}
 \item{Author}{primary author of the publication}
@@ -92,29 +92,16 @@
 \item{Out.Ind}{outcome indicator name}
 \item{Out.SubInd}{outcome subindicator name}
 \item{Out.SubInd}{outcome subindicator name simplified}
-\item{Out.Pillar.Code}{outcome pillar name code}
-\item{Out.SubPillar.Code}{outcome subpillar name code}
-\item{Out.Ind.Code}{outcome indicator name code}
-\item{Out.SubInd.Code}{outcome subindicator name code}
 \item{SubPrName}{experimental subpractice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
 \item{PrName}{experimental practice name}
 \item{Theme}{experimental practice theme name}
-\item{SubPrName.Code}{experimental subpractice name code}
-\item{PrName.Code}{experimental practice name code}
-\item{Theme.Code}{experimental practice theme name code}
 \item{SubPrName.Base}{base practice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
 \item{PrName.Base}{base practice name}
 \item{Theme.Base}{base practice theme name}
-\item{SubPrName.Base.Code}{base subpractice name code}
-\item{PrName.Base.Code}{base practice name code}
-\item{Theme.Base.Code}{base practice theme name code}
 \item{Product}{the full name of the product, including aspect of the component such as grain, meat or milk}
 \item{Product.Type}{product type name}
 \item{Product.Subtype}{product subtype name}
 \item{Product.Simple}{simplified product name, excluding any aspects of component}
-\item{Product.Type.Code}{product type name code}
-\item{Product.Subtype.Code}{product subtype name code}
-\item{Product.Simple.Code}{simplified product name code}
 \item{Latitude}{latitude of study location in degrees or decimal degrees}
 \item{Longitude}{longitude of study location in degrees or decimal degrees}
 \item{Buffer}{manual estimation (e.g. from measuring on google earth) in m of the spatial uncertainty for a point location. The site should within an X m radius (the buffer.manual amount) of the point location specified. Unit is meters}
@@ -130,7 +117,7 @@
 ...
 }}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 113015 rows and 150 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 112859 rows and 135 columns.
 }
 \source{
 ERA Project Team (2021)
@@ -140,7 +127,7 @@ ERA.Compiled
 }
 \description{
 The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
-\describe{
+\describe{Description of fields in the ERA.Compiled dataset.
 \item{Index}{unique row identity}
 \item{Code}{unique publication identity}
 \item{Author}{primary author of the publication}
@@ -228,29 +215,16 @@ The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
 \item{Out.Ind}{outcome indicator name}
 \item{Out.SubInd}{outcome subindicator name}
 \item{Out.SubInd}{outcome subindicator name simplified}
-\item{Out.Pillar.Code}{outcome pillar name code}
-\item{Out.SubPillar.Code}{outcome subpillar name code}
-\item{Out.Ind.Code}{outcome indicator name code}
-\item{Out.SubInd.Code}{outcome subindicator name code}
 \item{SubPrName}{experimental subpractice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
 \item{PrName}{experimental practice name}
 \item{Theme}{experimental practice theme name}
-\item{SubPrName.Code}{experimental subpractice name code}
-\item{PrName.Code}{experimental practice name code}
-\item{Theme.Code}{experimental practice theme name code}
 \item{SubPrName.Base}{base practice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
 \item{PrName.Base}{base practice name}
 \item{Theme.Base}{base practice theme name}
-\item{SubPrName.Base.Code}{base subpractice name code}
-\item{PrName.Base.Code}{base practice name code}
-\item{Theme.Base.Code}{base practice theme name code}
 \item{Product}{the full name of the product, including aspect of the component such as grain, meat or milk}
 \item{Product.Type}{product type name}
 \item{Product.Subtype}{product subtype name}
 \item{Product.Simple}{simplified product name, excluding any aspects of component}
-\item{Product.Type.Code}{product type name code}
-\item{Product.Subtype.Code}{product subtype name code}
-\item{Product.Simple.Code}{simplified product name code}
 \item{Latitude}{latitude of study location in degrees or decimal degrees}
 \item{Longitude}{longitude of study location in degrees or decimal degrees}
 \item{Buffer}{manual estimation (e.g. from measuring on google earth) in m of the spatial uncertainty for a point location. The site should within an X m radius (the buffer.manual amount) of the point location specified. Unit is meters}

@@ -5,7 +5,7 @@
 \alias{PracticeCodes}
 \title{Practice Codes (version 31.01.2022)}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 174 rows and 14 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 174 rows and 24 columns.
 }
 \source{
 ERA Project Team (2021)
