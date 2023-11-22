@@ -1,5 +1,5 @@
 #' The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
-#' \describe{
+#' \describe{Description of fields in the ERA.Compiled dataset.
 #'   \item{Index}{unique row identity}
 #'   \item{Code}{unique publication identity}
 #'   \item{Author}{primary author of the publication}
