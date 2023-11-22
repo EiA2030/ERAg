@@ -87,29 +87,16 @@
 #'   \item{Out.Ind}{outcome indicator name}
 #'   \item{Out.SubInd}{outcome subindicator name}
 #'   \item{Out.SubInd}{outcome subindicator name simplified}
-#'   \item{Out.Pillar.Code}{outcome pillar name code}
-#'   \item{Out.SubPillar.Code}{outcome subpillar name code}
-#'   \item{Out.Ind.Code}{outcome indicator name code}
-#'   \item{Out.SubInd.Code}{outcome subindicator name code}
 #'   \item{SubPrName}{experimental subpractice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
 #'   \item{PrName}{experimental practice name}
 #'   \item{Theme}{experimental practice theme name}
-#'   \item{SubPrName.Code}{experimental subpractice name code}
-#'   \item{PrName.Code}{experimental practice name code}
-#'   \item{Theme.Code}{experimental practice theme name code}
 #'   \item{SubPrName.Base}{base practice name (note that this corresponds to the Subpractice.S field in the PracticeCodes)}
 #'   \item{PrName.Base}{base practice name}
 #'   \item{Theme.Base}{base practice theme name}
-#'   \item{SubPrName.Base.Code}{base subpractice name code}
-#'   \item{PrName.Base.Code}{base practice name code}
-#'   \item{Theme.Base.Code}{base practice theme name code}
 #'   \item{Product}{the full name of the product, including aspect of the component such as grain, meat or milk}
 #'   \item{Product.Type}{product type name}
 #'   \item{Product.Subtype}{product subtype name}
 #'   \item{Product.Simple}{simplified product name, excluding any aspects of component}
-#'   \item{Product.Type.Code}{product type name code}
-#'   \item{Product.Subtype.Code}{product subtype name code}
-#'   \item{Product.Simple.Code}{simplified product name code}
 #'   \item{Latitude}{latitude of study location in degrees or decimal degrees}
 #'   \item{Longitude}{longitude of study location in degrees or decimal degrees}
 #'   \item{Buffer}{manual estimation (e.g. from measuring on google earth) in m of the spatial uncertainty for a point location. The site should within an X m radius (the buffer.manual amount) of the point location specified. Unit is meters}
