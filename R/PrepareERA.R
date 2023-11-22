@@ -37,9 +37,7 @@ PrepareERA<-function(Data,
                     Cols = c("Code","Country","Latitude","Longitude","Site.Type","ID","Site.ID","Rep","Diversity","Tree","Variety","Duration","M.Year","EU","EUlist",
                              "Outcode","MeanC","MeanC.Error","MeanT","MeanT.Error","Mean.Error.Type","Units","TID","CID","MeanFlip","Neg.Vals","plist","base.list","Product","Product.Type","Product.Subtype",
                              "Product.Simple","Out.Pillar","Out.SubPillar","Out.Ind","Out.SubInd","SubPrName","PrName","Theme","SubPrName.Base","PrName.Base",
-                             "T.Descrip", "C.Descrip", "C.NI","C.NO", "T.NI", "T.NO","PrName.Code","SubPrName.Code", "Product.Simple.Code",
-                             "Product.Subtype.Code", "Product.Type.Code","Out.Pillar.Code","Out.SubPillar.Code","Out.Ind.Code", "Out.SubInd.Code",
-                             "Theme.Code","PrName.Base.Code","SubPrName.Base.Code","Theme.Base.Code","Partial.Outcome.Name","Partial.Outcome.Code","DataLoc")
+                             "T.Descrip", "C.Descrip", "C.NI","C.NO", "T.NI", "T.NO","Partial.Outcome.Name","Partial.Outcome.Code","DataLoc")
 ){
 
   DataX<-data.table::copy(Data)

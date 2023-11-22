@@ -177,12 +177,6 @@ We can view the subordinates of these high level concepts by accessing the datas
 ERAg::ERAConcepts
 ```
 
-Individual concepts have columns containing their name and corresponding column with the suffix **`.Code`** containing much abbreviated versions of the name, for example **`OutSubInd`** & **`OutSubInd.Code`**. The abbreviated names are useful in decluttering plot axes.
-
-```{r Names vs. Codes, echo=T}
-knitr::kable(head(unique(ERA.Compiled[,list(Out.SubInd,Out.SubInd.Code,PrName,PrName.Code,Product.Simple,Product.Simple.Code)]), 5))
-```
-
 ### Management practices and technologies
 We selected a set of management practices and technologies ('practices' hereafter) based on existing literature and feedback from development partners. This list includes a broad range of interventions but clearly not all. Therefore, it is important to familiarize yourself with what is included with ERA. Practice coding is highly disaggregated with a single treatment receiving up to 13 individual codes. Codes for every practice in that treatment are included such as seed, tillage, fertilizer use, weeding, etc.   
 
@@ -243,21 +237,15 @@ Multiple practices in base or experimental columns are sorted then concatenated 
 
 For convenience we have translated the codes in the **`plist`** and **`base.list`**  columns into their corresponding names and codes from `ERAg::PracticeCodes`:  
 1) **`PrName`** = (experimental) practice name  
-2) **`PrName.Code`** = (experimental) practice name code  
-3) **`PrName.Base`** = base practice name  
-4) **`PrName.Base.Code`** = base practice name code  
-5) **`SubPrName`** = (experimental) subpractice name  (*note that this corresponds to the Subpractice.S field in the PracticeCodes*)
-6) **`SubPrName.Code`** = (experimental) subpractice name code  
-7) **`SubPrName.Base`** = base practice name (*note that this corresponds to the Subpractice.S field in the PracticeCodes*)
-8) **`SubPrName.Base.Code`** = base subpractice name code  
-9) **`Theme`** = (experimental) practice theme name  
-10) **`Theme.Code`** = (experimental) practice theme name code  
-11) **`Theme.Base`** = base practice theme name  
-12) **`Theme.Base.Code`** = base practice theme name code  
+2) **`PrName.Base`** = base practice name  
+3) **`SubPrName`** = (experimental) subpractice name  (*note that this corresponds to the Subpractice.S field in the PracticeCodes*)
+4) **`SubPrName.Base`** = base practice name (*note that this corresponds to the Subpractice.S field in the PracticeCodes*)
+5) **`Theme`** = (experimental) practice theme name  
+6) **`Theme.Base`** = base practice theme name  
 
 
 ```{r ERA Show Practice Codes, echo=T}
-knitr::kable(ERA.Compiled[99,list(plist,base.list,SubPrName,SubPrName.Code,SubPrName.Base,SubPrName.Base.Code)])
+knitr::kable(ERA.Compiled[99,list(plist,base.list,SubPrName,SubPrName.Base)])
 ```
 
 #### Management practices and technologies: Aggregated Treatments
@@ -283,17 +271,12 @@ knitr::kable(head(ERAg::OutcomeCodes[,1:6], 5))
 1) **`Outcode`** =  the outcome code `OutcomeCodes$Code` for the observation  
 2) **`Units`** = the unit of outcome reporting  
 3) **`Out.SubInd`** = outcome subindicator name  
-4) **`Out.SubInd.Code`** = outcome subindicator name code  
-5) **`Out.Ind`** = outcome indicator name  
-6) **`Out.Ind.Code`** = outcome indicator name code  
-7) **`Out.SubPillar`** = outcome subpillar name  
-8) **`Out.SubPillar.Code`** = outcome subpillar name code  
-9) **`Out.Pillar`** = outcome pillar name  
-10) **`Out.Pillar.Code`** = outcome pillar name code
-
+4) **`Out.Ind`** = outcome indicator name  
+5) **`Out.SubPillar`** = outcome subpillar name  
+6) **`Out.Pillar`** = outcome pillar name  
 
 ```{r ERA Show Outcomes, echo=T}
-knitr::kable(head(unique(ERA.Compiled[!is.na(Units),list(Outcode,Units,Out.SubInd,Out.SubInd.Code,Out.Ind,Out.Ind.Code,Out.Pillar,Out.Pillar.Code)]),5))
+knitr::kable(head(unique(ERA.Compiled[!is.na(Units),list(Outcode,Units,Out.SubInd,Out.Ind,Out.Pillar)]),5))
 ```
 
 #### Outcome: Partial Outcomes
@@ -323,11 +306,8 @@ knitr::kable(ERAg::EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
 2) **`EUlist`** = the product code `OutcomeCodes$Code` for the observation using a `-` delim for multiple products  
 3) **`Product`** =  the full name of the product, including aspect of the component such as grain, meat or milk  
 4) **`Product.Simple`** = simplified product name, excluding any aspects of component  
-5) **`Product.Simple.Code`** = simplified product name code  
-6) **`Product.Subtype`** = product subtype name  
-7) **`Product.Subtype.Code`** = product subtype name code  
-8) **`Product.Type`** = product type name  
-9) **`Product.Type.Code`**= product type name code
+5) **`Product.Subtype`** = product subtype name  
+6) **`Product.Type`** = product type name  
 
 ## Biophysical Variables
 You can find a range of variables to define the context of an ERA observation and we will be adding more functions to `ERAg` to enable you to link spatio-temporal co-ordinates to biophysical datasets.  
