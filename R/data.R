@@ -55,8 +55,8 @@
 #'   \item{Upper}{the depth for which the MeanC and MeanT correspond for soil properties in cm (lowest depth value = upper, so if you have a depth of 0-20 cm the lowest value = 20)}
 #'   \item{Lower}{the depth for which the MeanC and MeanT correspond for soil properties in cm (highest depth value = lower, so if you have a depth of 0-20 cm the highest value = 0)}
 #'   \item{DataLoc}{the location in the paper where the data can be found. This should be three letters (fig, tab, or txt) in lowercase and a number (for figures and tables) to signify figure, table or text, respectively}
-#'   \item{USD2010.C}{monetary outcomes converted to USD equivalent in 2010 using World Bank CPI figures and exchange rates (see Currency Tab). There are no reliable data for Zimbabwe}
-#'   \item{USD2010.T}{monetary outcomes converted to USD equivalent in 2010 using World Bank CPI figures and exchange rates (see Currency Tab). There are no reliable data for Zimbabwe}
+#'   \item{USD2010.C}{monetary outcomes converted to international USD  in 2010 using World Bank CPI, PPP and exchange rates. There are no data for Zimbabwe.}
+#'   \item{USD2010.T}{monetary outcomes converted to international USD  in 2010 using World Bank CPI, PPP and exchange rates. There are no data for Zimbabwe.}
 #'   \item{MeanFlip}{is a negative result considered better than a positive result (i.e. MeanT/MeanC <1 = good)? This is indexed in using the Outcode field in the compednium and the `Negative Values` field in the OUTCOMES tab}
 #'   \item{T.Feed.Source}{where were livestock diets in the treatment practice(s) sourced from?}
 #'   \item{C.Feed.Source}{Where were livestock diets in the control practice(s) sourced from?}
