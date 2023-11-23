@@ -93,15 +93,15 @@ StabCalc2<-function(Data,
   StabStats.Tab<-rbindlist(lapply(StabStats,"[[","Coefs"))
   StabStats.Tab[,N.Seq:=round(mean(N.Seq),0)][,N.Obs:=round(mean(N.Obs),0)][,N.Studies:=round(mean(N.Studies),0)]
   if(Inc.Prod){
-    StabStats.Tab<-dcast(StabStats.Tab,Model+Robust+N.Studies+N.Seq+N.Obs+Practice+Practice.Code+Outcome+EU~Response,value.var = c("Mean","SE","Z.val","CI.low","CI.high","P.Vals","Mean.Jen","CI.low.Jen","CI.high.Jen"))
+    StabStats.Tab<-dcast(StabStats.Tab,Model+Robust+N.Studies+N.Seq+N.Obs+Practice+Outcome+EU~Response,value.var = c("Mean","SE","Z.val","CI.low","CI.high","P.Vals","Mean.Jen","CI.low.Jen","CI.high.Jen"))
   }else{
-    StabStats.Tab<-dcast(StabStats.Tab,Model+Robust+N.Studies+N.Seq+N.Obs+Practice+Practice.Code+Outcome~Response,value.var = c("Mean","SE","Z.val","CI.low","CI.high","P.Vals","Mean.Jen","CI.low.Jen","CI.high.Jen"))
+    StabStats.Tab<-dcast(StabStats.Tab,Model+Robust+N.Studies+N.Seq+N.Obs+Practice+Outcome~Response,value.var = c("Mean","SE","Z.val","CI.low","CI.high","P.Vals","Mean.Jen","CI.low.Jen","CI.high.Jen"))
   }
 
   if(Inc.Prod){
-    StabStats.Test<-dcast(rbindlist(lapply(StabStats,"[[","Tests")),Practice+Practice.Code+Outcome+EU+Robust+N.Obs+N.Studies~Variable+Coefficient,value.var=c("Estimate","Std. Error","t value","Pr(>|t|)","PSymbol","Mean.Jen","CI.low.Jen","CI.high.Jen"))
+    StabStats.Test<-dcast(rbindlist(lapply(StabStats,"[[","Tests")),Practice+Outcome+EU+Robust+N.Obs+N.Studies~Variable+Coefficient,value.var=c("Estimate","Std. Error","t value","Pr(>|t|)","PSymbol","Mean.Jen","CI.low.Jen","CI.high.Jen"))
   }else{
-    StabStats.Test<-dcast(rbindlist(lapply(StabStats,"[[","Tests")),Practice+Practice.Code+Outcome+Robust+N.Obs+N.Studies~Variable+Coefficient,value.var=c("Estimate","Std. Error","t value","Pr(>|t|)","PSymbol","Mean.Jen","CI.low.Jen","CI.high.Jen"))
+    StabStats.Test<-dcast(rbindlist(lapply(StabStats,"[[","Tests")),Practice+Outcome+Robust+N.Obs+N.Studies~Variable+Coefficient,value.var=c("Estimate","Std. Error","t value","Pr(>|t|)","PSymbol","Mean.Jen","CI.low.Jen","CI.high.Jen"))
   }
   StabStats.Test[,Prac.x.Out:=paste0(Outcome,".",Practice)]
 

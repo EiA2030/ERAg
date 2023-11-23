@@ -88,7 +88,7 @@ PrepareStabData<-function(Data,OutCodes=101){
   # ERA.Compiled[Code=="NJ0059" & Outcode==101 & (MeanT>10|MeanC>10),list(Units,MeanC,MeanT,Product.Simple,DataLoc,Author,M.Year)]
 
   # Create unique identity for observation removing temporal elements
-  Cols<-c("Outcome","Practice","plist","Practice.Base","base.list","Practice.Code","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","TID","CID","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep","Units")
+  Cols<-c("Outcome","Practice","plist","Practice.Base","base.list","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","TID","CID","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep","Units")
   suppressWarnings(Data[,UID:=apply(Data[,..Cols],1,FUN=function(X){paste(X,collapse="")})])
 
   # Calculate statistics per unique time-series
@@ -136,7 +136,7 @@ PrepareStabData<-function(Data,OutCodes=101){
 
   Data[,acvratio:=acvexp/acvcont]
 
-  Cols<-c("Code","ID","Site.ID","EU","T.Descrip","C.Descrip","TID","CID","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Practice","Practice.Base","Practice.Code","plist","base.list","Outcome","UID","UID.C","UID.T","yieldcont","minyieldcont","yieldexp","sdcont","varcont","sdexp","varexp","cvcont","acvcont","cvexp","acvexp","yieldratio","sdratio","cvratio","acvratio","Rep","nryears")
+  Cols<-c("Code","ID","Site.ID","EU","T.Descrip","C.Descrip","TID","CID","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Practice","Practice.Base","plist","base.list","Outcome","UID","UID.C","UID.T","yieldcont","minyieldcont","yieldexp","sdcont","varcont","sdexp","varexp","cvcont","acvcont","cvexp","acvexp","yieldratio","sdratio","cvratio","acvratio","Rep","nryears")
 
   suppressWarnings( Data<-unique(Data[,..Cols]))
 

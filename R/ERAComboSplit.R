@@ -21,13 +21,10 @@ ERAComboSplit<-function(Data){
   Data[,SubPrName.Combo:=unlist(X)]
 
   PracticeCodes<-data.table(ERAg::PracticeCodes)
-  Data[,SubPrName.Code.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Subpractice.Code]]
 
   Data[,PrName.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Practice]]
-  Data[,PrName.Code.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Practice.Code]]
 
   Data[,Theme.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Theme]]
-  Data[,Theme.Code.Combo:=PracticeCodes[match(Data[,SubPrName.Combo],Subpractice.S),Theme.Code]]
 
 
   X<-strsplit(Data[,Product.Simple],"-")
@@ -36,13 +33,10 @@ ERAComboSplit<-function(Data){
   Data[,Product.Simple.Combo:=unlist(X)]
 
   EUCodes<-data.table(EUCodes)
-  Data[,Product.Code.Combo:=EUCodes[match(Data[,Product.Simple.Combo],Product.Simple),Product.Simple.Code]]
 
   Data[,Product.Subtype.Combo:=EUCodes[match(Data[,Product.Simple.Combo],Product.Simple),Product.Subtype]]
-  Data[,Product.Subtype.Combo.Code:=EUCodes[match(Data[,Product.Simple.Combo],Product.Simple),Product.Subtype.Code]]
 
   Data[,Product.Type.Combo:=EUCodes[match(Data[,Product.Simple.Combo],Product.Simple),Product.Type]]
-  Data[,Product.Type.Combo.Code:=EUCodes[match(Data[,Product.Simple.Combo],Product.Simple),Product.Type.Code]]
 
   return(Data)
 

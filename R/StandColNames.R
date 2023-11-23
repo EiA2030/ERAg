@@ -30,23 +30,19 @@ StandColNames<-function(Data,
     Prac<-ERAConcepts$Prac.Levels
     Prac<-Prac$Prac[Prac$Choice.Code==PLevel]
     setnames(Data,Prac,"Practice")
-    setnames(Data,paste0(Prac,".Code"),"Practice.Code")
     setnames(Data,paste0(Prac,".Base"),"Practice.Base")
-    setnames(Data,paste0(Prac,".Base.Code"),"Practice.Base.Code")
   }
 
   if(!is.na(OLevel)){
     Out<-ERAConcepts$Out.Levels
     Out<-Out$Out[Out$Choice.Code==OLevel]
     setnames(Data,Out,"Outcome")
-    setnames(Data,paste0(Out,".Code"),"Outcome.Code")
   }
 
   if(!is.na(EULevel)){
     Prod<-ERAConcepts$Prod.Levels
     Prod<-Prod$Prod[Prod$Choice.Code==EULevel]
     setnames(Data,Prod,"Product")
-    setnames(Data,paste0(Prod,".Code"),"Product.Code")
   }
 
   return(Data)

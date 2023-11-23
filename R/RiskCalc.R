@@ -62,7 +62,6 @@ RiskCalc<-function(Data,
 
   setnames(Risk,PLevel,"Practice")
   setnames(Risk,paste0(PLevel,".Base"),"Practice.Base")
-  setnames(Risk,paste0(PLevel,".Code"),"Practice.Code")
   setnames(Risk,"Out.SubInd","Outcome")
 
   Risk<-Risk[Outcode %in% Out.Codes]
@@ -84,7 +83,7 @@ RiskCalc<-function(Data,
   Risk[,N.Obs.Study:=.N,by=list(Practice,Code,Outcome)]
 
 
-  Cols<-c("Outcome","Practice","Practice.Base","Practice.Code","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")
+  Cols<-c("Outcome","Practice","Practice.Base","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")
   Cols<-c(Cols,"N.Years","N.Obs","N.Obs.Study","Diff.Mean","Diff.SD","Diff.t.stat","Diff.p.val","Mean.C","Mean.T","Mean.T.SD","Mean.t.stat","Mean.p.val")
   Risk<-unique(Risk[,..Cols])
   Risk[,Weight:=((Rep^2)/(Rep*2))/N.Obs.Study]
@@ -101,7 +100,7 @@ RiskCalc<-function(Data,
                                                   Median.Seq.Len=median(as.numeric(N.Years)),
                                                   N.Studies=length(unique(Code)),
                                                   Total.Obs=sum(N.Obs),
-                                                  N.Obs=.N),by=c("Practice","Practice.Code","Outcome")]
+                                                  N.Obs=.N),by=c("Practice","Outcome")]
 
   Risk.Diff[,Diff.CI95low:=Diff.p.val - (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Diff.p.val.se)]
   Risk.Diff[,Diff.CI95high:=Diff.p.val + (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Diff.p.val.se)]
@@ -113,12 +112,12 @@ RiskCalc<-function(Data,
                                                  Mean.p.val=weighted.mean(Mean.p.val,Weight),
                                                  Mean.p.val.se=diagis::weighted_se(Mean.p.val,Weight),
                                                  N.Obs=.N),
-                  by=c("Practice","Practice.Code","Outcome")]
+                  by=c("Practice","Outcome")]
 
   Risk.Means[,Mean.CI95low:=Mean.p.val - (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Mean.p.val.se)]
   Risk.Means[,Mean.CI95high:=Mean.p.val + (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Mean.p.val.se)]
 
-  Risk.Averages<-cbind(Risk.Diff,Risk.Means[,!c("Practice","Outcome","Practice.Code","N.Obs")])
+  Risk.Averages<-cbind(Risk.Diff,Risk.Means[,!c("Practice","Outcome","N.Obs")])
 
   return(list(Risk=Risk,Risk.Averages=Risk.Averages))
 }

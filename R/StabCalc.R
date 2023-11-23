@@ -52,7 +52,6 @@
 #' \item`N.Seq` integer, number of unique temporal sequences contributing to the analysis
 #' \item`N.Obs`  integer, depreciated field
 #' \item`Practice` character, ERA practice
-#' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
 #' \item`EU` character, ERA EU (product) code
 #' }
@@ -80,7 +79,6 @@
 #' \item`Robust` logical, when `T` robust tests are used, when `F` they are not
 #' \item`Sigma.sq` numeric, estimated sigma^2 value(s)
 #' \item`Practice` character, ERA practice
-#' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
 #' \item`EU` character, ERA EU (product) code
 #' \item`PSymbol` character, `*` P<=0.05, `**` P<=0.01, `***` P<=0.001, N.S. P>0.05.
@@ -128,7 +126,6 @@
 #' \item`Sigma_lnRR ` numeric, lnRR estimated sigma^2 value(s)
 #' \item`Sigma_lnVR ` numeric, lnVR estimated sigma^2 value(s)
 #' \item`Practice` character, ERA practice
-#' \item`Practice.Code` character, ERA practice code
 #' \item`Outcome` character, ERA outcome
 #' \item`EU` character, ERA EU (product) code
 #' }
@@ -426,7 +423,6 @@ StabCalc<-function(Data,
   rlm.CVR<-data.table(summary(rlm.CVR)$coefficients,`Pr(>|t|)`=c(sfsmisc::f.robftest(rlm.CVR, var = "(Intercept)")$p.value,sfsmisc::f.robftest(rlm.CVR, var = "log(cvratio)")$p.value))[,Coefficient:=c("Intercept","ln(CVR)")][,Variable:="CVR"][,Robust:=T][,Sigma.sq:=broom::glance(rlm.CVR)$sigma^2]
   LMs<-rbind(lm.VR,lm.CVR,rlm.VR,rlm.CVR,use.names=F)
   LMs[,Practice:=Y[1,"Practice"]
-  ][,Practice.Code:=Y[1,"Practice.Code"]
   ][,Outcome:=Y[1,"Outcome"]
   ][,EU:=Y[1,"EU"]
   ][,PSymbol:=psymbol(`Pr(>|t|)`)
@@ -446,7 +442,6 @@ StabCalc<-function(Data,
   Tests2<-dcast(Tests2,Model+Robust+N.Studies+N.Seq+N.Obs~Response,value.var = c("Mean","Mean.Jen","SE","Z.val","CI.low","CI.high","CI.low.Jen","CI.high.Jen","P.Vals","PSymbol","Sigma"))
 
   Tests2[,Practice:=Data[1,"Practice"]
-  ][,Practice.Code:=Data[1,"Practice.Code"]
   ][,Outcome:=Data[1,"Outcome"]
   ][,EU:=Data[1,"EU"]]
 
@@ -456,7 +451,6 @@ StabCalc<-function(Data,
   names(Y)<-Responses
   Z<-rbindlist(lapply(X,"[[","Coefs"))
   Z[,Practice:=Data[1,"Practice"]
-  ][,Practice.Code:=Data[1,"Practice.Code"]
   ][,Outcome:=Data[1,"Outcome"]
   ][,EU:=Data[1,"EU"]]
 

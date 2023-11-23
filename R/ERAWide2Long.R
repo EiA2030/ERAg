@@ -19,9 +19,7 @@ ERAWide2Long<-function(Data){
   C.Cols<-c("CID","C.Descrip",paste0("C",1:13),"C.NO","C.NI","MeanC","C.Feed.Source","USD2010.C")
   T.Cols<-c("TID","T.Descrip",paste0("T",1:13),"T.NO","T.NI","MeanT","T.Feed.Source","USD2010.T","Variety","Diversity","Tree")
 
-  Remove<-c("yi","pc","plist","base.list","SubPrName","PrName","Theme","SubPrName.Code",
-            "PrName.Code","Theme.Code","SubPrName.Base","PrName.Base","Theme.Base",
-            "SubPrName.Base.Code","PrName.Base.Code","Theme.Base.Code")
+  Remove<-c("yi","pc","plist","base.list","SubPrName","PrName","Theme","SubPrName.Base","PrName.Base","Theme.Base")
 
   Data<-Data[,!..Remove]
 

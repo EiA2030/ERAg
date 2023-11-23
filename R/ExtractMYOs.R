@@ -14,14 +14,14 @@
 #' @param MinYear An integer value for the minimum length of a MYO sequence. Sequences with fewer growing season than this number are excluded from analysis. Default = `3`.
 #' @return A list of two data.tables `Risk.Means` & `Risk.Diff`, the difference between these is described under the Details section.
 #' Output fields:
-#' * `UID` = a unique identifier based on the field `Outcome`,`Practice`,`Practice.Base`,`Practice.Code`,`Code`,`ID`,`Site.ID`,`EU`,`T.Descrip`,`C.Descrip`,`T.NI`,`T.NO`,`C.NI`,`C.NO`,`Tree`,`Variety`,`Diversity`, and `Rep`.
+#' * `UID` = a unique identifier based on the field `Outcome`,`Practice`,`Practice.Base`,`Code`,`ID`,`Site.ID`,`EU`,`T.Descrip`,`C.Descrip`,`T.NI`,`T.NO`,`C.NI`,`C.NO`,`Tree`,`Variety`,`Diversity`, and `Rep`.
 #' * `N.Years`= the number of unique growing seasons reported for a value of `UID`.
 #' * `N.Obs` = the total number of observation for a value of `UID`.
 #' @export
 #' @import data.table
 ExtractMYOs<-function(Data){
   Data<-data.table(Data)
-  Cols<-c("Outcome","Practice","Practice.Base","Practice.Code","plist","base.list","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")
+  Cols<-c("Outcome","Practice","Practice.Base","plist","base.list","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")
   UID<-as.numeric(as.factor(apply(Data[,..Cols],1,FUN=function(X){paste(X,collapse="")})))
   Data[,UID:=UID]
   Data[,N.Years:=length(unique(M.Year)),by=UID]
