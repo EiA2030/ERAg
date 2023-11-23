@@ -19,7 +19,7 @@ ExtractMYOs(Data)
 A list of two data.tables \code{Risk.Means} & \code{Risk.Diff}, the difference between these is described under the Details section.
 Output fields:
 \itemize{
-\item \code{UID} = a unique identifier based on the field \code{Outcome},\code{Practice},\code{Practice.Base},\code{Practice.Code},\code{Code},\code{ID},\code{Site.ID},\code{EU},\code{T.Descrip},\code{C.Descrip},\code{T.NI},\code{T.NO},\code{C.NI},\code{C.NO},\code{Tree},\code{Variety},\code{Diversity}, and \code{Rep}.
+\item \code{UID} = a unique identifier based on the field \code{Outcome},\code{Practice},\code{Practice.Base},\code{Code},\code{ID},\code{Site.ID},\code{EU},\code{T.Descrip},\code{C.Descrip},\code{T.NI},\code{T.NO},\code{C.NI},\code{C.NO},\code{Tree},\code{Variety},\code{Diversity}, and \code{Rep}.
 \item \code{N.Years}= the number of unique growing seasons reported for a value of \code{UID}.
 \item \code{N.Obs} = the total number of observation for a value of \code{UID}.
 }

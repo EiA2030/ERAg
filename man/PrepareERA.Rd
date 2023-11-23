@@ -21,10 +21,7 @@ PrepareERA(
     "Out.Ind", "Out.SubInd", "SubPrName", "PrName", "Theme", "SubPrName.Base",
     "PrName.Base", "T.Descrip", "C.Descrip", 
      "C.NI", "C.NO", "T.NI", "T.NO",
-    "PrName.Code", "SubPrName.Code", "Product.Simple.Code", "Product.Subtype.Code",
-    "Product.Type.Code", "Out.Pillar.Code", "Out.SubPillar.Code", "Out.Ind.Code",
-    "Out.SubInd.Code", "Theme.Code", "PrName.Base.Code", "SubPrName.Base.Code",
-    "Theme.Base.Code", "Partial.Outcome.Name", "Partial.Outcome.Code", "DataLoc")
+    "Partial.Outcome.Name", "Partial.Outcome.Code", "DataLoc")
 )
 }
 \arguments{

@@ -61,7 +61,6 @@ StabCalc(
 \item\code{N.Seq} integer, number of unique temporal sequences contributing to the analysis
 \item\code{N.Obs}  integer, depreciated field
 \item\code{Practice} character, ERA practice
-\item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
 \item\code{EU} character, ERA EU (product) code
 }
@@ -89,7 +88,6 @@ StabCalc(
 \item\code{Robust} logical, when \code{T} robust tests are used, when \code{F} they are not
 \item\code{Sigma.sq} numeric, estimated sigma^2 value(s)
 \item\code{Practice} character, ERA practice
-\item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
 \item\code{EU} character, ERA EU (product) code
 \item\code{PSymbol} character, \code{*} P<=0.05, \verb{**} P<=0.01, \verb{***} P<=0.001, N.S. P>0.05.
@@ -137,7 +135,6 @@ StabCalc(
 \item\code{Sigma_lnRR } numeric, lnRR estimated sigma^2 value(s)
 \item\code{Sigma_lnVR } numeric, lnVR estimated sigma^2 value(s)
 \item\code{Practice} character, ERA practice
-\item\code{Practice.Code} character, ERA practice code
 \item\code{Outcome} character, ERA outcome
 \item\code{EU} character, ERA EU (product) code
 }
