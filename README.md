@@ -1,2 +1,4 @@
 # ERAg
-ERAg R-package
+The ERAg R-package contains the ERA dataset, bibliography, search strings, plus data processing and analysis functions. Please use ```browseVignettes("ERAg")``` for vignettes that will guide you through the contents of this package.
+
+ERA v1 is being released based on support from the CGIAR Excellence in Agronomy Initiative and complimentary support from the Livestock and Climate Initiative for the livestock data. Earlier efforts toward ERA’s development received financial support from the CGIAR Research Program on Climate Change, Agriculture, and Food Security (CCAFS) Flagship Program on Practices and Technologies. Supplemental funding was provided by the Food and Agriculture Organization of the United Nations (FAO), European Union (EU), International Fund for Agricultural Development (IFAD), United States Department of Agriculture-Foreign Agricultural Service (USDA-FAS), CCAFS Flagship Program on Low Emissions Development, and the International Centre for Forestry Research (CIFOR)’s Evidence-Based Forestry. 
