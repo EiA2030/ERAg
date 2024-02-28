@@ -4,7 +4,7 @@
 \alias{Pbuffer}
 \title{Buffer Points}
 \usage{
-Pbuffer(Data, ID = NA, Projected = F)
+Pbuffer(Data, ID = NA, Projected = FALSE)
 }
 \arguments{
 \item{Data}{A data.table or data.frame with decimal degree point locations in columns \code{Latitude} and \code{Longitude}, and a numeric column \code{Buffer} which indicates the buffer radius
