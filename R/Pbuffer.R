@@ -12,8 +12,7 @@
 #' if `FALSE` it has a geographic CRS `epsg:4326`.
 #' @return Pbuffer returns circular buffers in an object of class `SpatialPolygons`.
 #' @export
-#' @importFrom terra
-#' @importFrom vect project buffer
+#' @import terra
 Pbuffer<-function(Data, ID = NA, Projected = FALSE) {
   Data <- data.frame(Data)
   # Filtering the Data
