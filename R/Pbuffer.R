@@ -12,40 +12,41 @@
 #' if `FALSE` it has a geographic CRS `epsg:4326`.
 #' @return Pbuffer returns circular buffers in an object of class `SpatialPolygons`.
 #' @export
-#' @importFrom sp SpatialPoints spTransform SpatialPolygons SpatialPolygonsDataFrame spChFIDs CRS
-#' @importFrom rgeos gBuffer
-Pbuffer<-function(Data,ID=NA,Projected=F){
-  Data<-data.frame(Data)
-  Data<-Data[!(is.na(Data$Latitude)|is.na(Data$Longitude)|Data$Buffer==""|is.na(Data$Buffer)),]
-  if(!is.na(ID)){
-    SS<-unique(Data[,c("Latitude","Longitude",ID,"Buffer")])
-  }else{
-    SS<-unique(Data[,c("Latitude","Longitude","Buffer")])
+#' @importFrom terra
+#' @importFrom vect project buffer
+Pbuffer<-function(Data, ID = NA, Projected = FALSE) {
+  Data <- data.frame(Data)
+  # Filtering the Data
+  Data <- Data[!(is.na(Data$Latitude) | is.na(Data$Longitude) |
+                   Data$Buffer == "" | is.na(Data$Buffer)), ]
+  # Handling ID selection
+  if (!is.na(ID)) {
+    SS <- unique(Data[, c("Latitude", "Longitude", ID, "Buffer")])
+  } else {
+    SS <- unique(Data[, c("Latitude", "Longitude", "Buffer")])
   }
-  # CRS of Site co-ordinates (lat/long)
-  CRS.old<- "+init=epsg:4326"
-  # CRS when creating buffers in meters (WGS 1984 World Mercator)
-  CRS.new<-"+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+  # Setting coordinate reference systems
+  CRS.old <- "EPSG:4326" # Note: terra uses EPSG codes directly
+  CRS.new <- "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 
-  # Buffer points
-  points <- sp::SpatialPoints(cbind(SS$Longitude, SS$Latitude),proj4string=CRS(CRS.old))
-  points <- sp::spTransform(points, CRS.new)
+  # Creating points
+  points <- terra::vect(cbind(SS$Longitude, SS$Latitude), crs = CRS.old, type="points")
 
-  pbuf1<-lapply(1:nrow(SS),FUN=function(i){
-    pbuf<- rgeos::gBuffer(points[i], widt=SS$Buffer[i])
-    pbuf<- sp::spChFIDs(pbuf, paste(i, row.names(pbuf), sep="."))
-  })
+  # Transforming points
+  points <- terra::project(points, CRS.new)
 
-  rownames(SS)<-lapply(pbuf1,names)
+  # Buffering and creating polygons
+  pbuf1 <- terra::vect(lapply(1:nrow(SS), function(i) {
+    pbuf <- terra::buffer(points[i, ], width = as.numeric(SS$Buffer[i]))
+    pbuf
+  }))
 
-  pbuf1<-sp::SpatialPolygons(lapply(pbuf1, function(x){x@polygons[[1]]}),proj4string=CRS(CRS.new))
+  pbuf1<-cbind(pbuf1,SS)
 
-  pbuf1<-sp::SpatialPolygonsDataFrame(pbuf1,data = SS)
-
-  if(Projected==T){
-    return(pbuf1)
-  }else{
-    pbuf1<-sp::spTransform(pbuf1,CRS(CRS.old))
-    return(pbuf1)
+  # Projecting back if not Projected
+  if (!Projected) {
+    pbuf1 <- terra::project(pbuf1, CRS.old)
   }
+
+  return(pbuf1)
 }
