@@ -5,7 +5,6 @@ authors:
   given-names: Steward
 - family-names: Todd
   given-names: Rosenstock
-orcid: 
-title: ERAg R Package: Evidence for Resilient Agriculture Dataset
+title: ERAg R Package Evidence for Resilient Agriculture
 version: v1.0.3_beta
 date-released: 2024-03-04
