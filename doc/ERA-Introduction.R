@@ -8,7 +8,6 @@ knitr::opts_chunk$set(
   require(ERAg)
   require(ERAgON)
   require(sp)
-  require(rgeos)
   require(ggplot2)
   require(rworldmap)
   require(rworldxtra)
@@ -16,7 +15,7 @@ knitr::opts_chunk$set(
   require(ggnewscale)
   require(terra)
   require(RColorBrewer)
-  require(cicular)
+  require(circular)
 
 ## ----Access ERA, echo=T-------------------------------------------------------
 knitr::kable(head(ERAg::ERA.Compiled[,1:8], 5))
@@ -54,9 +53,6 @@ ggplot(PrxThxYe,aes(x=Date,y=Cum.Sum,col=Theme))+
   labs(title="Cumulative number of studies reporting practice themes over time",
        x= "Publication Year",
        y = "No. Studies")
-
-
-
 
 ## ----Location, echo=T---------------------------------------------------------
 knitr::kable(head(unique(ERAg::ERA.Compiled[,list(Country,Site.ID,Latitude,Longitude,Buffer)]), 5))
@@ -98,9 +94,6 @@ knitr::kable(head(Agg.Sites,5))
 ## ----Show ERA Concepts, echo=T------------------------------------------------
 ERAg::ERAConcepts
 
-## ----Names vs. Codes, echo=T--------------------------------------------------
-knitr::kable(head(unique(ERA.Compiled[,list(Out.SubInd,Out.SubInd.Code,PrName,PrName.Code,Product.Simple,Product.Simple.Code)]), 5))
-
 ## ----Show Practice Codes, echo=T----------------------------------------------
 knitr::kable(head(ERAg::PracticeCodes[,1:6], 5))
 
@@ -128,13 +121,13 @@ T.Cols[!T.Cols %in% C.Cols]
 T.Cols[T.Cols %in% C.Cols]
 
 ## ----ERA Show Practice Codes, echo=T------------------------------------------
-knitr::kable(ERA.Compiled[99,list(plist,base.list,SubPrName,SubPrName.Code,SubPrName.Base,SubPrName.Base.Code)])
+knitr::kable(ERA.Compiled[99,list(plist,base.list,SubPrName,SubPrName.Base)])
 
 ## ----Show Outcome Codes, echo=T-----------------------------------------------
 knitr::kable(head(ERAg::OutcomeCodes[,1:6], 5))
 
 ## ----ERA Show Outcomes, echo=T------------------------------------------------
-knitr::kable(head(unique(ERA.Compiled[!is.na(Units),list(Outcode,Units,Out.SubInd,Out.SubInd.Code,Out.Ind,Out.Ind.Code,Out.Pillar,Out.Pillar.Code)]),5))
+knitr::kable(head(unique(ERA.Compiled[!is.na(Units),list(Outcode,Units,Out.SubInd,Out.Ind,Out.Pillar)]),5))
 
 ## ----Show EU Codes, echo=T----------------------------------------------------
 knitr::kable(ERAg::EUCodes[c(15,40,60,80,100),c(1,2,4,8,9)])
