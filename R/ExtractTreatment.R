@@ -8,45 +8,44 @@
 #'
 #' @param Data A raw ERA dataset.
 #' @param cores The number of logical cores to use for parallel processing.
-#' @param N.Cols The number of T or C cols in the dataset.
+#' @param N.Cols The number of T or C columns in the dataset.
 #' @return Two columns are appended to `Data`:
 #' 1) `plist` = a **list** of practice codes in the experimental treatment not in the control treatment.
-#' 2) `base.list` = a **vector** of practice codes shared by the experimental and control treatments, codes are concatenated with a `-` delim .
+#' 2) `base.list` = a **vector** of practice codes shared by the experimental and control treatments, codes are concatenated with a `-` delimiter.
 #' @export
-#' @importFrom parallel makeCluster clusterEvalQ stopCluster clusterExport
-#' @importFrom doSNOW registerDoSNOW
-#' @import data.table
-ExtractTreatment<-function(Data,cores,N.Cols){
-  Data<-data.frame(Data)
+#' @importFrom future.apply future_lapply
+#' @importFrom data.table data.table
+#' @import future
+ExtractTreatment <- function(Data, cores, N.Cols) {
+  # Convert Data to a data.frame
+  Data <- data.frame(Data)
 
-    cl<-makeCluster(cores)
-    clusterEvalQ(cl, library(data.table))
-    clusterExport(cl,list("Data","N.Cols"))
-    registerDoSNOW(cl)
+  # Set up future plan for parallel processing
+  future::plan(future::multisession, workers = cores)
 
-    # Parallel function when list output is needed
-    Data$plist<-parLapply(cl,1:nrow(Data),function(i){
-      cset<-Data[i,paste0("C",1:N.Cols)]
-      tset<-Data[i,paste0("T",1:N.Cols)]
-      cset<-cset[!is.na(cset)]
-      tset<-tset[!is.na(tset)]
-      Y<-as.character(unlist(setdiff(tset, cset)))
-      Y[!Y==""]
-    })
+  # Parallel computation for 'plist' (set differences)
+  Data$plist <- future.apply::future_lapply(1:nrow(Data), function(i) {
+    cset <- Data[i, paste0("C", 1:N.Cols)]
+    tset <- Data[i, paste0("T", 1:N.Cols)]
+    cset <- cset[!is.na(cset)]
+    tset <- tset[!is.na(tset)]
+    Y <- as.character(unlist(setdiff(tset, cset)))
+    Y[!Y == ""]
+  })
 
-    Data$base.list<-unlist(parLapply(cl,1:nrow(Data),function(X){
-      cset<-Data[X,paste0("C",1:N.Cols)]
-      tset<-Data[X,paste0("T",1:N.Cols)]
-      cset<-cset[!is.na(cset)]
-      tset<-tset[!is.na(tset)]
-      Y<-as.character(unlist(intersect(tset, cset)))
-      Y<-Y[!(Y=="" | is.na(Y))]
-      paste(Y,collapse = "-")
-    }))
+  # Parallel computation for 'base.list' (commonalities)
+  Data$base.list <- unlist(future.apply::future_lapply(1:nrow(Data), function(i) {
+    cset <- Data[i, paste0("C", 1:N.Cols)]
+    tset <- Data[i, paste0("T", 1:N.Cols)]
+    cset <- cset[!is.na(cset)]
+    tset <- tset[!is.na(tset)]
+    Y <- as.character(unlist(intersect(tset, cset)))
+    Y <- Y[!(Y == "" | is.na(Y))]
+    paste(Y, collapse = "-")
+  }))
 
+  # Reset the plan back to sequential processing (optional)
+  future::plan(future::sequential)
 
-    stopCluster(cl)
-
-
-  return(data.table(Data))
+  return(data.table::data.table(Data))
 }

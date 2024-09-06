@@ -11,13 +11,13 @@ ExtractTreatment(Data, cores, N.Cols)
 
 \item{cores}{The number of logical cores to use for parallel processing.}
 
-\item{N.Cols}{The number of T or C cols in the dataset.}
+\item{N.Cols}{The number of T or C columns in the dataset.}
 }
 \value{
 Two columns are appended to \code{Data}:
 \enumerate{
 \item \code{plist} = a \strong{list} of practice codes in the experimental treatment not in the control treatment.
-\item \code{base.list} = a \strong{vector} of practice codes shared by the experimental and control treatments, codes are concatenated with a \code{-} delim .
+\item \code{base.list} = a \strong{vector} of practice codes shared by the experimental and control treatments, codes are concatenated with a \code{-} delimiter.
 }
 }
 \description{

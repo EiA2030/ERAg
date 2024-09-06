@@ -1,16 +1,15 @@
-#' Buffer Points
+#' Create Circular Buffers from Point Data
 #'
-#' Creates circular buffers from a table containing point locations and buffer radii. The input table requires `Latitude` and `Longitude` columns in
-#' decimal degrees and a numeric column named `Buffer` which indicates the buffer radius in meters.
+#' This function generates circular buffers around geographic points from a table containing latitude, longitude, and buffer radius information.
+#' The input data must include `Latitude` and `Longitude` columns in decimal degrees and a numeric `Buffer` column indicating the radius in meters.
+#' Optionally, an `ID` column can be provided to distinguish points with identical locations or buffer sizes.
 #'
-#' An optional `ID` field can be specified if there is need to separate any points with identical locations and buffers.
-#'
-#' @param Data A data.table or data.frame with decimal degree point locations in columns `Latitude` and `Longitude`, and a numeric column `Buffer` which indicates the buffer radius
-#' to buffer each point in meters. NA values are not permitted and are filtered from the dataset.
-#' @param ID The column name of any grouping variables used to split point x buffer locations. Default = NA.
-#' @param Projected `Logical TRUE/FALSE`. If `TRUE` the output object has a projected CRS `+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs`,
-#' if `FALSE` it has a geographic CRS `epsg:4326`.
-#' @return Pbuffer returns circular buffers in an object of class `SpatialPolygons`.
+#' @param Data A `data.frame` or `data.table` containing point coordinates (`Latitude`, `Longitude`) in decimal degrees and `Buffer` in meters.
+#'    NA values are removed.
+#' @param ID Optional. The column name for grouping points with identical locations. Default is `NA`.
+#' @param Projected Logical. If `TRUE`, the output will be in the projected coordinate system `EPSG:3395` (Mercator projection).
+#'    If `FALSE`, the output will be in geographic coordinates `EPSG:4326` (WGS84).
+#' @return A `SpatVect` object (from the `terra` package) representing the circular buffer polygons.
 #' @export
 #' @import terra
 Pbuffer<-function(Data, ID = NA, Projected = FALSE) {
@@ -25,10 +24,10 @@ Pbuffer<-function(Data, ID = NA, Projected = FALSE) {
     SS <- unique(Data[, c("Latitude", "Longitude", "Buffer")])
   }
   # Setting coordinate reference systems
-  CRS.old <- "EPSG:4326" # Note: terra uses EPSG codes directly
-  CRS.new <- "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+  CRS.old <- "EPSG:4326" # WGS84
+  CRS.new <- "EPSG:3395" # Mercator projection
 
-  # Creating points
+  # Create points from latitude and longitude
   points <- terra::vect(cbind(SS$Longitude, SS$Latitude), crs = CRS.old, type="points")
 
   # Transforming points

@@ -82,19 +82,15 @@ RiskCalc<-function(Data,
   Risk[,Mean.p.val:=pt(Mean.t.stat,N.Obs-1,lower.tail = T)]
   Risk[,N.Obs.Study:=.N,by=list(Practice,Code,Outcome)]
 
-
   Cols<-c("Outcome","Practice","Practice.Base","Code","ID","Site.ID","EU","T.Descrip","C.Descrip","T.NI","T.NO","C.NI","C.NO","Tree","Variety","Diversity","Rep")
   Cols<-c(Cols,"N.Years","N.Obs","N.Obs.Study","Diff.Mean","Diff.SD","Diff.t.stat","Diff.p.val","Mean.C","Mean.T","Mean.T.SD","Mean.t.stat","Mean.p.val")
   Risk<-unique(Risk[,..Cols])
   Risk[,Weight:=((Rep^2)/(Rep*2))/N.Obs.Study]
 
-
-
-
-  Risk.Diff<-Risk[!is.infinite(Diff.t.stat),list(Diff.Mean=weighted.mean(Diff.Mean,Weight),
-                                                  Diff.SD=weighted.mean(Diff.SD,Weight),
-                                                  Diff.t.stat=weighted.mean(Diff.t.stat,Weight),
-                                                  Diff.p.val=weighted.mean(Diff.p.val,Weight),
+  Risk.Diff<-Risk[!is.infinite(Diff.t.stat),list(Diff.Mean=stats::weighted.mean(Diff.Mean,Weight),
+                                                  Diff.SD=stats::weighted.mean(Diff.SD,Weight),
+                                                  Diff.t.stat=stats::weighted.mean(Diff.t.stat,Weight),
+                                                  Diff.p.val=stats::weighted.mean(Diff.p.val,Weight),
                                                   Diff.p.val.se=diagis::weighted_se(Diff.p.val,Weight),
                                                   Mean.Seq.Len=mean(N.Years),
                                                   Median.Seq.Len=median(as.numeric(N.Years)),
@@ -105,11 +101,11 @@ RiskCalc<-function(Data,
   Risk.Diff[,Diff.CI95low:=Diff.p.val - (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Diff.p.val.se)]
   Risk.Diff[,Diff.CI95high:=Diff.p.val + (qt(p=0.05/2, df=N.Obs-1,lower.tail=F) * Diff.p.val.se)]
 
-  Risk.Means<-Risk[!is.infinite(Mean.t.stat),list(Mean.C=weighted.mean(Mean.C,Weight),
-                                                 Mean.T=weighted.mean(Mean.T,Weight),
-                                                 Mean.T.SD=weighted.mean(Mean.T.SD,Weight),
-                                                 Mean.t.stat=weighted.mean(Mean.t.stat,Weight),
-                                                 Mean.p.val=weighted.mean(Mean.p.val,Weight),
+  Risk.Means<-Risk[!is.infinite(Mean.t.stat),list(Mean.C=stats::weighted.mean(Mean.C,Weight),
+                                                 Mean.T=stats::weighted.mean(Mean.T,Weight),
+                                                 Mean.T.SD=stats::weighted.mean(Mean.T.SD,Weight),
+                                                 Mean.t.stat=stats::weighted.mean(Mean.t.stat,Weight),
+                                                 Mean.p.val=stats::weighted.mean(Mean.p.val,Weight),
                                                  Mean.p.val.se=diagis::weighted_se(Mean.p.val,Weight),
                                                  N.Obs=.N),
                   by=c("Practice","Outcome")]

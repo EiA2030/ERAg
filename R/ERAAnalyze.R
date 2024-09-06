@@ -45,7 +45,6 @@
 #' @param Aggregate.By Column names for grouping variables. Statistics will be compiled for each combination of these variables.
 #' @param ROUND Integer value for the number of decimal places numeric columns in the output dataset should be rounded to.
 #' @param Fast Logical T/F. If `FALSE` then lmer and lm models are used to estimate means, errors and significance if sufficient data exist.
-#' @param UseAllCores Logical T/F. If `TRUE` then data.table uses the maximum number of cores available for parallel processing.
 #' @return
 #' A data.table of response ratios and percentage change values, each row representing a combination of the grouping variables specified in the Aggregrate.By parameter. `RR` = outcome response ratio $log(MeanT/MeanC)$, `PC` = outcome proportional change $MeanT/MeanC$.
 #'
@@ -103,17 +102,13 @@
 #'  * `PC.Sigma2` = PC model sigma2
 #' @export
 #' @import data.table
-#' @importFrom data.table setDTthreads
 #' @importFrom stats weighted.mean shapiro.test
 #' @importFrom spatstat.geom weighted.median weighted.quantile
 #' @importFrom diagis weighted_se
 #' @importFrom Hmisc wtd.var
 #' @importFrom lmerTest lmer
-ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F,UseAllCores=F){
+ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
 
-  if(UseAllCores){
-  data.table::setDTthreads(threads = 0)
-  }
   options(scipen=999)
 
   Data<-suppressWarnings(Data[,yi:=log(MeanT/MeanC)][!(is.na(yi)|is.infinite(yi))])

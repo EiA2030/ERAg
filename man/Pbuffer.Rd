@@ -2,26 +2,24 @@
 % Please edit documentation in R/Pbuffer.R
 \name{Pbuffer}
 \alias{Pbuffer}
-\title{Buffer Points}
+\title{Create Circular Buffers from Point Data}
 \usage{
 Pbuffer(Data, ID = NA, Projected = FALSE)
 }
 \arguments{
-\item{Data}{A data.table or data.frame with decimal degree point locations in columns \code{Latitude} and \code{Longitude}, and a numeric column \code{Buffer} which indicates the buffer radius
-to buffer each point in meters. NA values are not permitted and are filtered from the dataset.}
+\item{Data}{A \code{data.frame} or \code{data.table} containing point coordinates (\code{Latitude}, \code{Longitude}) in decimal degrees and \code{Buffer} in meters.
+NA values are removed.}
 
-\item{ID}{The column name of any grouping variables used to split point x buffer locations. Default = NA.}
+\item{ID}{Optional. The column name for grouping points with identical locations. Default is \code{NA}.}
 
-\item{Projected}{\verb{Logical TRUE/FALSE}. If \code{TRUE} the output object has a projected CRS \code{+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs},
-if \code{FALSE} it has a geographic CRS \code{epsg:4326}.}
+\item{Projected}{Logical. If \code{TRUE}, the output will be in the projected coordinate system \code{EPSG:3395} (Mercator projection).
+If \code{FALSE}, the output will be in geographic coordinates \code{EPSG:4326} (WGS84).}
 }
 \value{
-Pbuffer returns circular buffers in an object of class \code{SpatialPolygons}.
+A \code{SpatVect} object (from the \code{terra} package) representing the circular buffer polygons.
 }
 \description{
-Creates circular buffers from a table containing point locations and buffer radii. The input table requires \code{Latitude} and \code{Longitude} columns in
-decimal degrees and a numeric column named \code{Buffer} which indicates the buffer radius in meters.
-}
-\details{
-An optional \code{ID} field can be specified if there is need to separate any points with identical locations and buffers.
+This function generates circular buffers around geographic points from a table containing latitude, longitude, and buffer radius information.
+The input data must include \code{Latitude} and \code{Longitude} columns in decimal degrees and a numeric \code{Buffer} column indicating the radius in meters.
+Optionally, an \code{ID} column can be provided to distinguish points with identical locations or buffer sizes.
 }

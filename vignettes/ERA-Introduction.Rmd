@@ -80,9 +80,6 @@ ggplot(PrxThxYe,aes(x=Date,y=Cum.Sum,col=Theme))+
   labs(title="Cumulative number of studies reporting practice themes over time",
        x= "Publication Year",
        y = "No. Studies")
-
-
-
 ```
 
 ## Spatial Variables
