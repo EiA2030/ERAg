@@ -42,7 +42,7 @@ Imports: broom,
          sfsmisc,
          sp,
          spatstat,
-         spatstat.geom,
+         spatstat.univar,
          zoo
 VignetteBuilder: knitr
 Suggests: BiocStyle, 
