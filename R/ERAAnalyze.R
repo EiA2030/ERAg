@@ -23,11 +23,11 @@
 #'
 #' 4) Statistics calculated (in all cases na.rm=T):
 #'    * *weighted means* use the \link[stats]{weighted.mean} function
-#'    * *weighted medians* use the \link[spatstat.geom]{weighted.median} function
+#'    * *weighted medians* use the \link[spatstat.univar]{weighted.median} function
 #'    * *weighted standard errors* use the \link[diagis]{weighted_se} function
 #'    * *95% confidence intervals* use the \link[stats]{confint} function with `method = "Wald"`
 #'    * *weighted variance* uses the \link[Hmisc]{wtd.stats} `wtd.var` function
-#'    * *weighted quantiles* use the \link[spatstat.geom]{weighted.median} (`weighted.quantile`) function with `probs=seq(0,1,0.25)`
+#'    * *weighted quantiles* use the \link[spatstat.univar]{weighted.median} (`weighted.quantile`) function with `probs=seq(0,1,0.25)`
 #'
 #' 5) Response ratios are back-transformed and converted to % change with and without a correction for the Jensen inequality.
 #' The correction applied is as per \href{https://www.biorxiv.org/content/10.1101/179358v1}{Tandini & Mehrabi 2017}.
@@ -103,7 +103,7 @@
 #' @export
 #' @import data.table
 #' @importFrom stats weighted.mean shapiro.test
-#' @importFrom spatstat.geom weighted.median weighted.quantile
+#' @importFrom spatstat.univar weighted.median weighted.quantile
 #' @importFrom diagis weighted_se
 #' @importFrom Hmisc wtd.var
 #' @importFrom lmerTest lmer
@@ -148,20 +148,20 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               Sites=length(unique(Site.Key)),
               RR.Shapiro.Sig=round(FunShap(log(MeanT/MeanC)),ROUND),
               RR=stats::weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
-              RR.median=spatstat.geom::weighted.median(log(MeanT/MeanC),Weight.Study,na.rm = T),
+              RR.median=spatstat.univar::weighted.median(log(MeanT/MeanC),Weight.Study,na.rm = T),
               RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
               RR.CIlow=suppressWarnings(confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[1]),
               RR.CIhigh=suppressWarnings(confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[2]),
               RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
-              RR.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.geom::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
+              RR.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.univar::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
               PC.Shapiro.Sig=round(FunShap(MeanT/MeanC),ROUND),
               PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
-              PC.median=spatstat.geom::weighted.median(MeanT/MeanC,Weight.Study,na.rm = T),
+              PC.median=spatstat.univar::weighted.median(MeanT/MeanC,Weight.Study,na.rm = T),
               PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
               PC.CIlow=suppressWarnings(confint(lm(MeanT/MeanC~1,weights=Weight.Study))[1]),
               PC.CIhigh=suppressWarnings(confint(lm(MeanT/MeanC~1,weights=Weight.Study))[2]),
               PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
-              PC.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.geom::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
+              PC.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.univar::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"}
       ),by=Aggregate.By
       ][,PC.pc:=round(100*PC-100,ROUND)
@@ -240,20 +240,20 @@ ERAAnalyze<-function(Data,rmOut=T,Aggregate.By,ROUND=5,Fast=F){
               Sites=length(unique(Site.Key)),
               RR.Shapiro.Sig=FunShap(log(MeanT/MeanC)),
               RR=stats::weighted.mean(log(MeanT/MeanC),Weight.Study,na.rm=T),
-              RR.median=spatstat.geom::weighted.median(x=log(MeanT/MeanC),w=Weight.Study,na.rm = T),
+              RR.median=spatstat.univar::weighted.median(x=log(MeanT/MeanC),w=Weight.Study,na.rm = T),
               RR.var=suppressWarnings(abs(Hmisc::wtd.var(log(MeanT/MeanC),Weight.Study,na.rm=T))),
               RR.se=diagis::weighted_se(log(MeanT/MeanC), Weight.Study, na.rm=T),
               RR.CIlow=suppressWarnings(confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[1]),
               RR.CIhigh=suppressWarnings(confint(lm(log(MeanT/MeanC)~1,weights=Weight.Study))[1]),
-              RR.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.geom::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
+              RR.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.univar::weighted.quantile(log(MeanT/MeanC),Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
               PC.Shapiro.Sig=FunShap(MeanT/MeanC),
               PC=stats::weighted.mean(MeanT/MeanC,Weight.Study,na.rm=T),
-              PC.median=spatstat.geom::weighted.median(x=MeanT/MeanC,w=Weight.Study,na.rm = T),
+              PC.median=spatstat.univar::weighted.median(x=MeanT/MeanC,w=Weight.Study,na.rm = T),
               PC.se=diagis::weighted_se(MeanT/MeanC, Weight.Study, na.rm=T),
               PC.CIlow=suppressWarnings(confint(lm(MeanT/MeanC~1,weights=Weight.Study))[1]),
               PC.CIhigh=suppressWarnings(confint(lm(MeanT/MeanC~1,weights=Weight.Study))[2]),
               PC.var=suppressWarnings(abs(Hmisc::wtd.var(MeanT/MeanC,Weight.Study,na.rm=T))),
-              PC.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.geom::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
+              PC.Quantiles0.25=if(.N==1){as.character(NA)}else{if(length(unique(MeanC/MeanT))==1){as.character(NA)}else{paste(round(spatstat.univar::weighted.quantile(MeanT/MeanC,Weight.Study,probs=seq(0,1,0.25),na.rm=T),ROUND),collapse="|")}},
               Units=if(length(unique(Units))==1){unique(Units)}else{"Multiple"},
               # To run the lmer the requirement of three or more sites of which two must have at least three observations must be met
               # If not sufficient data for random-effects model run a t-test if >5 observations
