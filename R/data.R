@@ -1,4 +1,4 @@
-#' The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
+#' The compiled ERA dataset (version = era_compiled-v1.0_2018-v1.1_2020-skinny_cow_2022_2024_11_28)
 #' \describe{Description of fields in the ERA.Compiled dataset.
 #'   \item{Index}{unique row identity}
 #'   \item{Code}{unique publication identity}
