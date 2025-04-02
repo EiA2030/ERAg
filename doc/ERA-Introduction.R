@@ -62,8 +62,8 @@ SiteBuffers<-ERAg::Pbuffer(Data=ERAg::ERA.Compiled, ID = NA, Projected = F)
 plot(SiteBuffers)
 
 ## ----Filter Location, echo=T,eval=F-------------------------------------------
-#  # Filter dataset to sites with spatial uncertainty radius of less than 5km
-#  ERA.Compiled<-ERAg::ERA.Compiled[Buffer<5000]
+# # Filter dataset to sites with spatial uncertainty radius of less than 5km
+# ERA.Compiled<-ERAg::ERA.Compiled[Buffer<5000]
 
 ## ----Hexplot, echo=T,eval=T,fig.width=7,fig.height=6,warning=F----------------
 ERAgON::ERAHexPlot(Data=ERA.Compiled,Low = "grey10",Mid = "grey80",High = "black",Point.Col = "yellow",Do.Log="Yes",Showpoints="Yes",ALevel=NA)

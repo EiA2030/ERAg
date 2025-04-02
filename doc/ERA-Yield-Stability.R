@@ -32,7 +32,7 @@ StabData<-ERAg::StandColNames(Data=ERAg::ERA.Compiled,
               )
 
 ## ----Run Subset on Product, echo=T,eval=F-------------------------------------
-#  StabData<-StabData[Product.Subtype=="Cereals"]
+# StabData<-StabData[Product.Subtype=="Cereals"]
 
 ## ----Show Outcome Codes, echo=T-----------------------------------------------
 data.table(OutcomeCodes)[grep("Crop Yield",Subindicator),list(Subindicator,Code)]
@@ -41,8 +41,8 @@ data.table(OutcomeCodes)[grep("Crop Yield",Subindicator),list(Subindicator,Code)
 StabData<-ERAg::PrepareStabData(Data=StabData,OutCodes=101)
 
 ## ----Subset Stability Data, echo=T,eval=F-------------------------------------
-#  StabData<-StabData[nryears>=4]
-#  
+# StabData<-StabData[nryears>=4]
+# 
 
 ## ----Stability calc, echo=T, eval=T,include=F---------------------------------
 StabData<-ERAg::StabCalc2(Data=StabData,
