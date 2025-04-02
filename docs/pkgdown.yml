@@ -1,0 +1,9 @@
+pandoc: '3.2'
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  ERA-Explore-and-Analyze: ERA-Explore-and-Analyze.html
+  ERA-Introduction: ERA-Introduction.html
+  ERA-Search-Protocol: ERA-Search-Protocol.html
+  ERA-Yield-Stability: ERA-Yield-Stability.html
+last_built: 2025-04-02T17:54Z
