@@ -3,7 +3,7 @@
 \docType{data}
 \name{ERA.Compiled}
 \alias{ERA.Compiled}
-\title{The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
+\title{The compiled ERA dataset (version = \verb{era_compiled-v1.0_2018-majestic_hippo_2020_2025-01-30.1_comparisons-skinny_cow_2022_2025_01_30.1})
 \describe{Description of fields in the ERA.Compiled dataset.
 \item{Index}{unique row identity}
 \item{Code}{unique publication identity}
@@ -117,7 +117,7 @@
 ...
 }}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 112859 rows and 135 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 113286 rows and 137 columns.
 }
 \source{
 ERA Project Team (2021)
@@ -126,7 +126,7 @@ ERA Project Team (2021)
 ERA.Compiled
 }
 \description{
-The compiled ERA dataset (version = Comb 2023.04.26 2023.06.27)
+The compiled ERA dataset (version = \verb{era_compiled-v1.0_2018-majestic_hippo_2020_2025-01-30.1_comparisons-skinny_cow_2022_2025_01_30.1})
 \describe{Description of fields in the ERA.Compiled dataset.
 \item{Index}{unique row identity}
 \item{Code}{unique publication identity}

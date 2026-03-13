@@ -18,7 +18,7 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5),
     data.table
@@ -46,7 +46,12 @@ Imports: broom,
          spatstat.univar,
          zoo
 VignetteBuilder: knitr
-Suggests: BiocStyle, 
-          rmarkdown,
-          terra
+Suggests: 
+    BiocStyle,
+    future,
+    future.apply,
+    rmarkdown,
+    terra,
+    testthat (>= 3.0.0)
 Maintainer: Pete Steward <p.steward@cgiar.org>
+Config/testthat/edition: 3

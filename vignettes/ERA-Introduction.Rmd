@@ -132,7 +132,7 @@ ERAgON::ERAAlphaPlot(Data = ERA.Compiled,
 Where experiments have been conducted across multiple sites it is not unusual for results to be reported averaged across more than one site. In ERA, combined sites are indicated by the concatenation of names in the **`Site.ID`** field using a **`..`** delimiter. Note that aggregation of sites can lead to very large buffer distances.
 
 ```{r Ag Sites, echo=T}
-
+ERA.Compiled[, Site.ID := iconv(Site.ID, from = "Windows-1252", to = "UTF-8")]
 Agg.Sites<-unique(ERA.Compiled[grep("[.][.]",Site.ID),
                                list(Site.ID,Latitude,Longitude,Buffer,Version)])
 
@@ -455,7 +455,7 @@ A number of datasets including many from the former HarvestChoice website now fo
 can be found in the `ERAgON::ERA_Other_Linked_Data` dataset. You can find details of these in the `ERAgON::ERA_Other_Linked_Data_Fields` object:
 
 ```{r Other Datasets, echo=T, warning=FALSE}
- knitr::kable(ERAgON::ERA_Other_Linked_Data_Fields$Dataset_Descriptions[-(1:4),c("Name","Description")])
+ knitr::kable(ERAgON::ERA_Other_Linked_Data_Fields$Datasets[-(1:4),c("Name","Description")])
 ```
 
 

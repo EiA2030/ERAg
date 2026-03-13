@@ -12,39 +12,73 @@
 #' @return A `SpatVect` object (from the `terra` package) representing the circular buffer polygons.
 #' @export
 #' @import terra
-Pbuffer<-function(Data, ID = NA, Projected = FALSE) {
+Pbuffer <- function(Data, ID = NA, Projected = FALSE) {
   Data <- data.frame(Data)
-  # Filtering the Data
-  Data <- Data[!(is.na(Data$Latitude) | is.na(Data$Longitude) |
-                   Data$Buffer == "" | is.na(Data$Buffer)), ]
-  # Handling ID selection
+
+  Data$Latitude  <- suppressWarnings(as.numeric(Data$Latitude))
+  Data$Longitude <- suppressWarnings(as.numeric(Data$Longitude))
+  Data$Buffer    <- suppressWarnings(as.numeric(Data$Buffer))
+
+  # Keep only valid geographic coordinates and valid buffers
+  keep <- !is.na(Data$Latitude) &
+    !is.na(Data$Longitude) &
+    !is.na(Data$Buffer) &
+    is.finite(Data$Latitude) &
+    is.finite(Data$Longitude) &
+    is.finite(Data$Buffer) &
+    Data$Buffer > 0 &
+    abs(Data$Longitude) <= 180 &
+    abs(Data$Latitude) <= 90
+
+  Data <- Data[keep, , drop = FALSE]
+
   if (!is.na(ID)) {
-    SS <- unique(Data[, c("Latitude", "Longitude", ID, "Buffer")])
+    SS <- unique(Data[, c("Latitude", "Longitude", ID, "Buffer"), drop = FALSE])
   } else {
-    SS <- unique(Data[, c("Latitude", "Longitude", "Buffer")])
+    SS <- unique(Data[, c("Latitude", "Longitude", "Buffer"), drop = FALSE])
   }
-  # Setting coordinate reference systems
-  CRS.old <- "EPSG:4326" # WGS84
-  CRS.new <- "EPSG:3395" # Mercator projection
 
-  # Create points from latitude and longitude
-  points <- terra::vect(cbind(SS$Longitude, SS$Latitude), crs = CRS.old, type="points")
+  if (nrow(SS) == 0) {
+    stop("Pbuffer: no valid lon/lat rows remain after filtering.")
+  }
 
-  # Transforming points
+  CRS.old <- "EPSG:4326"
+  CRS.new <- "EPSG:3395"
+
+  points <- terra::vect(
+    SS[, c("Longitude", "Latitude"), drop = FALSE],
+    geom = c("Longitude", "Latitude"),
+    crs = CRS.old
+  )
   points <- terra::project(points, CRS.new)
 
-  # Buffering and creating polygons
-  pbuf1 <- terra::vect(lapply(1:nrow(SS), function(i) {
-    pbuf <- terra::buffer(points[i, ], width = as.numeric(SS$Buffer[i]))
-    pbuf
-  }))
+  buf_list <- vector("list", nrow(SS))
 
-  pbuf1<-cbind(pbuf1,SS)
+  for (i in seq_len(nrow(SS))) {
+    buf_i <- terra::buffer(points[i], width = SS$Buffer[i])
 
-  # Projecting back if not Projected
+    if (nrow(buf_i) < 1) {
+      next
+    }
+
+    att_i <- SS[rep(i, nrow(buf_i)), , drop = FALSE]
+    rownames(att_i) <- NULL
+
+    buf_i <- cbind(buf_i, att_i)
+    buf_list[[i]] <- buf_i
+  }
+
+  buf_list <- Filter(Negate(is.null), buf_list)
+
+  if (length(buf_list) == 0) {
+    stop("Pbuffer: no buffers could be created.")
+  }
+
+  pbuf1 <- do.call(rbind, buf_list)
+
   if (!Projected) {
     pbuf1 <- terra::project(pbuf1, CRS.old)
   }
 
-  return(pbuf1)
+  pbuf1
 }
