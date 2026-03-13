@@ -5,12 +5,12 @@
 #' @param Data The ERA.Compiled dataset or a subset of it.
 #' @return A data.table where control vs experimental treatment comparisons have been removed. Each unique outcome observation (control or experimental) is a row in this table.
 #' @export
-ERAWide2Long_mod <- function(Data) {
+ERAWide2Long <- function(Data) {
   Data[, Index := 1:.N
        ][Tree == "", Tree := NA
          ][Diversity == "", Diversity := NA
            ][Variety == "", Variety := NA]
-  
+
   # Need to create control "Variety","Diversity","Tree" columns if codes for relevant practices match in T vs C cols
   C.Cols <- c("CID", "C.Descrip", paste0("C", 1:13), "C.NO", "C.NI", "MeanC", "C.Feed.Source", "USD2010.C", "Irrigation.C", "Irrig.Meth.C")
   T.Cols <- c("TID", "T.Descrip", paste0("T", 1:13), "T.NO", "T.NI", "MeanT", "T.Feed.Source", "USD2010.T", "Variety", "Diversity", "Tree", "Irrigation.T", "Irrig.Meth.T")
@@ -28,10 +28,10 @@ ERAWide2Long_mod <- function(Data) {
   C.Comb <- c(C.Cols, Shared)
   Control <- Data[, ..C.Comb]
 
-  setnames(Control, 
+  setnames(Control,
            c("C.NO", "C.NI", "MeanC", "C.Feed.Source", "USD2010.C", "CID", paste0("C", 1:13), "C.Descrip", "Irrigation.C", "Irrig.Meth.C"),
            c("T.NO", "T.NI", "MeanT", "T.Feed.Source", "USD2010.T", "TID", paste0("T", 1:13), "T.Descrip", "Irrigation.T", "Irrig.Meth.T"))
-  
+
   # Is same improved variety in control & treatment?
   PracCodes <- data.table(ERAg::PracticeCodes)[Practice == "Improved Varieties", Code]
 
@@ -71,7 +71,7 @@ ERAWide2Long_mod <- function(Data) {
 
   Control[, Variety := as.character(NA)]
   Control[VarMatch, Variety := Data[VarMatch, Variety]]
-  
+
   # Is same diversification in control & treatment?
   PracCodes <- data.table(ERAg::PracticeCodes)[Theme == "Agroforestry" |
                                                  Practice %in% c("Green Manure", "Improved Fallow", "Crop Rotation",
@@ -82,7 +82,7 @@ ERAWide2Long_mod <- function(Data) {
 
   Control[, Diversity := as.character(NA)]
   Control[DivMatch, Diversity := Data[DivMatch, Diversity]]
-  
+
   # Is same tree the same in control & treatment?
   PracCodes <- data.table(ERAg::PracticeCodes)[Theme == "Agroforestry", Code]
 
@@ -91,17 +91,17 @@ ERAWide2Long_mod <- function(Data) {
 
   Control[, Tree := as.character(NA)]
   Control[TreeMatch, Tree := Data[TreeMatch, Tree]]
-  
+
   # Remove duplicate controls
   Control[, Index := NULL]
   Control <- unique(Control)
-  
+
   # Prepare final datasets
   Treat[, ID := NULL][, Index := NULL][, TorC := "T"]
   Control[, ID := NULL][, TorC := "C"]
-  
+
   # Combine unique controls with all treatments
   Long <- rbind(Treat, Control, use.names = TRUE)
-  
+
   return(Long)
 }
